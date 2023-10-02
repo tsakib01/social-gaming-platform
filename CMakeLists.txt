@@ -9,6 +9,18 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 
+if (CMAKE_SYSTEM_NAME STREQUAL Emscripten)
+  set(NETWORKING_EMSCRIPTEN_BUILD ON)
+  set(CMAKE_CXX_FLAGS_DEBUG
+      "-O0 -g -fno-omit-frame-pointer"
+  )
+else()
+  set(NETWORKING_EMSCRIPTEN_BUILD OFF)
+  set(CMAKE_CXX_FLAGS_DEBUG
+      "-O0 -g -fsanitize=address,undefined -fno-omit-frame-pointer"
+  )
+endif()
+
 add_subdirectory(lib)
 add_subdirectory(tools)
 add_subdirectory(test)
