@@ -1,4 +1,3 @@
-
 add_library(networking
   src/Server.cpp
   src/Client.cpp
@@ -30,12 +29,11 @@ else()
 endif()
 
 set_target_properties(networking
-                      PROPERTIES
-                      LINKER_LANGUAGE CXX
-                      CXX_STANDARD 17
+  PROPERTIES
+  LINKER_LANGUAGE CXX
+  CXX_STANDARD 17
 )
 
 install(TARGETS networking
   ARCHIVE DESTINATION lib
 )
-
