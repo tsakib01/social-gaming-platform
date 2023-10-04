@@ -1,6 +1,5 @@
 #include <cpp-tree-sitter.h>
 #include <iostream>
-#include <string_view>
 
 extern "C" {
     TSLanguage* tree_sitter_json();
