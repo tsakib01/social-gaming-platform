@@ -1,5 +1,4 @@
 #include <iostream>
-#include <string_view>
 #include "GameConfigLoader.h"
 
 int main(int argc, char** argv) {

@@ -1,5 +1,6 @@
 #include <cpp-tree-sitter.h>
 #include <iostream>
+#include <string>
 
 extern "C" {
     TSLanguage* tree_sitter_json();
@@ -17,7 +18,7 @@ void printTestConfig() {
     ts::Language language = tree_sitter_json();
     ts::Parser parser{language};
 
-    std::string input = "[1, null]";
+    std::string_view input = "[1, null]";
     ts::Tree tree = parser.parseString(input);
 
     ts::Node root = tree.getRootNode();
