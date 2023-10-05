@@ -1,5 +1,5 @@
-#ifndef NETWORKING_SERVER_H
-#define NETWORKING_SERVER_H
+#ifndef GAME_CONFIG_LOADER_H
+#define GAME_CONFIG_LOADER_H
 
 void printTestConfig();
 
