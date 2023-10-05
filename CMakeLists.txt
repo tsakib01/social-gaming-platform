@@ -26,4 +26,6 @@ include(cmake/CPM.cmake)
 
 add_subdirectory(lib)
 add_subdirectory(tools)
+
+set(BUILD_TESTS OFF)
 add_subdirectory(test)

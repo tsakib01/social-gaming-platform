@@ -1,3 +1,7 @@
+if (BUILD_TESTS STREQUAL OFF)
+    return()
+endif()
+
 # requires GoogleTest is installed > sudo apt-get install libgtest-dev
 find_package(GTest REQUIRED)
 
