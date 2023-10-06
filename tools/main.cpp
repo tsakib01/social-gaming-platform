@@ -10,9 +10,7 @@ int main(int argc, char** argv) {
 
     std::string_view gameFilePath = argv[1];
     std::cout << "Game file path: " << gameFilePath << "\n";
-
-    std::shared_ptr<GameRuleEngine> gameRuleEngine = std::make_shared<GameRuleEngine>();
-    GameConfigLoader(gameFilePath, gameRuleEngine);
+    GameConfigLoader configLoader(gameFilePath);
     
     return EXIT_SUCCESS;
 }

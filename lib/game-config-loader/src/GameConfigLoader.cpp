@@ -1,5 +1,5 @@
 #include "GameConfigLoader.h"
-#include "GameRuleEngine.h"
+#include "RuleInterpreter.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -8,8 +8,7 @@ extern "C" {
     TSLanguage* tree_sitter_socialgaming();
 }
 
-GameConfigLoader::GameConfigLoader(std::string_view path, std::shared_ptr<GameRuleEngine> gameRuleEngine) 
-    : gameRuleEngine(gameRuleEngine), source(setSource(path)) {
+GameConfigLoader::GameConfigLoader(std::string_view path) : source(setSource(path)) {
     ts::Language language = tree_sitter_socialgaming();
     ts::Parser parser{language};
     ts::Tree tree = parser.parseString(this->source);
@@ -21,8 +20,7 @@ GameConfigLoader::GameConfigLoader(std::string_view path, std::shared_ptr<GameRu
 }
 
 std::string GameConfigLoader::setSource(std::string_view path) {
-    std::string gameFile(path);
-    std::ifstream ifs(gameFile);
+    std::ifstream ifs(path.data());
     std::stringstream buffer;
     buffer << ifs.rdbuf();
     ifs.close();
@@ -31,35 +29,5 @@ std::string GameConfigLoader::setSource(std::string_view path) {
 
 void GameConfigLoader::loadRules(const ts::Node& root) {
     ts::Node rules = root.getChildByFieldName("rules");
-    this->gameRuleEngine->interpretRules(rules, this->source);
-}
-
-void GameConfigLoader::printNode(ts::Node node) {
-    std::cout <<
-        "\ttype - " << node.getType() << "\n" <<
-        "\tis named - " << (node.isNamed() ? "yes" : "no") << "\n" <<
-        "\tnum children - " << node.getNumChildren() << "\n" <<
-        "\tnum named children - " << node.getNumNamedChildren() << "\n";
-}
-
-void GameConfigLoader::printTestConfig() {
-    ts::Language language = tree_sitter_socialgaming();
-    ts::Parser parser{language};
-
-    std::string_view input = "[1, null]";
-    ts::Tree tree = parser.parseString(input);
-
-    ts::Node root = tree.getRootNode();
-
-    ts::Node array = root.getNamedChild(0);
-    ts::Node number = array.getNamedChild(0);
-
-    std::cout << "Root node:\n";
-    printNode(root);
-    std::cout << "Array node:\n";
-    printNode(array);
-    std::cout << "Number node:\n";
-    printNode(number);
-
-    std::cout << "Whole tree:\n" << root.getSExpr().get() << "\n";
+    RuleInterpreter::interpretRules(rules, this->source);
 }
