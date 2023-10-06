@@ -2,7 +2,7 @@
 #define RULE_INTERPRETER_H
 
 #include <cpp-tree-sitter.h>
-#include "RuleExpression.h"
+#include "Rule.h"
 
 class RuleInterpreter {
 public:
