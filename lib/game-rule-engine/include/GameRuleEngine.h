@@ -5,9 +5,10 @@
 
 class GameRuleEngine {
 public:
-    GameRuleEngine(){};
-    ~GameRuleEngine(){};
-    void interpretRules(const ts::Node& rulesHead, std::string source);
+    static GameRuleEngine& getInstance();
+private:
+    GameRuleEngine() {}; // Prevent instantiation
+    ~GameRuleEngine() = default;
 };
 
 #endif
