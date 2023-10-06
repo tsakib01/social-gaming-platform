@@ -22,6 +22,11 @@ else()
   )
 endif()
 
+file(
+  COPY ${CMAKE_CURRENT_SOURCE_DIR}/games/rock-paper-scissors.game
+  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/games/
+)
+
 include(cmake/CPM.cmake)
 
 add_subdirectory(lib)
