@@ -1,37 +1,33 @@
-#include <cpp-tree-sitter.h>
+#include "GameConfigLoader.h"
+#include "RuleInterpreter.h"
 #include <iostream>
-#include <string>
+#include <fstream>
+#include <sstream>
 
 extern "C" {
-    TSLanguage* tree_sitter_json();
+    TSLanguage* tree_sitter_socialgaming();
 }
 
-void printNode(ts::Node node) {
-    std::cout <<
-        "\ttype - " << node.getType() << "\n" <<
-        "\tis named - " << (node.isNamed() ? "yes" : "no") << "\n" <<
-        "\tnum children - " << node.getNumChildren() << "\n" <<
-        "\tnum named children - " << node.getNumNamedChildren() << "\n";
-}
-
-void printTestConfig() {
-    ts::Language language = tree_sitter_json();
+GameConfigLoader::GameConfigLoader(std::string_view path) : source(setSource(path)) {
+    ts::Language language = tree_sitter_socialgaming();
     ts::Parser parser{language};
-
-    std::string_view input = "[1, null]";
-    ts::Tree tree = parser.parseString(input);
-
+    ts::Tree tree = parser.parseString(this->source);
+    if(tree.getRootNode().getNumChildren() == 0) {
+        throw std::runtime_error("Error: Empty config.");
+    }
     ts::Node root = tree.getRootNode();
+    this->loadRules(root);
+}
 
-    ts::Node array = root.getNamedChild(0);
-    ts::Node number = array.getNamedChild(0);
+std::string GameConfigLoader::setSource(std::string_view path) {
+    std::ifstream ifs(path.data());
+    std::stringstream buffer;
+    buffer << ifs.rdbuf();
+    ifs.close();
+    return buffer.str();
+}
 
-    std::cout << "Root node:\n";
-    printNode(root);
-    std::cout << "Array node:\n";
-    printNode(array);
-    std::cout << "Number node:\n";
-    printNode(number);
-
-    std::cout << "Whole tree:\n" << root.getSExpr().get() << "\n";
+void GameConfigLoader::loadRules(const ts::Node& root) {
+    ts::Node rules = root.getChildByFieldName("rules");
+    RuleInterpreter::interpretRules(rules, this->source);
 }

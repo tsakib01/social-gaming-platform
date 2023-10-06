@@ -1,5 +1,6 @@
 #include <iostream>
 #include "GameConfigLoader.h"
+#include "GameRuleEngine.h"
 
 int main(int argc, char** argv) {
     if(argc != 2) {
@@ -9,8 +10,7 @@ int main(int argc, char** argv) {
 
     std::string_view gameFilePath = argv[1];
     std::cout << "Game file path: " << gameFilePath << "\n";
-
-    printTestConfig();
-
+    GameConfigLoader configLoader(gameFilePath);
+    
     return EXIT_SUCCESS;
 }
