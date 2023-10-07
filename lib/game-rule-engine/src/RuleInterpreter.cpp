@@ -3,11 +3,7 @@
 #include <string.h>
 
 IRule* RuleInterpreter::createRule(const ts::Node& node, const std::string& source) {
-    // TO-DO: handle other types
-    if (node.getType() == "for") {
-      return new ForLoopRule();
-    }
-    return nullptr;
+    return RuleMap::getRule(node.getType());
 }
 
 RuleNode* RuleInterpreter::convertNodeTreeToRuleTree(const ts::Node& root, const std::string& source) {
