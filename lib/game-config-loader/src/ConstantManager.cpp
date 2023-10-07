@@ -1,6 +1,6 @@
 #include "ConstantManager.h"
 #include<iostream>
-
+#include <queue>
 
 ConstantManager::ConstantManager(const ts::Node & constantRoot, std::string_view source)
 : source(source)
@@ -9,19 +9,19 @@ ConstantManager::ConstantManager(const ts::Node & constantRoot, std::string_view
 }
 
 // Print node by level order
-void ConstantManager::print_by_level_order(const ts::Node& node){
-    std::queue<ts::Node> node_queue;
-    node_queue.push(node);
+void ConstantManager::printByLevelOrder(const ts::Node& node){
+    std::queue<ts::Node> nodeQueue;
+    nodeQueue.push(node);
 
-    while (!node_queue.empty()){
-        int queue_size = node_queue.size();
+    while (!nodeQueue.empty()){
+        int queueSize = nodeQueue.size();
 
-        for (int i = 0; i < queue_size; i++){
-            ts::Node node = node_queue.front();
-            node_queue.pop();
+        for (int i = 0; i < queueSize; i++){
+            ts::Node node = nodeQueue.front();
+            nodeQueue.pop();
             std::cout << node.getType() << ", ";
             for (uint32_t j = 0; j < node.getNumNamedChildren(); j++){
-                node_queue.push(node.getNamedChild(j));
+                nodeQueue.push(node.getNamedChild(j));
             }
         }
         std::cout << "\n";
@@ -30,8 +30,8 @@ void ConstantManager::print_by_level_order(const ts::Node& node){
 
 // Print constant list with key: value1, value2, value3....
 void ConstantManager::print(){
-    for (const auto&[variable_name, values] : constant_list){
-        std::cout << variable_name << ": ";
+    for (const auto&[variableName, values] : constantList){
+        std::cout << variableName << ": ";
         for (std::string_view value : values){
             std::cout << value << ", ";
         }
@@ -40,48 +40,48 @@ void ConstantManager::print(){
 }
 
 // Convert a given node to string_view
-std::string_view ConstantManager::convert_quoted_string_to_string_view(ts::Node node){
+std::string_view ConstantManager::convertQuotedStringToStringView(ts::Node node){
     int startByte = node.getByteRange().start;
     int length = node.getByteRange().end - startByte;
     return this->source.substr(startByte, length);
 }
 
 // Take an expression list containing strings, return it as a vector 
-std::vector<std::string_view> ConstantManager::get_string_list(const ts::Node& expression_list_node){
-    std::vector<std::string_view> to_return;
-    for (uint32_t i = 0; i < expression_list_node.getNumNamedChildren(); i++){
-        ts::Node expression_element_node = expression_list_node.getNamedChild(i).getChild(0);
+std::vector<std::string_view> ConstantManager::getStringList(const ts::Node& expressionListNode){
+    std::vector<std::string_view> toReturn;
+    for (uint32_t i = 0; i < expressionListNode.getNumNamedChildren(); i++){
+        ts::Node expressionElementNode = expressionListNode.getNamedChild(i).getChild(0);
         // If an expression_element is a string, put it to vector
-        if (expression_element_node.getType() == "quoted_string"){
-            to_return.push_back(convert_quoted_string_to_string_view(expression_element_node));
+        if (expressionElementNode.getType() == "quoted_string"){
+            toReturn.push_back(convertQuotedStringToStringView(expressionElementNode));
         }
     }
-    return to_return;
+    return toReturn;
 }
 
 
 void ConstantManager::interpretConstant(const ts::Node& constantRoot){
-    ts::Node value_map_node = constantRoot.getNamedChild(0);
+    ts::Node valueMapNode = constantRoot.getNamedChild(0);
     
     // Loop each map entry
-    for (uint32_t i = 0; i < value_map_node.getNumNamedChildren(); i++){
+    for (uint32_t i = 0; i < valueMapNode.getNumNamedChildren(); i++){
         // Map enty has identifeir should have identifier and expression which is a value of constant
-        ts::Node map_entry = value_map_node.getNamedChild(i);
-        ts::Node identifier_node = map_entry.getNamedChild(0);
-        ts::Node value_node = map_entry.getNamedChild(1);
+        ts::Node mapEntry = valueMapNode.getNamedChild(i);
+        ts::Node identifierNode = mapEntry.getNamedChild(0);
+        ts::Node valueNode = mapEntry.getNamedChild(1);
 
         // Convert an identifier of a constant node to string 
-        std::string_view identifier = convert_quoted_string_to_string_view(identifier_node);
+        std::string_view identifier = convertQuotedStringToStringView(identifierNode);
         
         // Check the value type is list or not
-        ts::Node value_expression_node = value_node.getNamedChild(0);
-        if (value_expression_node.getType() == "list_literal"){
+        ts::Node valueExpressionNode = valueNode.getNamedChild(0);
+        if (valueExpressionNode.getType() == "list_literal"){
             // If it is a list, get an expression list
-            ts::Node expression_list_node = value_expression_node.getNamedChild(0);
+            ts::Node expressionListNode = valueExpressionNode.getNamedChild(0);
             // Get a list of strings from expression list
-            std::vector<std::string_view> values = get_string_list(expression_list_node); 
+            std::vector<std::string_view> values = getStringList(expressionListNode); 
             // Insert a value to constant list
-            constant_list.emplace(identifier, values);
+            constantList.emplace(identifier, values);
         }
     }
 }
