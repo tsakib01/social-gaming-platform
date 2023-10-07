@@ -34,7 +34,6 @@ target_include_directories(constantManager
 target_link_libraries(constantManager
   tree-sitter-socialgaming
   cpp-tree-sitter
-  gameConfigLoader
 )
 
 install(TARGETS gameConfigLoader

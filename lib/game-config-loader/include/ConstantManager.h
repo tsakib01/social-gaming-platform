@@ -13,12 +13,12 @@
 // Write now, I am only asssuming the mapping from name -> list of strings
 class ConstantManager{
 public:
-    ConstantManager(const ts::Node & constantRoot, const std::string_view& source);
+    ConstantManager(const ts::Node & constantRoot, std::string_view source);
     void print();
     void print_by_level_order(const ts::Node& node);
 private:
     // Member vairabls
-    std::map<std::string, std::vector<std::string_view>> constant_list;
+    std::map<std::string_view, std::vector<std::string_view>> constant_list;
     std::string_view source;
 
     void interpretConstant(const ts::Node& constantRoot);

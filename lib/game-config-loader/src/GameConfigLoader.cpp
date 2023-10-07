@@ -37,4 +37,5 @@ void GameConfigLoader::loadRules(const ts::Node& root) {
 void GameConfigLoader::loadConstants(const ts::Node& root){
     ts::Node constants = root.getChildByFieldName("constants");
     ConstantManager constantManager(constants, this->source);
+    constantManager.print();
 }

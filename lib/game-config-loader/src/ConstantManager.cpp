@@ -2,11 +2,10 @@
 #include<iostream>
 
 
-ConstantManager::ConstantManager(const ts::Node & constantRoot, const std::string_view& source)
+ConstantManager::ConstantManager(const ts::Node & constantRoot, std::string_view source)
 : source(source)
 {    
     this->interpretConstant(constantRoot);
-    this->print();
 }
 
 // Print node by level order
