@@ -5,9 +5,13 @@ configuration {
   setup: {}
 }
 constants {
-    names: [
+  names: [
     "Naoto", "Michael", "Victor", "Ray", "Tosrif", "Allan", "Bryan", "Jack"
-  ]
+  ],
+  names_copy: [
+    "Naoto", "Michael", "Victor", "Ray", "Tosrif", "Allan", "Bryan", "Jack"
+  ],
+  value:  "naoto"
 }
 variables {}
 per-player {}
