@@ -11,7 +11,8 @@ constants {
   names_copy: [
     "Naoto", "Michael", "Victor", "Ray", "Tosrif", "Allan", "Bryan", "Jack"
   ],
-  value:  "naoto"
+  value:  "naoto",
+  x:  10
 }
 variables {}
 per-player {}

@@ -5,7 +5,6 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <iostream>
 #include<string_view>
 
 // This file is a temporary class while statemanager is developed.
@@ -15,9 +14,11 @@ public:
     ConstantManager(const ts::Node & constantRoot, std::string_view source);
     void print();
     void printByLevelOrder(const ts::Node& node);
+    int getNumberByName(std::string_view name);
 private:
     // Member vairabls
-    std::map<std::string_view, std::vector<std::string_view>> constantList;
+    std::map<std::string_view, std::vector<std::string_view>> constantListOfString;
+    std::map<std::string_view, int> constantListOfNumber;
     std::string_view source;
 
     void interpretConstant(const ts::Node& constantRoot);

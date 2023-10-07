@@ -1,6 +1,7 @@
 #include "ConstantManager.h"
 #include<iostream>
 #include <queue>
+#include <stdexcept> 
 
 ConstantManager::ConstantManager(const ts::Node & constantRoot, std::string_view source)
 : source(source)
@@ -30,12 +31,17 @@ void ConstantManager::printByLevelOrder(const ts::Node& node){
 
 // Print constant list with key: value1, value2, value3....
 void ConstantManager::print(){
-    for (const auto&[variableName, values] : constantList){
+    for (const auto&[variableName, values] : constantListOfString){
         std::cout << variableName << ": ";
         for (std::string_view value : values){
             std::cout << value << ", ";
         }
         std::cout << std::endl;
+    }
+
+    for (const auto&[variableName, value] : constantListOfNumber){
+        std::cout << variableName << ": ";
+        std::cout << value << std::endl;
     }
 }
 
@@ -81,7 +87,22 @@ void ConstantManager::interpretConstant(const ts::Node& constantRoot){
             // Get a list of strings from expression list
             std::vector<std::string_view> values = getStringList(expressionListNode); 
             // Insert a value to constant list
-            constantList.emplace(identifier, values);
+            constantListOfString.emplace(identifier, values);
+        }
+        else if (valueExpressionNode.getType() == "number"){
+            int number = std::stoi(std::string(convertQuotedStringToStringView(valueExpressionNode)));
+            constantListOfNumber.emplace(identifier, number);
         }
     }
 }
+
+int ConstantManager::getNumberByName(std:: string_view name){
+    // Find an iterator of the given name
+    auto itr = constantListOfNumber.find(name);
+    // If the name not found
+    if (itr == constantListOfNumber.end()){
+        throw std::runtime_error("Name not found.");
+    }
+    return (*itr).second;
+}
+
