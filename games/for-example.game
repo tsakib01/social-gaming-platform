@@ -1,0 +1,24 @@
+configuration {
+  name: ""
+  player range: (0, 0)
+  audience: false
+  setup: {}
+}
+constants {
+  names: [
+    "Naoto", "Michael", "Victor", "Ray", "Tosrif", "Allan", "Bryan", "Jack"
+  ],
+  names_copy: [
+    "Naoto", "Michael", "Victor", "Ray", "Tosrif", "Allan", "Bryan", "Jack"
+  ],
+  value:  "naoto",
+  x:  10
+}
+variables {}
+per-player {}
+per-audience {}
+rules {
+    for name in constants.names{
+        message all name;
+    } 
+}
