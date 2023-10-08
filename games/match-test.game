@@ -17,4 +17,12 @@ rules {
       message all "not 10";
     }
   }
+
+  for weapon in weapons {
+      match !players.elements.weapon.contains(weapon.name) {
+        true => {
+          extend winners with players.elements.collect(player, player.weapon = weapon.beats);
+        }
+      }
+    }
 }

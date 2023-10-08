@@ -16,47 +16,43 @@ public:
 
 class ForLoopRule : public IRule {
 public:
-    ForLoopRule() {
+    ForLoopRule(const ts::Node node) : m_node(node) {
         std::cout << "For Loop Rule created" << std::endl;
     }
 
     void execute() override;
+private:
+    const ts::Node m_node;
 };
 
 class MatchRule : public IRule {
 public:
-  MatchRule() {
-    std::cout << "Match Rule created" << std::endl;
-  }
+    MatchRule(const ts::Node node) : m_node(node) {
+        std::cout << "Match Rule created" << std::endl;
+    }
 
-  void execute() override;
+    void execute() override;
+private:
+    const ts::Node m_node;
 };
 
 // This allows a cleaner way to map from a string representing a rule in the 
 // treesitter language to their corresponding Rule constructor
 class RuleMap {
 public:
-  using MapType = std::unordered_map<std::string_view, std::function<IRule*()>>; 
+    using MapType = std::unordered_map<std::string_view, std::function<IRule*(const ts::Node&)>>; 
 
-  // Takes in a string representing a rule, and returns the appropriate Rule object
-  static IRule* getRule(std::string_view ruleName) {
-    if (m_map.find(ruleName) != m_map.end()) {
-      return m_map[ruleName]();
-    }
-    return nullptr;
-  };
+    // Takes in a string representing a rule, and returns the appropriate Rule object
+    static IRule* getRule(std::string_view ruleName, const ts::Node& nodeRef);
 
 private:
-  // Static initializer for the m_map static variable
-  static MapType generate() {
-    MapType map;
-    map["for"] = []() {return new ForLoopRule();};
-    map["match"] = []() {return new MatchRule();};
-    return map;
-  }
+    template <typename RuleType>
+    static IRule* createRule(const ts::Node& node);
+
+    // Static initializer for the m_map static variable
+    static MapType generate();
   
-  static inline MapType m_map{ generate() };
+    static inline MapType m_map{ generate() };
 };
 
-//TO-DO: create other types of rule expressions
 #endif
