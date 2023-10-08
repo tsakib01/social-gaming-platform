@@ -20,7 +20,7 @@ public:
         std::cout << "For Loop Rule created" << std::endl;
     }
 
-    void execute() override {};
+    void execute() override;
 };
 
 class MatchRule : public IRule {
@@ -29,7 +29,7 @@ public:
     std::cout << "Match Rule created" << std::endl;
   }
 
-  void execute() override {};
+  void execute() override;
 };
 
 // This allows a cleaner way to map from a string representing a rule in the 

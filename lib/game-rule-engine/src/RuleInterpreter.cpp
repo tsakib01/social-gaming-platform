@@ -20,8 +20,23 @@ RuleNode* RuleInterpreter::convertNodeTreeToRuleTree(const ts::Node& root, const
     return ruleNode;
 }
 
-void RuleInterpreter::interpretRules(const ts::Node& rulesHead, std::string source) {
+void RuleInterpreter::interpretRules(const ts::Node& rulesHead, const std::string& source) {
     RuleNode* root = RuleInterpreter::convertNodeTreeToRuleTree(rulesHead, source);
-    // To-do: create exection (Post-order traversal)
+    RuleInterpreter::executeRuleTree(root, source);
     delete root;
+}
+
+void RuleInterpreter::executeRuleTree(RuleNode* root, const std::string& source) {
+  if (!root) { 
+    return;
+  }
+  auto rule{root->getRule()};
+  if (rule) {
+    rule->execute();
+  }
+
+  auto children{root->getChildren()};
+  for (auto itr{children.begin()}; itr != children.end(); ++itr) {
+    RuleInterpreter::executeRuleTree(*itr, source);
+  }
 }
