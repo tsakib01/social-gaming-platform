@@ -27,15 +27,14 @@ void RuleInterpreter::interpretRules(const ts::Node& rulesHead, const std::strin
 }
 
 void RuleInterpreter::executeRuleTree(RuleNode* root, const std::string& source) {
-  if (!root) { 
+  if (!root) {
     return;
   }
-  auto rule{root->getRule()};
-  if (rule) {
-    rule->execute();
-  }
+  
+  root->executeRule();
 
   auto children{root->getChildren()};
+
   for (auto itr{children.begin()}; itr != children.end(); ++itr) {
     RuleInterpreter::executeRuleTree(*itr, source);
   }

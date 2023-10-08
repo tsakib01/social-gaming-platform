@@ -24,6 +24,12 @@ public:
         children.clear();
     }
 
+    void executeRule() {
+      if (rule) {
+        rule->execute();
+      }
+    };
+
     IRule* getRule() { return this->rule; }
 
     std::vector<RuleNode*> getChildren() { return this->children; }
