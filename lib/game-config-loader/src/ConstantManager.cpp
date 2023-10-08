@@ -2,6 +2,7 @@
 #include<iostream>
 #include <queue>
 #include <stdexcept> 
+#include <any>
 
 ConstantManager::ConstantManager(const ts::Node & constantRoot, std::string_view source)
 : source(source)
@@ -73,6 +74,12 @@ void ConstantManager::interpretConstant(const ts::Node& constantRoot){
         
         // Check the value type is list or not
         ts::Node valueExpressionNode = valueNode.getNamedChild(0);
+
+        //std::any a = valueExpressionNode.getType();
+        //std::cout << "The type is... " << valueExpressionNode.getSymbol() << '\n';
+        std::cout << "The type is... " << valueExpressionNode.getType() << '\n';
+
+        // TODO: Find a way to account for lists that contain lists
         if (valueExpressionNode.getType() == "list_literal"){
             // If it is a list, get an expression list
             ts::Node expressionListNode = valueExpressionNode.getNamedChild(0);

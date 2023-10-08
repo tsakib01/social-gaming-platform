@@ -1,0 +1,33 @@
+configuration {
+  name: ""
+  player range: (0, 0)
+  audience: false
+  setup: {}
+}
+
+constants {  
+  names: [
+    "This", "That", "There", "You there"
+  ],
+
+  value:  "true",
+  victory-cry: "WOOHOO!",
+}
+
+constants {
+  things: [
+    { trait-one: "Sad",     trait-two: "Oyster" },
+    { trait-one: "Angry",    trait-two: "Clam"     },
+    { trait-one: "Frustrated",      trait-two: "Starfish"    },
+  ]
+}
+
+variables {}
+per-player {}
+per-audience {}
+rules {
+    for name in names {
+        message all name
+        message all victory-cry
+    }
+}
