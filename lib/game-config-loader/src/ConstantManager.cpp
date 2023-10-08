@@ -45,13 +45,6 @@ void ConstantManager::print(){
     }
 }
 
-// Convert a given node to string_view
-std::string_view ConstantManager::convertQuotedStringToStringView(ts::Node node){
-    int startByte = node.getByteRange().start;
-    int length = node.getByteRange().end - startByte;
-    return this->source.substr(startByte, length);
-}
-
 // Take an expression list containing strings, return it as a vector 
 std::vector<std::string_view> ConstantManager::getStringList(const ts::Node& expressionListNode){
     std::vector<std::string_view> toReturn;
@@ -59,12 +52,11 @@ std::vector<std::string_view> ConstantManager::getStringList(const ts::Node& exp
         ts::Node expressionElementNode = expressionListNode.getNamedChild(i).getChild(0);
         // If an expression_element is a string, put it to vector
         if (expressionElementNode.getType() == "quoted_string"){
-            toReturn.push_back(convertQuotedStringToStringView(expressionElementNode));
+            toReturn.push_back(expressionElementNode.getSourceRange(this->source));
         }
     }
     return toReturn;
 }
-
 
 void ConstantManager::interpretConstant(const ts::Node& constantRoot){
     ts::Node valueMapNode = constantRoot.getNamedChild(0);
@@ -77,7 +69,7 @@ void ConstantManager::interpretConstant(const ts::Node& constantRoot){
         ts::Node valueNode = mapEntry.getNamedChild(1);
 
         // Convert an identifier of a constant node to string 
-        std::string_view identifier = convertQuotedStringToStringView(identifierNode);
+        std::string_view identifier = identifierNode.getSourceRange(this->source);
         
         // Check the value type is list or not
         ts::Node valueExpressionNode = valueNode.getNamedChild(0);
@@ -90,7 +82,7 @@ void ConstantManager::interpretConstant(const ts::Node& constantRoot){
             constantListOfString.emplace(identifier, values);
         }
         else if (valueExpressionNode.getType() == "number"){
-            int number = std::stoi(std::string(convertQuotedStringToStringView(valueExpressionNode)));
+            int number = std::stoi(std::string(valueExpressionNode.getSourceRange(this->source)));
             constantListOfNumber.emplace(identifier, number);
         }
     }
