@@ -19,5 +19,22 @@ public:
 
     void execute() override {};
 };
+
+class MatchRule : public IRule {
+public:
+    MatchRule() {
+        std::cout << "Match Rule created" << std::endl;
+    }
+
+    void execute() override {};
+
+    bool getMatchCase();
+
+    bool evaluateMatchEntries();
+
+private:
+    bool matchCase;
+};
+
 //TO-DO: create other types of rule expressions
 #endif

@@ -7,6 +7,10 @@ IRule* RuleInterpreter::createRule(const ts::Node& node, const std::string& sour
     if (node.getType() == "for") {
       return new ForLoopRule();
     }
+    if (node.getType() == "match") {
+			return new MatchRule();
+    }
+
     return nullptr;
 }
 
