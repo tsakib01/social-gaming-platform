@@ -8,18 +8,20 @@ configuration {
 constants {  
   names: [
     "This", "That", "There", "You there"
+  ],  
+  numbers: [
+    1,2,3,4
   ],
-
-  value:  "true",
-  victory-cry: "WOOHOO!",
+  value:  1,
+  victory-cry: "WOOHOO!"
 }
 
-constants {
-  things: [
-    { trait-one: "Sad",     trait-two: "Oyster" },
-    { trait-one: "Angry",    trait-two: "Clam"     },
-    { trait-one: "Frustrated",      trait-two: "Starfish"    },
-  ]
+constants {  
+  numbers: [
+    1,2,3,4
+  ],
+  value:  1,
+  victory-cry: "WOOHOO!"
 }
 
 variables {}
@@ -30,4 +32,6 @@ rules {
         message all name
         message all victory-cry
     }
+    message all value
+    message all victory-cry
 }

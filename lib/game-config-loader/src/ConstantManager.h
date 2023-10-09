@@ -24,5 +24,6 @@ private:
     void interpretConstant(const ts::Node& constantRoot);
     std::vector<std::string_view> getStringList(const ts::Node& expressionListNode);
     std::string_view convertQuotedStringToStringView(ts::Node node);
+    // TODO: Cover more types than just strings... std::any?
 };
 #endif

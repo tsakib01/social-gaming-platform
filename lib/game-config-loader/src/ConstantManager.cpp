@@ -51,9 +51,17 @@ std::vector<std::string_view> ConstantManager::getStringList(const ts::Node& exp
     std::vector<std::string_view> toReturn;
     for (uint32_t i = 0; i < expressionListNode.getNumNamedChildren(); i++){
         ts::Node expressionElementNode = expressionListNode.getNamedChild(i).getChild(0);
-        // If an expression_element is a string, put it to vector
-        if (expressionElementNode.getType() == "quoted_string"){
+        std::any element = expressionElementNode.getType();
+        
+        //Whatever the element... use it. 
+        if (std::any_cast<std::string_view>(element) != "ERROR"){
+            std::cout << "Guess any_cast still works!" << '\n';
             toReturn.push_back(expressionElementNode.getSourceRange(this->source));
+        // If an expression_element is a string, put it to vector
+        }else if(expressionElementNode.getType() == "quoted_string"){
+            toReturn.push_back(expressionElementNode.getSourceRange(this->source));
+        }else {
+            std::cout << "Oops, that was an error!" << '\n';
         }
     }
     return toReturn;
@@ -76,15 +84,34 @@ void ConstantManager::interpretConstant(const ts::Node& constantRoot){
         ts::Node valueExpressionNode = valueNode.getNamedChild(0);
 
         //std::any a = valueExpressionNode.getType();
-        //std::cout << "The type is... " << valueExpressionNode.getSymbol() << '\n';
         std::cout << "The type is... " << valueExpressionNode.getType() << '\n';
+        
+        std::any anyType = valueExpressionNode.getType();
+        std::cout << "With any, the type is... " << std::any_cast<std::string_view>(anyType) << '\n';
+        
+        // if (anyType.has_value()){
+        // Why does this throw an error?
+        //     std::cout << "value from any found. It is " << anyType.type().name() << '\n';
+        // }
+ 
+        // Following gives a std::bad_any_cast error due to a type mismatch...
+        // std::cout << "Through any, the type is..." << std::any_cast<std::string>(anyType) << '\n';
 
         // TODO: Find a way to account for lists that contain lists
         if (valueExpressionNode.getType() == "list_literal"){
             // If it is a list, get an expression list
             ts::Node expressionListNode = valueExpressionNode.getNamedChild(0);
+
+
+            std::any anyType2 = expressionListNode.getType();
+            ts::Node expressionListNode2 = valueExpressionNode.getNamedChild(0);
+
+            // std::any_cast<std::string_view>(anyType) == "list_literal"
+            std::cout << "With any, the type2 is... " << std::any_cast<std::string_view>(anyType2) << '\n';
+
+            // The line below is what is relevant to check with type
             // Get a list of strings from expression list
-            std::vector<std::string_view> values = getStringList(expressionListNode); 
+            std::vector<std::string_view> values = getStringList(expressionListNode);
             // Insert a value to constant list
             constantListOfString.emplace(identifier, values);
         }
