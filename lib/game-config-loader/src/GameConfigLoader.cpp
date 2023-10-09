@@ -1,5 +1,6 @@
 #include "GameConfigLoader.h"
 #include "RuleInterpreter.h"
+#include "ConstantManager.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -17,6 +18,7 @@ GameConfigLoader::GameConfigLoader(std::string_view path) : source(setSource(pat
     }
     ts::Node root = tree.getRootNode();
     this->loadRules(root);
+    this->loadConstants(root);
 }
 
 std::string GameConfigLoader::setSource(std::string_view path) {
@@ -30,4 +32,10 @@ std::string GameConfigLoader::setSource(std::string_view path) {
 void GameConfigLoader::loadRules(const ts::Node& root) {
     ts::Node rules = root.getChildByFieldName("rules");
     RuleInterpreter::interpretRules(rules, this->source);
+}
+
+void GameConfigLoader::loadConstants(const ts::Node& root){
+    ts::Node constants = root.getChildByFieldName("constants");
+    ConstantManager constantManager(constants, this->source);
+    constantManager.print();
 }
