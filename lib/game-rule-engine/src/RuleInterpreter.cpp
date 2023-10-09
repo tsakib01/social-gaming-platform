@@ -2,11 +2,19 @@
 #include <iostream>
 #include <string.h>
 
+IRule* RuleInterpreter::createRule(const ts::Node& node, const std::string& source) {
+    if (node.getType() == "for") {
+      return new ForLoopRule(node);
+    }
+    return nullptr;
+}
+
+
 RuleNode* RuleInterpreter::convertNodeTreeToRuleTree(const ts::Node& root, const std::string& source) {
     if (root.isNull()) {
         return nullptr;
     }
-    RuleNode* ruleNode = new RuleNode(RuleMap::getRule(root.getType(), root));
+    RuleNode* ruleNode = new RuleNode(createRule(root, source));
     // Recursively add children to rule tree
     for (uint32_t idx = 0; idx < root.getNumNamedChildren(); ++idx) {
         ts::Node child = root.getNamedChild(idx);
@@ -16,12 +24,14 @@ RuleNode* RuleInterpreter::convertNodeTreeToRuleTree(const ts::Node& root, const
     return ruleNode;
 }
 
+// TODO: Move the execution of the rules out of RuleInterpreter
 void RuleInterpreter::interpretRules(const ts::Node& rulesHead, const std::string& source) {
     RuleNode* root = convertNodeTreeToRuleTree(rulesHead, source);
     RuleInterpreter::executeRuleTree(root, source);
     delete root;
 }
 
+// TODO: Move the execution of the rules out of RuleInterpreter
 void RuleInterpreter::executeRuleTree(RuleNode* root, const std::string& source) {
   if (!root) {
     return;

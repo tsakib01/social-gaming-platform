@@ -34,25 +34,7 @@ public:
     void execute() override;
 private:
     const ts::Node m_node;
-};
-
-// This allows a cleaner way to map from a string representing a rule in the 
-// treesitter language to their corresponding Rule constructor
-class RuleMap {
-public:
-    using MapType = std::unordered_map<std::string_view, std::function<IRule*(const ts::Node&)>>; 
-
-    // Takes in a string representing a rule, and returns the appropriate Rule object
-    static IRule* getRule(std::string_view ruleName, const ts::Node& nodeRef);
-
-private:
-    template <typename RuleType>
-    static IRule* createRule(const ts::Node& node);
-
-    // Static initializer for the m_map static variable
-    static MapType generate();
-  
-    static inline MapType m_map{ generate() };
+    
 };
 
 #endif
