@@ -10,13 +10,7 @@ int main(int argc, char** argv) {
     }
 
     std::string_view gameFilePath = argv[1];
-    // std::cout << "Game file path: " << gameFilePath << "\n";
-    // GameConfigLoader configLoader(gameFilePath);
-
     GameInstance game = GameInstance(gameFilePath);
-    game.startGame();
 
-    return EXIT_SUCCESS;
-
-    
+    return EXIT_SUCCESS;    
 }

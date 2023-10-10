@@ -3,7 +3,6 @@
 
 #include <cpp-tree-sitter.h>
 #include "Rule.h"
-#include "RuleNode.h"
 
 class RuleInterpreter {
 public:

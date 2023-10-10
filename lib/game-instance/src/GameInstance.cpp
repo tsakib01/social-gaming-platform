@@ -3,13 +3,12 @@
 #include <fstream>
 #include <sstream>
 
+// This probably also shouldn't be here
 extern "C" {
     TSLanguage* tree_sitter_socialgaming();
 }
 
 GameInstance::GameInstance(std::string_view gameFilePath) {
-    // create empty stack, push rules body
-
     std::cout << "Game Instance created. Game: " << gameFilePath << std::endl;
 
     // This implementation should probably go to GameConfigLoader
@@ -29,22 +28,23 @@ GameInstance::GameInstance(std::string_view gameFilePath) {
     ts::Node root = tree.getRootNode();
     ts::Node rules = root.getChildByFieldName("rules");
     ts::Node body = rules.getNamedChild(0);
-
-    std::cout << "body children : " << body.getNumNamedChildren() << std::endl;
-
-    // convert this node to a IRule (body rule)
     
     std::shared_ptr<IRule> firstInstruction(RuleInterpreter::createRule(body, source));
     instructionStack.push(firstInstruction);
+
+    startGame();
 }
 
 void GameInstance::startGame() {
 
-    // This game shouldn't exist - it's just a test to see if it will work
+    // This function shouldn't exist - it's just a test to see if it will work
     // Should probably be in GameInstanceManager
+
+    std::cout << "\nGame started." << std::endl;
     while (!instructionStack.empty()) {
         executeNextInstruction();
     }
+    std::cout << "Game ended." << std::endl;
 }
 
 void GameInstance::executeNextInstruction() {

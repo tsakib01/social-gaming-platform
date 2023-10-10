@@ -3,31 +3,21 @@
 #include <string.h>
 
 IRule* RuleInterpreter::createRule(std::optional<ts::Node> node, const std::string& source) {
-    // TO-DO: handle other types
-    // if (node.getType() == "for") {
-    //     return new ForLoopRule(node);
-    // }
-    // if (node.getType() == "match") {
-	//     return new MatchRule(node);
-    // }
-
-    // TO-DO : replace with a switch case
-    // std::cout << "Creating rule of type ";
-    // std::cout << node.getType() << std:: endl;
-    
     if (node.has_value()) {
         ts::Node actualNode = node.value();
-        std::cout << "Node ID " << actualNode.getID() << std::endl;
+        std::string_view type = actualNode.getType();
 
-        if (actualNode.getType() == "body") {
+        if (type == "body") {
             return new BodyRule(actualNode, source);
         }
-        if (actualNode.getType() == "rule") {
+        if (type == "rule") {
             return new BaseRule(actualNode, source);
         }
-        if (actualNode.getType() == "message") {
+        if (type == "message") {
             return new MessageRule(actualNode, source);
         }
+
+        throw std::runtime_error("Rule hasn't been created yet.");
     }
 
     return nullptr;
