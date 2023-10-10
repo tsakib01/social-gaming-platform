@@ -2,34 +2,33 @@
 #include <iostream>
 #include <string.h>
 
-IRule* RuleInterpreter::createRule(const ts::Node& node, const std::string& source) {
+IRule* RuleInterpreter::createRule(std::optional<ts::Node> node, const std::string& source) {
     // TO-DO: handle other types
-    if (node.getType() == "for") {
-      return new ForLoopRule();
-    }
-    if (node.getType() == "match") {
-			return new MatchRule();
+    // if (node.getType() == "for") {
+    //     return new ForLoopRule(node);
+    // }
+    // if (node.getType() == "match") {
+	//     return new MatchRule(node);
+    // }
+
+    // TO-DO : replace with a switch case
+    // std::cout << "Creating rule of type ";
+    // std::cout << node.getType() << std:: endl;
+    
+    if (node.has_value()) {
+        ts::Node actualNode = node.value();
+        std::cout << "Node ID " << actualNode.getID() << std::endl;
+
+        if (actualNode.getType() == "body") {
+            return new BodyRule(actualNode, source);
+        }
+        if (actualNode.getType() == "rule") {
+            return new BaseRule(actualNode, source);
+        }
+        if (actualNode.getType() == "message") {
+            return new MessageRule(actualNode, source);
+        }
     }
 
     return nullptr;
-}
-
-RuleNode* RuleInterpreter::convertNodeTreeToRuleTree(const ts::Node& root, const std::string& source) {
-    if (root.isNull()) {
-        return nullptr;
-    }
-    RuleNode* ruleNode = new RuleNode(RuleInterpreter::createRule(root, source));
-    // Recursively add children to rule tree
-    for (uint32_t idx = 0; idx < root.getNumNamedChildren(); ++idx) {
-        ts::Node child = root.getNamedChild(idx);
-        RuleNode* childRuleNode = convertNodeTreeToRuleTree(child, source);
-        ruleNode->addChildNode(childRuleNode);
-    }
-    return ruleNode;
-}
-
-void RuleInterpreter::interpretRules(const ts::Node& rulesHead, std::string source) {
-    RuleNode* root = RuleInterpreter::convertNodeTreeToRuleTree(rulesHead, source);
-    // To-do: create exection (Post-order traversal)
-    delete root;
 }

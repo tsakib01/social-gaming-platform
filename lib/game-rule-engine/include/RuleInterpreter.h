@@ -7,9 +7,7 @@
 
 class RuleInterpreter {
 public:
-    static IRule* createRule(const ts::Node& node, const std::string& source);
-    static RuleNode* convertNodeTreeToRuleTree(const ts::Node& root, const std::string& source);
-    static void interpretRules(const ts::Node& rulesHead, std::string source);
+    static IRule* createRule(std::optional<ts::Node> node, const std::string& source);
 };
 
 #endif

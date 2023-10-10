@@ -1,3 +1,5 @@
 add_subdirectory(networking)
 add_subdirectory(game-config-loader)
 add_subdirectory(game-rule-engine)
+add_subdirectory(game-instance-manager)
+add_subdirectory(game-instance)
