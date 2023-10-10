@@ -27,14 +27,16 @@ private:
 
 class MatchRule : public IRule {
 public:
-    MatchRule(const ts::Node node) : m_node(node) {
+    MatchRule(const ts::Node node, std::string_view source) 
+        : m_node(node), m_source(source)
+    {
         std::cout << "Match Rule created" << std::endl;
     }
 
     void execute() override;
 private:
     const ts::Node m_node;
-    
+    std::string_view m_source;
 };
 
 #endif

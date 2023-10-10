@@ -7,7 +7,7 @@ std::unique_ptr<IRule>
 RuleInterpreter::createRule(const ts::Node& node, const std::string& source) {
     auto type = node.getType();
     if (type == "match") {
-        return std::make_unique<MatchRule>(node);
+        return std::make_unique<MatchRule>(node, source);
     } else if (type == "for") {
         return std::make_unique<ForLoopRule>(node);
     }

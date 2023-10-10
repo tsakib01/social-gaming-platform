@@ -3,6 +3,7 @@
 #include "ConstantManager.h"
 #include "GameState.h"
 #include "RuleNode.h"
+#include "Rules.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -34,7 +35,9 @@ std::string GameConfigLoader::setSource(std::string_view path) {
 
 void GameConfigLoader::loadRules(const ts::Node& root) {
     ts::Node rulesHead = root.getChildByFieldName("rules");
-    m_rules = RuleInterpreter::interpretRules(rulesHead, m_source);
+    auto rulesNode = RuleInterpreter::interpretRules(rulesHead, m_source);
+    auto rules = std::make_unique<Rules>(std::move(rulesNode), m_source);
+    m_rules = std::move(rules);
 }
 
 void GameConfigLoader::loadConstants(const ts::Node& root){
