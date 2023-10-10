@@ -1,42 +1,29 @@
 #ifndef RULE__NODE__H
 #define RULE__NODE__H
 
+#include <memory>
+#include <algorithm>
 #include "Rule.h"
 
 class RuleNode {
 public:
-    RuleNode(IRule* rule) : rule(rule) {}
+    RuleNode(std::unique_ptr<IRule> rule) : m_rule(std::move(rule)) {}
 
-    ~RuleNode() {
-        this->deleteTree();
-    }
-
-    void addChildNode(RuleNode* node) {
-        this->children.push_back(node);
-    }
-
-    void deleteTree() {
-        for (RuleNode* child : this->children) {
-            child->deleteTree();
-            delete child->rule;
-            delete child;
-        }
-        children.clear();
+    void addChildNode(std::unique_ptr<RuleNode> node) {
+        m_children.push_back(std::move(node));
     }
 
     void executeRule() {
-      if (rule) {
-        rule->execute();
+      if (m_rule) {
+        m_rule->execute();
       }
     };
 
-    IRule* getRule() { return this->rule; }
-
-    std::vector<RuleNode*> getChildren() { return this->children; }
+    std::vector<std::unique_ptr<RuleNode>>& getChildren() { return m_children; }
 
 private:
-    IRule* rule;
-    std::vector<RuleNode*> children;
+    std::unique_ptr<IRule> m_rule;
+    std::vector<std::unique_ptr<RuleNode>> m_children{};
 };
 
 #endif
