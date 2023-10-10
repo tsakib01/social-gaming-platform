@@ -1,6 +1,7 @@
 #include "GameConfigLoader.h"
 #include "RuleInterpreter.h"
 #include "ConstantManager.h"
+#include "GameState.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -9,16 +10,17 @@ extern "C" {
     TSLanguage* tree_sitter_socialgaming();
 }
 
-GameConfigLoader::GameConfigLoader(std::string_view path) : source(setSource(path)) {
+GameConfigLoader::GameConfigLoader(std::string_view path) : m_source(setSource(path)) {
     ts::Language language = tree_sitter_socialgaming();
     ts::Parser parser{language};
-    ts::Tree tree = parser.parseString(this->source);
+    ts::Tree tree = parser.parseString(m_source);
     if(tree.getRootNode().getNumChildren() == 0) {
         throw std::runtime_error("Error: Empty config.");
     }
     ts::Node root = tree.getRootNode();
-    this->loadConstants(root);
-    this->loadRules(root);
+    loadConstants(root);
+    loadRules(root);
+    loadGameState();
 }
 
 std::string GameConfigLoader::setSource(std::string_view path) {
@@ -29,12 +31,31 @@ std::string GameConfigLoader::setSource(std::string_view path) {
     return buffer.str();
 }
 
-ts::Node GameConfigLoader::loadRules(const ts::Node& root) {
-    return root.getChildByFieldName("rules");
+void GameConfigLoader::loadRules(const ts::Node& root) {
+    std::unique_ptr<ts::Node> rules = std::make_unique<ts::Node>(root.getChildByFieldName("rules"));
+    m_rules = std::move(rules);
 }
 
 void GameConfigLoader::loadConstants(const ts::Node& root){
     ts::Node constants = root.getChildByFieldName("constants");
-    ConstantManager constantManager(constants, this->source);
+    ConstantManager constantManager(constants, m_source);
     constantManager.print();
+}
+
+void GameConfigLoader::loadGameState() {
+    m_gameState = std::make_unique<GameState>();
+
+    // If parser sees a number expression node, can add to constants map like this:
+    m_gameState->addConstant("testNum", Expression::createNumber(10));
+    m_gameState->addConstant("testString", Expression::createString("helloworld"));
+
+    // Access map entries like this:
+    auto constant = m_gameState->getConstant("testNum");
+    if (constant) {
+        std::cout << dynamic_cast<NumberExpr*>(constant)->getValue() << '\n';
+    }
+    constant = m_gameState->getConstant("testString");
+    if (constant) {
+        std::cout << dynamic_cast<StringExpr*>(constant)->getValue() << '\n';
+    }
 }
