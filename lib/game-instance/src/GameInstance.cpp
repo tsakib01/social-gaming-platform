@@ -36,7 +36,6 @@ GameInstance::GameInstance(std::string_view gameFilePath) {
 }
 
 void GameInstance::startGame() {
-
     // This function shouldn't exist - it's just a test to see if it will work
     // Should probably be in GameInstanceManager
 
