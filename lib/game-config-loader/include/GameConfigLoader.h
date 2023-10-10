@@ -13,7 +13,7 @@ public:
     ~GameConfigLoader() {};
     std::string setSource(std::string_view path);
     std::unique_ptr<ts::Node> transferRules() { return std::move(m_rules); }
-    std::unique_ptr<GameState> getGameState() { return std::move(m_gameState); };
+    std::unique_ptr<GameState> transferGameState() { return std::move(m_gameState); };
 
 private:
     const std::string m_source;
