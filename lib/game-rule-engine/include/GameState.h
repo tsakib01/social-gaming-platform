@@ -4,8 +4,8 @@
 #include <unordered_map>
 #include <optional>
 #include <functional>
-#include <memory>
 #include <string>
+#include <memory>
 #include "Expression.h"
 
 class GameState {
@@ -15,10 +15,10 @@ public:
     void addVariable(std::string key, std::unique_ptr<Expression> value);
     void addPerPlayer(std::string key, std::unique_ptr<Expression> value);
     void addPerAudience(std::string key, std::unique_ptr<Expression> value);
-    std::optional<std::reference_wrapper<Expression>> getConstant(std::string key);
-    std::optional<std::reference_wrapper<Expression>> getVariable(std::string key);
-    std::optional<std::reference_wrapper<Expression>> getPerPlayer(std::string key);
-    std::optional<std::reference_wrapper<Expression>> getPerAudience(std::string key);
+    Expression* getConstant(std::string key);
+    Expression* getVariable(std::string key);
+    Expression* getPerPlayer(std::string key);
+    Expression* getPerAudience(std::string key);
 
 private:
     std::unordered_map<std::string, std::unique_ptr<Expression>> constants;

@@ -3,10 +3,21 @@
 
 #include <string>
 #include <string_view>
+#include <vector>
+
+class NumberExpr;
+class StringExpr;
+class ListExpr;
 
 class Expression {
 public:
     virtual ~Expression() = default;
+
+    static std::unique_ptr<NumberExpr> 
+    createNumber(int value) { return std::make_unique<NumberExpr>(value); }
+
+    static std::unique_ptr<StringExpr>
+    createString(std::string_view value) { return std::make_unique<StringExpr>(value); }
 };
 
 class NumberExpr : public Expression {
