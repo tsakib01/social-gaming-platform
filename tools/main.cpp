@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
     gameState.addConstant("test", &test);
     auto constant = gameState.getConstant("test");
     if (constant) {
-        std::cout << *constant << '\n';
+        std::cout << dynamic_cast<NumberExpr*>(constant)->getValue() << '\n';
     }
     
     return EXIT_SUCCESS;

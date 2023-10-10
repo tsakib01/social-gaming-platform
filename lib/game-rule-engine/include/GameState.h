@@ -4,26 +4,27 @@
 #include <unordered_map>
 #include <optional>
 #include <functional>
+#include <memory>
 #include <string>
 #include "Expression.h"
 
 class GameState {
 public:
     GameState() {};
-    void addConstant(std::string key, Expression* value);
-    void addVariable(std::string key, Expression* value);
-    void addPerPlayer(std::string key, Expression* value);
-    void addPerAudience(std::string key, Expression* value);
+    void addConstant(std::string key, std::unique_ptr<Expression> value);
+    void addVariable(std::string key, std::unique_ptr<Expression> value);
+    void addPerPlayer(std::string key, std::unique_ptr<Expression> value);
+    void addPerAudience(std::string key, std::unique_ptr<Expression> value);
     std::optional<std::reference_wrapper<Expression>> getConstant(std::string key);
     std::optional<std::reference_wrapper<Expression>> getVariable(std::string key);
     std::optional<std::reference_wrapper<Expression>> getPerPlayer(std::string key);
     std::optional<std::reference_wrapper<Expression>> getPerAudience(std::string key);
 
 private:
-    std::unordered_map<std::string, Expression*> constants;
-    std::unordered_map<std::string, Expression*> variables;
-    std::unordered_map<std::string, Expression*> perPlayer;
-    std::unordered_map<std::string, Expression*> perAudience;
+    std::unordered_map<std::string, std::unique_ptr<Expression>> constants;
+    std::unordered_map<std::string, std::unique_ptr<Expression>> variables;
+    std::unordered_map<std::string, std::unique_ptr<Expression>> perPlayer;
+    std::unordered_map<std::string, std::unique_ptr<Expression>> perAudience;
 };
 
 #endif
