@@ -23,7 +23,7 @@ else()
 endif()
 
 file(
-  COPY ${CMAKE_CURRENT_SOURCE_DIR}/games/rock-paper-scissors.game
+  COPY ${CMAKE_CURRENT_SOURCE_DIR}/games/
   DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/games/
 )
 

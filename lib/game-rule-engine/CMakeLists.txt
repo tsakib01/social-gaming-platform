@@ -1,6 +1,9 @@
 add_library(gameRuleEngine
     src/GameRuleEngine.cpp
     src/RuleInterpreter.cpp
+    src/BaseRule.cpp
+    src/BodyRule.cpp
+    src/MessageRule.cpp
 )
 
 target_include_directories(gameRuleEngine

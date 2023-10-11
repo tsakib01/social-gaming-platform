@@ -5,19 +5,41 @@
 #include <cpp-tree-sitter.h>
 #include <iostream>
 
-class IRule {
+#include <optional>
+
+class Rule {
 public:
-    virtual void execute() = 0;
-    virtual ~IRule() {}
+    Rule(ts::Node node, const std::string_view source) : node(node), source(source)  {}   
+    virtual std::optional<ts::Node> execute() = 0;
+    virtual ~Rule() {}
+protected:
+    const ts::Node node;
+    const std::string_view source;
 };
 
-class ForLoopRule : public IRule {
-public:
-    ForLoopRule() {
-        std::cout << "For Loop Rule created" << std::endl;
-    }
 
-    void execute() override {};
+class BodyRule : public Rule {
+public:
+    BodyRule(ts::Node node, const std::string_view source);
+    std::optional<ts::Node> execute() override;
+private:
+    uint32_t index = 0; 
 };
-//TO-DO: create other types of rule expressions
+
+
+class BaseRule : public Rule {
+public:
+    BaseRule(ts::Node node, const std::string_view source);
+    std::optional<ts::Node> execute() override;
+private:
+    bool executed = false;
+};
+
+
+class MessageRule : public Rule {
+public:
+    MessageRule(ts::Node node, const std::string_view source);
+    std::optional<ts::Node> execute() override;
+};
+
 #endif

@@ -17,7 +17,6 @@ GameConfigLoader::GameConfigLoader(std::string_view path) : source(setSource(pat
         throw std::runtime_error("Error: Empty config.");
     }
     ts::Node root = tree.getRootNode();
-    this->loadRules(root);
     this->loadConstants(root);
 }
 
@@ -27,11 +26,6 @@ std::string GameConfigLoader::setSource(std::string_view path) {
     buffer << ifs.rdbuf();
     ifs.close();
     return buffer.str();
-}
-
-void GameConfigLoader::loadRules(const ts::Node& root) {
-    ts::Node rules = root.getChildByFieldName("rules");
-    RuleInterpreter::interpretRules(rules, this->source);
 }
 
 void GameConfigLoader::loadConstants(const ts::Node& root){

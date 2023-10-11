@@ -3,13 +3,10 @@
 
 #include <cpp-tree-sitter.h>
 #include "Rule.h"
-#include "RuleNode.h"
 
 class RuleInterpreter {
 public:
-    static IRule* createRule(const ts::Node& node, const std::string& source);
-    static RuleNode* convertNodeTreeToRuleTree(const ts::Node& root, const std::string& source);
-    static void interpretRules(const ts::Node& rulesHead, std::string source);
+    static std::shared_ptr<Rule> createRule(std::optional<ts::Node> node, const std::string_view source);
 };
 
 #endif
