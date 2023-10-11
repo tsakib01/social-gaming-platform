@@ -4,6 +4,8 @@ add_executable(main
 
 target_link_libraries(main 
     gameConfigLoader 
+    gameInstance
+    gameInstanceManager
 )
 
 install(TARGETS main

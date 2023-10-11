@@ -32,7 +32,7 @@ std::string GameConfigLoader::setSource(std::string_view path) {
 
 void GameConfigLoader::loadRules(const ts::Node& root) {
     ts::Node rulesHead = root.getChildByFieldName("rules");
-    auto rulesNode = RuleInterpreter::interpretRules(rulesHead, m_source);
+    auto rulesNode = RuleInterpreter::convertNodeTreeToRuleTree(rulesHead, m_source);
     auto rules = std::make_unique<GameRules>(std::move(rulesNode), m_source);
     m_rules = std::move(rules);
 }

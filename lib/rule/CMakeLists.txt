@@ -1,5 +1,8 @@
 add_library(rule
     src/Rule.cpp
+    src/BaseRule.cpp
+    src/BodyRule.cpp
+    src/MessageRule.cpp
 )
 
 target_include_directories(rule

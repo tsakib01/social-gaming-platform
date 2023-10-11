@@ -10,6 +10,8 @@ add_grammar_from_repo(tree-sitter-socialgaming
 
 add_subdirectory(expression)
 add_subdirectory(game-config-loader)
+add_subdirectory(game-instance-manager)
+add_subdirectory(game-instance)
 add_subdirectory(networking)
 add_subdirectory(rule)
 add_subdirectory(rule-interpreter)

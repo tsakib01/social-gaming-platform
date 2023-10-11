@@ -8,10 +8,11 @@
 
 class RuleInterpreter {
 public:
-    static std::unique_ptr<IRule> createRule(const ts::Node& node, const std::string& source);
+    static std::shared_ptr<Rule> createRule(std::optional<ts::Node> node, const std::string_view source);
+
+    // Note: May be used in future iterations rather than using ts::Node directly
+    // Converts a raw ts::Node into a RuleNode wrapper object
     static std::unique_ptr<RuleNode> convertNodeTreeToRuleTree(const ts::Node& root, const std::string& source);
-    static std::unique_ptr<RuleNode> interpretRules(const ts::Node& rulesHead, const std::string& source);
-    static void executeRuleTree(RuleNode* root);
 };
 
 #endif

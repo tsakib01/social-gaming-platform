@@ -19,15 +19,10 @@ void print(const ts::Node& node, std::string_view source) {
     }
 }
 
-void ForLoopRule::execute() {
-    // std::cout << "Executing for loop\n";
-    // std::cout << m_node.getSExpr() << std::endl;
-}
-
-void MatchRule::execute() {
+std::optional<ts::Node> MatchRule::execute() {
     std::cout << "Executing match\n";
-    ts::Node target = m_node.getChildByFieldName("target");
-    std::cout << target.getSourceRange(m_source) << std::endl;
+    ts::Node target = node.getChildByFieldName("target");
+    std::cout << target.getSourceRange(source) << std::endl;
     std::vector<ts::Node> matchEntries{};
 
     ts::Node matchEntry = target.getNextSibling();
@@ -39,7 +34,7 @@ void MatchRule::execute() {
 
     for (const auto& m : matchEntries) {
         std::cout << "MATCHENTRY\n";
-        std::cout << m.getSourceRange(m_source) << '\n';
+        std::cout << m.getSourceRange(source) << '\n';
     }
 
     // print(m_node, m_source);

@@ -7,36 +7,56 @@
 #include <unordered_map>
 #include <functional>
 #include <string_view>
+#include <optional>
 
-class IRule {
+class Rule {
 public:
-    virtual void execute() = 0;
-    virtual ~IRule() {}
+    Rule(ts::Node node, const std::string_view source) 
+        : node(node), source(source)  {}
+
+    virtual std::optional<ts::Node> execute() = 0;
+    virtual ~Rule() {}
+
+protected:
+    const ts::Node node;
+    const std::string_view source;
 };
 
-class ForLoopRule : public IRule {
-public:
-    ForLoopRule(const ts::Node node) : m_node(node) {
-        std::cout << "For Loop Rule created" << std::endl;
-    }
 
-    void execute() override;
+class BodyRule : public Rule {
+public:
+    BodyRule(ts::Node node, const std::string_view source);
+    std::optional<ts::Node> execute() override;
 private:
-    const ts::Node m_node;
+    uint32_t index = 0; 
 };
 
-class MatchRule : public IRule {
+
+class BaseRule : public Rule {
+public:
+    BaseRule(ts::Node node, const std::string_view source);
+    std::optional<ts::Node> execute() override;
+private:
+    bool executed = false;
+};
+
+
+class MessageRule : public Rule {
+public:
+    MessageRule(ts::Node node, const std::string_view source);
+    std::optional<ts::Node> execute() override;
+};
+
+
+class MatchRule : public Rule {
 public:
     MatchRule(const ts::Node node, std::string_view source) 
-        : m_node(node), m_source(source)
+        : Rule(node, source)
     {
         std::cout << "Match Rule created" << std::endl;
     }
 
-    void execute() override;
-private:
-    const ts::Node m_node;
-    std::string_view m_source;
+    std::optional<ts::Node> execute() override;
 };
 
 #endif

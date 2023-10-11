@@ -3,14 +3,31 @@
 #include <string>
 #include <algorithm>
 
-std::unique_ptr<IRule> 
-RuleInterpreter::createRule(const ts::Node& node, const std::string& source) {
-    auto type = node.getType();
-    if (type == "match") {
-        return std::make_unique<MatchRule>(node, source);
-    } else if (type == "for") {
-        return std::make_unique<ForLoopRule>(node);
+
+std::shared_ptr<Rule> 
+RuleInterpreter::createRule(std::optional<ts::Node> node, const std::string_view source) {
+    if (node.has_value()) {
+        ts::Node actualNode = node.value();
+        std::string_view type = actualNode.getType();
+
+        if (type == "body") {
+            return std::make_shared<BodyRule>(actualNode, source);
+        }
+        if (type == "rule") {
+            return std::make_shared<BaseRule>(actualNode, source);
+        }
+        if (type == "message") {
+            return std::make_shared<MessageRule>(actualNode, source);
+        }
+        if (type == "match") {
+            return std::make_shared<MatchRule>(actualNode, source);
+        }
+
+        std::string errorMsg = std::string("Rule hasn't been created yet: ") 
+                             + std::string(actualNode.getType());
+        throw std::runtime_error(errorMsg);
     }
+
     return nullptr;
 }
 
@@ -29,28 +46,4 @@ RuleInterpreter::convertNodeTreeToRuleTree(const ts::Node& root, const std::stri
         ruleNode->addChildNode(std::move(childRuleNode));
     }
     return ruleNode;
-}
-
-// TODO: Move the execution of the rules out of RuleInterpreter
-std::unique_ptr<RuleNode> 
-RuleInterpreter::interpretRules(const ts::Node& rulesHead, const std::string& source) {
-    auto root = convertNodeTreeToRuleTree(rulesHead, source);
-    RuleInterpreter::executeRuleTree(root.get());
-    return root;
-}
-
-// TODO: Move the execution of the rules out of RuleInterpreter
-void 
-RuleInterpreter::executeRuleTree(RuleNode* root) {
-  if (!root) {
-    return;
-  }
-  
-  root->executeRule();
-
-  auto& children = root->getChildren();
-
-  for (auto itr{children.begin()}; itr != children.end(); ++itr) {
-    RuleInterpreter::executeRuleTree(itr->get());
-  }
 }
