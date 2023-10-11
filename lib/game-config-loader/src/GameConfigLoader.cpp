@@ -1,9 +1,11 @@
 #include "GameConfigLoader.h"
 #include "RuleInterpreter.h"
 #include "ConstantManager.h"
+#include "GameState.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include<queue>
 
 extern "C" {
     TSLanguage* tree_sitter_socialgaming();
@@ -34,8 +36,28 @@ void GameConfigLoader::loadRules(const ts::Node& root) {
     RuleInterpreter::interpretRules(rules, this->source);
 }
 
+// Print node by level order
+void GameConfigLoader::printByLevelOrder(const ts::Node& node){
+    std::queue<ts::Node> nodeQueue;
+    nodeQueue.push(node);
+
+    while (!nodeQueue.empty()){
+        int queueSize = nodeQueue.size();
+
+        for (int i = 0; i < queueSize; i++){
+            ts::Node node = nodeQueue.front();
+            nodeQueue.pop();
+            std::cout << node.getType() << ", ";
+            for (uint32_t j = 0; j < node.getNumNamedChildren(); j++){
+                nodeQueue.push(node.getNamedChild(j));
+            }
+        }
+        std::cout << "\n";
+    }
+}
+
 void GameConfigLoader::loadConstants(const ts::Node& root){
     ts::Node constants = root.getChildByFieldName("constants");
-    ConstantManager constantManager(constants, this->source);
-    constantManager.print();
+    printByLevelOrder(constants);
+    GameState gameSate(constants.getSourceRange(source));
 }
