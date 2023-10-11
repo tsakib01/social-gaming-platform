@@ -1,8 +1,5 @@
 #include <iostream>
 #include "GameConfigLoader.h"
-#include "GameRuleEngine.h"
-#include "GameState.h"
-#include "Expression.h"
 
 int main(int argc, char** argv) {
     if(argc != 2) {

@@ -1,11 +1,8 @@
-add_library(gameRuleEngine
-    src/GameRuleEngine.cpp
+add_library(ruleInterpreter
     src/RuleInterpreter.cpp
-    src/Rule.cpp
-    src/GameState.cpp
 )
 
-target_include_directories(gameRuleEngine
+target_include_directories(ruleInterpreter
     PUBLIC
         $<INSTALL_INTERFACE:include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -13,10 +10,12 @@ target_include_directories(gameRuleEngine
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-target_link_libraries(gameRuleEngine
-    gameConfigLoader
+target_link_libraries(ruleInterpreter
+    cpp-tree-sitter
+    rule
+    ruleNode
 )
 
-install(TARGETS gameRuleEngine
+install(TARGETS ruleInterpreter
     ARCHIVE DESTINATION lib
 )

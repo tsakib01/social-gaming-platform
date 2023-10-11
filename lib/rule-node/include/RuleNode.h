@@ -7,17 +7,12 @@
 
 class RuleNode {
 public:
-    RuleNode(std::unique_ptr<IRule> rule) : m_rule(std::move(rule)) {}
+    RuleNode(std::unique_ptr<IRule> rule) 
+        : m_rule(std::move(rule)) {}
 
-    void addChildNode(std::unique_ptr<RuleNode> node) {
-        m_children.push_back(std::move(node));
-    }
+    void addChildNode(std::unique_ptr<RuleNode> node);
 
-    void executeRule() {
-      if (m_rule) {
-        m_rule->execute();
-      }
-    };
+    void executeRule(); 
 
     std::vector<std::unique_ptr<RuleNode>>& getChildren() { return m_children; }
 

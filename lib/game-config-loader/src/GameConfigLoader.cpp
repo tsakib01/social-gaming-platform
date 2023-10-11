@@ -1,9 +1,6 @@
 #include "GameConfigLoader.h"
 #include "RuleInterpreter.h"
 #include "ConstantManager.h"
-#include "GameState.h"
-#include "RuleNode.h"
-#include "Rules.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -36,7 +33,7 @@ std::string GameConfigLoader::setSource(std::string_view path) {
 void GameConfigLoader::loadRules(const ts::Node& root) {
     ts::Node rulesHead = root.getChildByFieldName("rules");
     auto rulesNode = RuleInterpreter::interpretRules(rulesHead, m_source);
-    auto rules = std::make_unique<Rules>(std::move(rulesNode), m_source);
+    auto rules = std::make_unique<GameRules>(std::move(rulesNode), m_source);
     m_rules = std::move(rules);
 }
 
@@ -56,10 +53,10 @@ void GameConfigLoader::loadGameState() {
     // Access map entries like this:
     auto constant = m_gameState->getConstant("testNum");
     if (constant) {
-        std::cout << dynamic_cast<NumberExpr*>(constant)->getValue() << '\n';
+        std::cout << dynamic_cast<IntExpression*>(constant)->getValue() << '\n';
     }
     constant = m_gameState->getConstant("testString");
     if (constant) {
-        std::cout << dynamic_cast<StringExpr*>(constant)->getValue() << '\n';
+        std::cout << dynamic_cast<StringExpression*>(constant)->getValue() << '\n';
     }
 }

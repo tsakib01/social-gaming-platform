@@ -6,9 +6,9 @@
 #include <string>
 #include <memory>
 
-class Rules {
+class GameRules {
 public:
-    Rules(std::unique_ptr<RuleNode> rules, std::string_view source)
+    GameRules(std::unique_ptr<RuleNode> rules, std::string_view source)
         : m_rules(std::move(rules)), m_source(source) 
     {}
 
