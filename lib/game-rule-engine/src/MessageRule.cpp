@@ -1,6 +1,6 @@
 #include "Rule.h"
 
-MessageRule::MessageRule(ts::Node node, const std::string_view& source) : Rule(node, source) {
+MessageRule::MessageRule(ts::Node node, const std::string_view source) : Rule(node, source) {
     std::cout << "MessageRule created" << std::endl;
 }
 

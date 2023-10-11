@@ -6,7 +6,7 @@
 
 class RuleInterpreter {
 public:
-    static std::shared_ptr<Rule> createRule(std::optional<ts::Node> node, const std::string_view& source);
+    static std::shared_ptr<Rule> createRule(std::optional<ts::Node> node, const std::string_view source);
 };
 
 #endif

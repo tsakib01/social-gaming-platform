@@ -1,6 +1,6 @@
 #include "Rule.h"
 
-BodyRule::BodyRule(ts::Node node, const std::string_view& source) : Rule(node, source) {
+BodyRule::BodyRule(ts::Node node, const std::string_view source) : Rule(node, source) {
     std::cout << "Body Rule created" << std::endl;
 }
 
