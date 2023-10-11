@@ -21,15 +21,16 @@ GameInstance::GameInstance(std::string_view gameFilePath) {
     std::string source = buffer.str();
     ifs.close();
 
-    ts::Tree tree = parser.parseString(source);
+    std::string_view sourceView(source);
+    ts::Tree tree = parser.parseString(sourceView);
 
-    this->source = source;
+    this->source = sourceView;
 
     ts::Node root = tree.getRootNode();
     ts::Node rules = root.getChildByFieldName("rules");
     ts::Node body = rules.getNamedChild(0);
     
-    std::shared_ptr<IRule> firstInstruction(RuleInterpreter::createRule(body, source));
+    std::shared_ptr<Rule> firstInstruction(RuleInterpreter::createRule(body, source));
     instructionStack.push(firstInstruction);
 
     startGame();
@@ -47,11 +48,11 @@ void GameInstance::startGame() {
 }
 
 void GameInstance::executeNextInstruction() {
-    std::shared_ptr<IRule> instruction = instructionStack.top();
+    std::shared_ptr<Rule> instruction = instructionStack.top();
     std::optional<ts::Node> nextInstructionNode = instruction->execute();
 
     if (nextInstructionNode.has_value()) {
-        std::shared_ptr<IRule> nextInstruction(RuleInterpreter::createRule(nextInstructionNode, source));
+        std::shared_ptr<Rule> nextInstruction(RuleInterpreter::createRule(nextInstructionNode, source));
         instructionStack.push(nextInstruction);
     } else {
         instructionStack.pop();

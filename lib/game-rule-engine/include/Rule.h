@@ -7,38 +7,38 @@
 
 #include <optional>
 
-class IRule {
+class Rule {
 public:
-    IRule(ts::Node node, const std::string& source) : node(node), source(source)  {}   
+    Rule(ts::Node node, const std::string_view& source) : node(node), source(source)  {}   
     virtual std::optional<ts::Node> execute() = 0;
-    virtual ~IRule() {}
+    virtual ~Rule() {}
 protected:
     const ts::Node node;
-    const std::string& source;
+    const std::string_view& source;
 };
 
 
-class BodyRule : public IRule {
+class BodyRule : public Rule {
 public:
-    BodyRule(ts::Node node, const std::string& source);
+    BodyRule(ts::Node node, const std::string_view& source);
     std::optional<ts::Node> execute() override;
 private:
     uint32_t index = 0; 
 };
 
 
-class BaseRule : public IRule {
+class BaseRule : public Rule {
 public:
-    BaseRule(ts::Node node, const std::string& source);
+    BaseRule(ts::Node node, const std::string_view& source);
     std::optional<ts::Node> execute() override;
 private:
     bool executed = false;
 };
 
 
-class MessageRule : public IRule {
+class MessageRule : public Rule {
 public:
-    MessageRule(ts::Node node, const std::string& source);
+    MessageRule(ts::Node node, const std::string_view& source);
     std::optional<ts::Node> execute() override;
 };
 
