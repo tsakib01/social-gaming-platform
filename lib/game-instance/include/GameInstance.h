@@ -2,18 +2,22 @@
 #define GAME_INSTANCE_H
 
 #include "RuleInterpreter.h"
+#include "GameRules.h"
+#include "GameState.h"
 #include <stack>
 #include <iostream>
 
 class GameInstance {
 public:
-    GameInstance(std::string_view gameFilePath);
+    GameInstance(std::shared_ptr<GameRules> rules, std::shared_ptr<GameState> state);
     ~GameInstance() {};
     void startGame();
     void executeNextInstruction();
+
 private:
+    std::shared_ptr<GameRules> m_gameRules;
+    std::shared_ptr<GameState> m_gameState;
     std::stack<std::shared_ptr<Rule>> instructionStack;
-    std::string_view source;
 };
 
 #endif
