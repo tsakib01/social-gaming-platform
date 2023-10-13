@@ -38,7 +38,7 @@ void GameConfigLoader::loadRules(std::string_view source) {
 
 // TODO: Change implementation of handling game state to use std::variant
 void GameConfigLoader::loadGameState() {
-    m_gameState = std::make_unique<GameState>();
+    m_gameState = std::make_shared<GameState>();
 
     // If parser sees a number expression node, can add to constants map like this:
     m_gameState->addConstant("testNum", Expression::createNumber(10));

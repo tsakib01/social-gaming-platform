@@ -11,36 +11,21 @@ extern "C" {
 }
 
 
-GameInstance::GameInstance(std::unique_ptr<GameRules> gameRules, 
-std::unique_ptr<GameState> gameState)
-    : gameRules(std::move(gameRules)), gameState(std::move(gameState))
+GameInstance::GameInstance(std::shared_ptr<GameRules> gameRules, 
+std::shared_ptr<GameState> gameState)
+    : m_gameRules(gameRules), m_gameState(std::move(gameState))
 {
-    // TODO: FIX these 2 lines - this should replace the implementation below, but I
-    // ran into some issues with resource management where ts::Tree is involved
-    // - you can't make copies of ts::Tree, and you can't make smart pointers to
-    // ts::Tree, so it is hard to pass around. See GameRules.cpp for more info.
-
-    // const ts::Node rules = gameRules->getRules();
-    // ts::Node body = rules.getNamedChild(0);
+    const ts::Node rules = gameRules->getRules();
+    ts::Node body = rules.getNamedChild(0);
 
     // This implementation should probably go to GameConfigLoader
     ts::Language language = tree_sitter_socialgaming();
     ts::Parser parser{language};
 
-    std::cout << gameRules.get() << '\n';
+    std::shared_ptr<Rule> firstInstruction(RuleInterpreter::createRule(body, gameRules->getSource()));
+    instructionStack.push(firstInstruction);
 
-    // ts::Tree tree = parser.parseString(gameRules->getSource());
-    // std::cout << gameRules->getSource();
-
-    // ts::Node root = tree.getRootNode();
-    // ts::Node rules = root.getChildByFieldName("rules");
-    // ts::Node body = rules.getNamedChild(0);
-
-
-    // std::shared_ptr<Rule> firstInstruction(RuleInterpreter::createRule(body, source));
-    // instructionStack.push(firstInstruction);
-
-    // startGame();
+    startGame();
 }
 
 void GameInstance::startGame() {
@@ -59,7 +44,9 @@ void GameInstance::executeNextInstruction() {
     std::optional<ts::Node> nextInstructionNode = instruction->execute();
 
     if (nextInstructionNode.has_value()) {
-        std::shared_ptr<Rule> nextInstruction(RuleInterpreter::createRule(nextInstructionNode, source));
+        std::shared_ptr<Rule> nextInstruction(
+                RuleInterpreter::createRule(nextInstructionNode, m_gameRules->getSource()));
+
         instructionStack.push(nextInstruction);
     } else {
         instructionStack.pop();

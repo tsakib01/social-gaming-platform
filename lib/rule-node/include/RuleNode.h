@@ -14,7 +14,8 @@ public:
 
     void executeRule(); 
 
-    std::vector<std::shared_ptr<RuleNode>>& getChildren() { return m_children; }
+    [[nodiscard]] std::vector<std::shared_ptr<RuleNode>>& 
+    getChildren() { return m_children; }
 
 private:
     std::shared_ptr<Rule> m_rule;

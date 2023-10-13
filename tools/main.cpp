@@ -13,9 +13,10 @@ int main(int argc, char** argv) {
 
     // TODO: Creating GameInstances with configloader should probably be handled by GIM
     GameConfigLoader gameConfigLoader(gameFilePath);
+    auto rules = gameConfigLoader.transferRules();
+    auto state = gameConfigLoader.transferGameState();
 
-    GameInstance game = GameInstance(gameConfigLoader.transferRules(), 
-                                     gameConfigLoader.transferGameState());
+    GameInstance game = GameInstance(std::move(rules), std::move(state));
 
     return EXIT_SUCCESS;    
 }

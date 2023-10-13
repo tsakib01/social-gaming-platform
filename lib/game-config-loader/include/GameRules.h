@@ -9,13 +9,14 @@ class GameRules {
 public:
     GameRules(std::string_view source);
 
-    // [[nodiscard]] const ts::Node& getRules() const { return m_rules; }
-    [[nodiscard]] std::string_view getSource() { return m_source; }
+    [[nodiscard]] const ts::Node& getRules() const { return m_rules; }
+
+    [[nodiscard]] const std::string_view getSource() const { return m_source; }
 
 private:
     std::string m_source{};
-    // ts::Tree m_exprTree{nullptr}; // Dummy placeholder replaced on constructor call
-    // ts::Node m_rules{TSNode{}}; // Dummy placeholder
+    ts::Tree m_exprTree{nullptr}; // Dummy placeholder replaced on constructor call
+    ts::Node m_rules{TSNode{}}; // Dummy placeholder
 };
 
 #endif

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include "GameState.h"
 #include "GameRules.h"
+#include <iostream>
 
 class GameConfigLoader {
 public:
@@ -20,14 +21,14 @@ public:
     void loadGameConfig(std::string_view path);
 
     // Transfers ownership of rules to a GameInstance
-    std::unique_ptr<GameRules> transferRules() { return std::move(m_rules); }
+    [[nodiscard]] std::shared_ptr<GameRules> transferRules() { return m_rules; }
 
     // Transfers ownership of state to a GameInstance
-    std::unique_ptr<GameState> transferGameState() { return std::move(m_gameState); };
+    [[nodiscard]] std::shared_ptr<GameState> transferGameState() { return m_gameState; }
 
 private:
-    std::unique_ptr<GameRules> m_rules{};
-    std::unique_ptr<GameState> m_gameState{};
+    std::shared_ptr<GameRules> m_rules;
+    std::shared_ptr<GameState> m_gameState;
 
     // Creates the GameRules private member which can be transferred to a GameInstance
     // @param source Game source text
