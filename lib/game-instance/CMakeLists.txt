@@ -1,5 +1,6 @@
 add_library(gameInstance
-    src/GameInstance.cpp)
+    src/GameInstance.cpp
+)
 
 target_include_directories(gameInstance
     PUBLIC
@@ -15,4 +16,5 @@ install(TARGETS gameInstance
 
 target_link_libraries(gameInstance
     gameConfigLoader
+    cpp-tree-sitter
 )

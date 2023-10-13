@@ -10,9 +10,12 @@ int main(int argc, char** argv) {
 
     std::string_view gameFilePath = argv[1];
     std::cout << "Game file path: " << gameFilePath << "\n";
-    // GameConfigLoader configLoader(gameFilePath);
 
-    GameInstance game = GameInstance(gameFilePath);
+    // TODO: Creating GameInstances with configloader should probably be handled by GIM
+    GameConfigLoader gameConfigLoader(gameFilePath);
+
+    GameInstance game = GameInstance(gameConfigLoader.transferRules(), 
+                                     gameConfigLoader.transferGameState());
 
     return EXIT_SUCCESS;    
 }

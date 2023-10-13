@@ -1,22 +1,21 @@
 #ifndef RULES__H
 #define RULES__H
 
-#include "RuleNode.h"
 #include <cpp-tree-sitter.h>
 #include <string>
 #include <memory>
 
 class GameRules {
 public:
-    GameRules(std::unique_ptr<RuleNode> rules, std::string_view source)
-        : m_rules(std::move(rules)), m_source(source) 
-    {}
+    GameRules(std::string_view source);
 
-    RuleNode& getRules() { return *m_rules; }
-    std::string_view getSource() { return m_source; }
+    // [[nodiscard]] const ts::Node& getRules() const { return m_rules; }
+    [[nodiscard]] std::string_view getSource() { return m_source; }
+
 private:
-    std::unique_ptr<RuleNode> m_rules;
-    std::string m_source;
+    std::string m_source{};
+    // ts::Tree m_exprTree{nullptr}; // Dummy placeholder replaced on constructor call
+    // ts::Node m_rules{TSNode{}}; // Dummy placeholder
 };
 
 #endif

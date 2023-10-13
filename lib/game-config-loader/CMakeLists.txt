@@ -1,5 +1,6 @@
 add_library(gameConfigLoader 
     src/GameConfigLoader.cpp
+    src/GameRules.cpp
     src/GameState.cpp
 )
 

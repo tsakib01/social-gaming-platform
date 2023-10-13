@@ -11,7 +11,7 @@ void print(const ts::Node& node, std::string_view source) {
         return;
     }
     std::cout << node.getType() << std::endl;
-    for (auto i{0}; i < node.getNumNamedChildren(); ++i) {
+    for (uint32_t i{0}; i < node.getNumNamedChildren(); ++i) {
         print(node.getNamedChild(i), source);
         if (node.getType() == "expression") { 
             std::cout << node.getSourceRange(source) << std::endl;
@@ -36,6 +36,8 @@ std::optional<ts::Node> MatchRule::execute() {
         std::cout << "MATCHENTRY\n";
         std::cout << m.getSourceRange(source) << '\n';
     }
+
+    return std::nullopt;
 
     // print(m_node, m_source);
     // std::cout << m_node.getSExpr() << std::endl;

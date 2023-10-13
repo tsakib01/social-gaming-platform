@@ -1,39 +1,46 @@
 #include "GameInstance.h"
+#include "GameConfigLoader.h"
 
 #include <fstream>
 #include <sstream>
+#include <cpp-tree-sitter.h>
 
 // This probably also shouldn't be here
 extern "C" {
     TSLanguage* tree_sitter_socialgaming();
 }
 
-GameInstance::GameInstance(std::string_view gameFilePath) {
-    std::cout << "Game Instance created. Game: " << gameFilePath << std::endl;
+
+GameInstance::GameInstance(std::unique_ptr<GameRules> gameRules, 
+std::unique_ptr<GameState> gameState)
+    : gameRules(std::move(gameRules)), gameState(std::move(gameState))
+{
+    // TODO: FIX these 2 lines - this should replace the implementation below, but I
+    // ran into some issues with resource management where ts::Tree is involved
+    // - you can't make copies of ts::Tree, and you can't make smart pointers to
+    // ts::Tree, so it is hard to pass around. See GameRules.cpp for more info.
+
+    // const ts::Node rules = gameRules->getRules();
+    // ts::Node body = rules.getNamedChild(0);
 
     // This implementation should probably go to GameConfigLoader
     ts::Language language = tree_sitter_socialgaming();
     ts::Parser parser{language};
 
-    std::ifstream ifs(gameFilePath.data());
-    std::stringstream buffer;
-    buffer << ifs.rdbuf();
-    std::string source = buffer.str();
-    ifs.close();
+    std::cout << gameRules.get() << '\n';
 
-    std::string_view sourceView(source);
-    ts::Tree tree = parser.parseString(sourceView);
+    // ts::Tree tree = parser.parseString(gameRules->getSource());
+    // std::cout << gameRules->getSource();
 
-    this->source = sourceView;
+    // ts::Node root = tree.getRootNode();
+    // ts::Node rules = root.getChildByFieldName("rules");
+    // ts::Node body = rules.getNamedChild(0);
 
-    ts::Node root = tree.getRootNode();
-    ts::Node rules = root.getChildByFieldName("rules");
-    ts::Node body = rules.getNamedChild(0);
-    
-    std::shared_ptr<Rule> firstInstruction(RuleInterpreter::createRule(body, source));
-    instructionStack.push(firstInstruction);
 
-    startGame();
+    // std::shared_ptr<Rule> firstInstruction(RuleInterpreter::createRule(body, source));
+    // instructionStack.push(firstInstruction);
+
+    // startGame();
 }
 
 void GameInstance::startGame() {

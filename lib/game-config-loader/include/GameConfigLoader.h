@@ -10,20 +10,37 @@
 
 class GameConfigLoader {
 public:
+    // Sets up a GameConfigLoader with a parser, rules and game state pre-loaded
+    // @param path Path to a game file
     GameConfigLoader(std::string_view path);
     ~GameConfigLoader() {};
-    std::string setSource(std::string_view path);
+    
+    // Loads a new game configuration and stores it within GameConfigLoader
+    // @param path Path to the game file
+    void loadGameConfig(std::string_view path);
+
+    // Transfers ownership of rules to a GameInstance
     std::unique_ptr<GameRules> transferRules() { return std::move(m_rules); }
+
+    // Transfers ownership of state to a GameInstance
     std::unique_ptr<GameState> transferGameState() { return std::move(m_gameState); };
 
 private:
-    const std::string m_source;
-    std::unique_ptr<GameRules> m_rules;
+    std::unique_ptr<GameRules> m_rules{};
     std::unique_ptr<GameState> m_gameState{};
 
-    void loadRules(const ts::Node& root);
+    // Creates the GameRules private member which can be transferred to a GameInstance
+    // @param source Game source text
+    void loadRules(std::string_view source);
+
+    // TODO: Figure out dependencies for loadGameState
     void loadGameState();
-    void loadConstants(const ts::Node& root);
+
+    // TODO: Move handling of loading constants into loadGameState
+    // void loadConstants(const ts::Node& root);
+
+    // Reads path to a file and converts to a string
+    std::string readSource(std::string_view path);
 };
 
 #endif

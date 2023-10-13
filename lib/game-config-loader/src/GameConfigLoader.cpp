@@ -9,40 +9,34 @@ extern "C" {
     TSLanguage* tree_sitter_socialgaming();
 }
 
-GameConfigLoader::GameConfigLoader(std::string_view path) : m_source(setSource(path)) {
-    ts::Language language = tree_sitter_socialgaming();
-    ts::Parser parser{language};
-    ts::Tree tree = parser.parseString(m_source);
-    if(tree.getRootNode().getNumChildren() == 0) {
-        throw std::runtime_error("Error: Empty config.");
-    }
-    ts::Node root = tree.getRootNode();
-    loadConstants(root);
-    loadRules(root);
+
+GameConfigLoader::GameConfigLoader(std::string_view path) { 
+    loadGameConfig(path);
+}
+
+
+void GameConfigLoader::loadGameConfig(std::string_view path) {
+    std::string source = readSource(path);
+    loadRules(source);
     loadGameState();
+}   
+
+
+void GameConfigLoader::loadRules(std::string_view source) { 
+    m_rules = std::make_unique<GameRules>(source);
 }
 
-std::string GameConfigLoader::setSource(std::string_view path) {
-    std::ifstream ifs(path.data());
-    std::stringstream buffer;
-    buffer << ifs.rdbuf();
-    ifs.close();
-    return buffer.str();
-}
 
-void GameConfigLoader::loadRules(const ts::Node& root) {
-    ts::Node rulesHead = root.getChildByFieldName("rules");
-    auto rulesNode = RuleInterpreter::convertNodeTreeToRuleTree(rulesHead, m_source);
-    auto rules = std::make_unique<GameRules>(std::move(rulesNode), m_source);
-    m_rules = std::move(rules);
-}
+// TODO: Move handling of loading constants into loadGameState
 
-void GameConfigLoader::loadConstants(const ts::Node& root){
-    ts::Node constants = root.getChildByFieldName("constants");
-    ConstantManager constantManager(constants, m_source);
-    constantManager.print();
-}
+// void GameConfigLoader::loadConstants(const ts::Node& root){
+//     ts::Node constants = root.getChildByFieldName("constants");
+//     ConstantManager constantManager(constants, source);
+//     constantManager.print();
+// }
 
+
+// TODO: Change implementation of handling game state to use std::variant
 void GameConfigLoader::loadGameState() {
     m_gameState = std::make_unique<GameState>();
 
@@ -59,4 +53,13 @@ void GameConfigLoader::loadGameState() {
     if (constant) {
         std::cout << dynamic_cast<StringExpression*>(constant)->getValue() << '\n';
     }
+}
+
+
+std::string GameConfigLoader::readSource(std::string_view path) {
+    std::ifstream ifs(path.data());
+    std::stringstream buffer;
+    buffer << ifs.rdbuf();
+    ifs.close();
+    return buffer.str();
 }

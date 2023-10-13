@@ -25,6 +25,7 @@ RuleInterpreter::createRule(std::optional<ts::Node> node, const std::string_view
 
         std::string errorMsg = std::string("Rule hasn't been created yet: ") 
                              + std::string(actualNode.getType());
+
         throw std::runtime_error(errorMsg);
     }
 
@@ -33,7 +34,7 @@ RuleInterpreter::createRule(std::optional<ts::Node> node, const std::string_view
 
 
 std::unique_ptr<RuleNode> 
-RuleInterpreter::convertNodeTreeToRuleTree(const ts::Node& root, const std::string& source) {
+RuleInterpreter::convertNodeTreeToRuleTree(const ts::Node& root, std::string_view source) {
     if (root.isNull()) {
         return nullptr;
     }
