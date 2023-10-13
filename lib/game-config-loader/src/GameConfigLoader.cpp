@@ -1,7 +1,7 @@
 #include "GameConfigLoader.h"
 #include "RuleInterpreter.h"
-#include "ConstantManager.h"
 #include "GameState.h"
+#include "GameStateLoader.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -19,8 +19,12 @@ GameConfigLoader::GameConfigLoader(std::string_view path) : source(setSource(pat
         throw std::runtime_error("Error: Empty config.");
     }
     ts::Node root = tree.getRootNode();
+    std::shared_ptr<GameStateLoader> gameStateLoader = std::make_shared<GameStateLoader>(source);
+    std::unique_ptr<GameState> gameState = std::make_unique<GameState>(gameStateLoader);
+    gameState->addEnvironment(root.getChildByFieldName("constants").getNamedChild(0));
+    gameState->addEnvironment(root.getChildByFieldName("variables").getNamedChild(0));
+    gameState->print();
     this->loadRules(root);
-    this->loadConstants(root);
 }
 
 std::string GameConfigLoader::setSource(std::string_view path) {
@@ -34,30 +38,4 @@ std::string GameConfigLoader::setSource(std::string_view path) {
 void GameConfigLoader::loadRules(const ts::Node& root) {
     ts::Node rules = root.getChildByFieldName("rules");
     RuleInterpreter::interpretRules(rules, this->source);
-}
-
-// Print node by level order
-void GameConfigLoader::printByLevelOrder(const ts::Node& node){
-    std::queue<ts::Node> nodeQueue;
-    nodeQueue.push(node);
-
-    while (!nodeQueue.empty()){
-        int queueSize = nodeQueue.size();
-
-        for (int i = 0; i < queueSize; i++){
-            ts::Node node = nodeQueue.front();
-            nodeQueue.pop();
-            std::cout << node.getType() << ", ";
-            for (uint32_t j = 0; j < node.getNumNamedChildren(); j++){
-                nodeQueue.push(node.getNamedChild(j));
-            }
-        }
-        std::cout << "\n";
-    }
-}
-
-void GameConfigLoader::loadConstants(const ts::Node& root){
-    ts::Node constants = root.getChildByFieldName("constants");
-    printByLevelOrder(constants);
-    GameState gameSate(constants.getSourceRange(source));
 }
