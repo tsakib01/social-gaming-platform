@@ -5,7 +5,7 @@
 
 
 std::shared_ptr<Rule> 
-RuleInterpreter::createRule(std::optional<ts::Node> node, const std::string_view source) {
+RuleInterpreter::createRule(std::optional<ts::Node> node, std::string_view source) {
     if (node.has_value()) {
         ts::Node actualNode = node.value();
         std::string_view type = actualNode.getType();

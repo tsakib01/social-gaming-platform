@@ -10,20 +10,10 @@ extern "C" {
 }
 
 
-GameConfigLoader::GameConfigLoader(std::string_view path) { 
-    loadGameConfig(path);
-}
-
-
-void GameConfigLoader::loadGameConfig(std::string_view path) {
-    std::string source = readSource(path);
-    loadRules(source);
-    loadGameState();
-}   
-
-
-void GameConfigLoader::loadRules(std::string_view source) { 
-    m_rules = std::make_unique<GameRules>(source);
+std::shared_ptr<GameRules> 
+GameConfigLoader::createGameRules(std::string_view path) { 
+    setSource(path);
+    return std::make_unique<GameRules>(m_source);
 }
 
 
@@ -37,29 +27,39 @@ void GameConfigLoader::loadRules(std::string_view source) {
 
 
 // TODO: Change implementation of handling game state to use std::variant
-void GameConfigLoader::loadGameState() {
-    m_gameState = std::make_shared<GameState>();
+std::shared_ptr<GameState>
+GameConfigLoader::createGameState() {
+    auto gameState = std::make_shared<GameState>();
 
     // If parser sees a number expression node, can add to constants map like this:
-    m_gameState->addConstant("testNum", Expression::createNumber(10));
-    m_gameState->addConstant("testString", Expression::createString("helloworld"));
+    gameState->addConstant("testNum", Expression::createNumber(10));
+    gameState->addConstant("testString", Expression::createString("helloworld"));
 
     // Access map entries like this:
-    auto constant = m_gameState->getConstant("testNum");
+    auto constant = gameState->getConstant("testNum");
     if (constant) {
         std::cout << dynamic_cast<IntExpression*>(constant)->getValue() << '\n';
     }
-    constant = m_gameState->getConstant("testString");
+    constant = gameState->getConstant("testString");
     if (constant) {
         std::cout << dynamic_cast<StringExpression*>(constant)->getValue() << '\n';
     }
+
+    return gameState;
 }
 
 
-std::string GameConfigLoader::readSource(std::string_view path) {
+void 
+GameConfigLoader::setSource(std::string_view path) {
+    if (path == m_path) {
+        return;
+    }
+
+    m_path = path;
+
     std::ifstream ifs(path.data());
     std::stringstream buffer;
     buffer << ifs.rdbuf();
     ifs.close();
-    return buffer.str();
+    m_source = buffer.str();
 }

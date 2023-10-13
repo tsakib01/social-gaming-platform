@@ -11,7 +11,7 @@ public:
 
     [[nodiscard]] const ts::Node& getRules() const { return m_rules; }
 
-    [[nodiscard]] const std::string_view getSource() const { return m_source; }
+    [[nodiscard]] std::string_view getSource() const { return m_source; }
 
 private:
     std::string m_source{};

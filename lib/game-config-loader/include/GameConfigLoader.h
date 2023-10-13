@@ -11,37 +11,27 @@
 
 class GameConfigLoader {
 public:
-    // Sets up a GameConfigLoader with a parser, rules and game state pre-loaded
-    // @param path Path to a game file
-    GameConfigLoader(std::string_view path);
-    ~GameConfigLoader() {};
-    
-    // Loads a new game configuration and stores it within GameConfigLoader
-    // @param path Path to the game file
-    void loadGameConfig(std::string_view path);
+    // Creates a GameRules for a GameInstance 
+    // @param path Path to a game file 
+    [[nodiscard]] std::shared_ptr<GameRules> 
+    createGameRules(std::string_view path);
 
-    // Transfers ownership of rules to a GameInstance
-    [[nodiscard]] std::shared_ptr<GameRules> transferRules() { return m_rules; }
-
+    // Creates a GameState for a GameInstance
     // Transfers ownership of state to a GameInstance
-    [[nodiscard]] std::shared_ptr<GameState> transferGameState() { return m_gameState; }
+    [[nodiscard]] std::shared_ptr<GameState> 
+    createGameState(); 
 
 private:
-    std::shared_ptr<GameRules> m_rules;
-    std::shared_ptr<GameState> m_gameState;
-
-    // Creates the GameRules private member which can be transferred to a GameInstance
-    // @param source Game source text
-    void loadRules(std::string_view source);
-
-    // TODO: Figure out dependencies for loadGameState
-    void loadGameState();
+    // Cache source text to avoid multiple file IOs
+    std::string m_source{};
+    std::string m_path{};
 
     // TODO: Move handling of loading constants into loadGameState
     // void loadConstants(const ts::Node& root);
 
-    // Reads path to a file and converts to a string
-    std::string readSource(std::string_view path);
+    // Sets and caches game source text if path is different from last path
+    // @param path Path to a game file
+    void setSource(std::string_view path);
 };
 
 #endif
