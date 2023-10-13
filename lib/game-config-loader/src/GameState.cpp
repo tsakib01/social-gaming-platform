@@ -35,6 +35,15 @@ void GameState::updateState(Identifier identifier, Value value){
     environment->insert(std::make_pair(identifier, value));
 }
 
+Value GameState::getData(Identifier identifier){
+    auto found = environment->find(identifier);
+    
+    if (found == environment->end()){
+        std::runtime_error ("The identifier does not exists in the environment");
+    }
+    return found->second;
+}
+
 struct PrintVisitor {
     void operator()(const Primitive& value) const {
         if (std::holds_alternative<int>(value)) {

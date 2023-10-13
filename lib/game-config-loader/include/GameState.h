@@ -12,6 +12,7 @@ public:
     void addEnvironment(ts::Node root);
     void addState(Identifier identifier, Value value);
     void updateState(Identifier identifier, Value value);
+    Value getData(Identifier identifier);
     void print();
 private:
     std::unique_ptr<Environment> environment;
