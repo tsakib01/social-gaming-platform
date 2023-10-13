@@ -5,10 +5,6 @@
 #include <fstream>
 #include <sstream>
 
-extern "C" {
-    TSLanguage* tree_sitter_socialgaming();
-}
-
 
 std::shared_ptr<GameRules> 
 GameConfigLoader::createGameRules(std::string_view path) { 
@@ -17,7 +13,7 @@ GameConfigLoader::createGameRules(std::string_view path) {
 }
 
 
-// TODO: Move handling of loading constants into loadGameState
+// TODO: Move handling of loading constants into createGameState
 
 // void GameConfigLoader::loadConstants(const ts::Node& root){
 //     ts::Node constants = root.getChildByFieldName("constants");

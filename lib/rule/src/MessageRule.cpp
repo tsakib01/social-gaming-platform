@@ -4,7 +4,8 @@ MessageRule::MessageRule(ts::Node node, std::string_view source) : Rule(node, so
     std::cout << "MessageRule created" << std::endl;
 }
 
-std::optional<ts::Node> MessageRule::execute() {
+std::optional<ts::Node> 
+MessageRule::execute() {
     std::cout << "Executing MessageRule..." << std::endl;
 
     ts::Node expression = node.getNamedChild(1);

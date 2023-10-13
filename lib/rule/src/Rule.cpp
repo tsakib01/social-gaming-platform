@@ -6,7 +6,8 @@
 // Rules
 /////////////////////////////////////////////////////////////////////////
 
-void print(const ts::Node& node, std::string_view source) {
+void 
+print(const ts::Node& node, std::string_view source) {
     if (node.isNull()) {
         return;
     }
@@ -19,7 +20,8 @@ void print(const ts::Node& node, std::string_view source) {
     }
 }
 
-std::optional<ts::Node> MatchRule::execute() {
+std::optional<ts::Node> 
+MatchRule::execute() {
     std::cout << "Executing match\n";
     ts::Node target = node.getChildByFieldName("target");
     std::cout << target.getSourceRange(source) << std::endl;
