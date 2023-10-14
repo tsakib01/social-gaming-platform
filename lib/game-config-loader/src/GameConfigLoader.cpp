@@ -7,35 +7,57 @@
 #include <sstream>
 #include<queue>
 
-extern "C" {
-    TSLanguage* tree_sitter_socialgaming();
+
+std::shared_ptr<GameRules> 
+GameConfigLoader::createGameRules(std::string_view path) { 
+    setSource(path);
+    return std::make_unique<GameRules>(m_source);
 }
 
-GameConfigLoader::GameConfigLoader(std::string_view path) : source(setSource(path)) {
-    ts::Language language = tree_sitter_socialgaming();
-    ts::Parser parser{language};
-    ts::Tree tree = parser.parseString(this->source);
-    if(tree.getRootNode().getNumChildren() == 0) {
-        throw std::runtime_error("Error: Empty config.");
+
+// TODO: Move handling of loading constants into createGameState
+
+// void GameConfigLoader::loadConstants(const ts::Node& root){
+//     ts::Node constants = root.getChildByFieldName("constants");
+//     ConstantManager constantManager(constants, source);
+//     constantManager.print();
+// }
+
+
+// TODO: Change implementation of handling game state to use std::variant
+std::shared_ptr<GameState>
+GameConfigLoader::createGameState() {
+    auto gameState = std::make_shared<GameState>();
+
+    // If parser sees a number expression node, can add to constants map like this:
+    gameState->addConstant("testNum", Expression::createNumber(10));
+    gameState->addConstant("testString", Expression::createString("helloworld"));
+
+    // Access map entries like this:
+    auto constant = gameState->getConstant("testNum");
+    if (constant) {
+        std::cout << dynamic_cast<IntExpression*>(constant)->getValue() << '\n';
     }
-    ts::Node root = tree.getRootNode();
-    std::shared_ptr<GameStateLoader> gameStateLoader = std::make_shared<GameStateLoader>(source);
-    std::unique_ptr<GameState> gameState = std::make_unique<GameState>(gameStateLoader);
-    gameState->addEnvironment(root.getChildByFieldName("constants").getNamedChild(0));
-    gameState->addEnvironment(root.getChildByFieldName("variables").getNamedChild(0));
-    gameState->print();
-    this->loadRules(root);
+    constant = gameState->getConstant("testString");
+    if (constant) {
+        std::cout << dynamic_cast<StringExpression*>(constant)->getValue() << '\n';
+    }
+
+    return gameState;
 }
 
-std::string GameConfigLoader::setSource(std::string_view path) {
+
+void 
+GameConfigLoader::setSource(std::string_view path) {
+    if (path == m_path) {
+        return;
+    }
+
+    m_path = path;
+
     std::ifstream ifs(path.data());
     std::stringstream buffer;
     buffer << ifs.rdbuf();
     ifs.close();
-    return buffer.str();
-}
-
-void GameConfigLoader::loadRules(const ts::Node& root) {
-    ts::Node rules = root.getChildByFieldName("rules");
-    RuleInterpreter::interpretRules(rules, this->source);
+    m_source = buffer.str();
 }

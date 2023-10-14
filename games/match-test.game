@@ -1,0 +1,24 @@
+configuration {
+  name: ""
+  player range: (0, 0)
+  audience: false
+  setup: {}
+}
+constants {}
+variables {}
+per-player {}
+per-audience {}
+rules {
+  match true {
+    x = 10 => {
+      message all "is 10";
+    }
+    true => {
+      message all "not 10";
+    }
+  }
+
+  for weapon in weapons  {
+      message all weapon;
+  }
+}
