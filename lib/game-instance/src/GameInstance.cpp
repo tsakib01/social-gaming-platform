@@ -3,7 +3,7 @@
 
 
 GameInstance::GameInstance(std::shared_ptr<GameRules> gameRules, 
-std::shared_ptr<GameState> gameState)
+std::unique_ptr<GameState> gameState)
     : m_gameRules(gameRules), m_gameState(std::move(gameState))
 {
     const ts::Node rules = gameRules->getRules();

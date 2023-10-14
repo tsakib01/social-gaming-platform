@@ -9,34 +9,12 @@ add_grammar_from_repo(tree-sitter-socialgaming
   0.0.1
 )
 
-add_library(gameStateLoader src/GameStateLoader.cpp)
-target_include_directories(gameStateLoader
-  PUBLIC
-    $<INSTALL_INTERFACE:include>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
+add_library(gameConfigLoader
+  src/GameConfigLoader.cpp
+  src/GameRules.cpp
+  src/GameState.cpp
+  src/GameStateLoader.cpp
 )
-
-target_link_libraries(gameStateLoader
-  cpp-tree-sitter
-)
-
-
-add_library(gameState src/GameState.cpp)
-target_include_directories(gameState
-  PUBLIC
-    $<INSTALL_INTERFACE:include>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
-)
-
-target_link_libraries(gameState
-  gameStateLoader
-)
-
-add_library(gameConfigLoader src/GameConfigLoader.cpp)
 target_include_directories(gameConfigLoader
   PUBLIC
     $<INSTALL_INTERFACE:include>
@@ -52,26 +30,8 @@ target_link_libraries(gameConfigLoader
   ruleInterpreter
   rule
   expression
-  constantManager
 )
 
-add_library(constantManager 
-    src/ConstantManager.cpp
-)
-
-target_include_directories(constantManager
-  PUBLIC
-    $<INSTALL_INTERFACE:include>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
-)
-
-target_link_libraries(constantManager
-  tree-sitter-socialgaming
-  cpp-tree-sitter
-)
-
-install(TARGETS gameConfigLoader constantManager
+install(TARGETS
   ARCHIVE DESTINATION lib
 )
