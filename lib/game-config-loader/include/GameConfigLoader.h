@@ -11,27 +11,23 @@
 
 class GameConfigLoader {
 public:
+    GameConfigLoader(std::string_view path);
+
     // Creates a GameRules for a GameInstance 
     // @param path Path to a game file 
     [[nodiscard]] std::shared_ptr<GameRules> 
-    createGameRules(std::string_view path);
+    createGameRules();
 
     // Creates a GameState for a GameInstance
     // Transfers ownership of state to a GameInstance
-    [[nodiscard]] std::shared_ptr<GameState> 
+    [[nodiscard]] std::unique_ptr<GameState> 
     createGameState(); 
-
 private:
-    // Cache source text to avoid multiple file IOs
-    std::string m_source{};
-    std::string m_path{};
-
     // TODO: Move handling of loading constants into loadGameState
     // void loadConstants(const ts::Node& root);
+    std::string m_source;
 
-    // Sets and caches game source text if path is different from last path
-    // @param path Path to a game file
-    void setSource(std::string_view path);
+    std::string getSource(std::string_view path);
 };
 
 #endif
