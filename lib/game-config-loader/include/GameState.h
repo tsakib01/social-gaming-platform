@@ -15,10 +15,10 @@ public:
     void addVariable(std::string key, std::unique_ptr<Expression> value);
     void addPerPlayer(std::string key, std::unique_ptr<Expression> value);
     void addPerAudience(std::string key, std::unique_ptr<Expression> value);
-    Expression* getConstant(std::string key);
-    Expression* getVariable(std::string key);
-    Expression* getPerPlayer(std::string key);
-    Expression* getPerAudience(std::string key);
+    std::unique_ptr<Expression> getConstant(std::string key);
+    std::unique_ptr<Expression> getVariable(std::string key);
+    std::unique_ptr<Expression> getPerPlayer(std::string key);
+    std::unique_ptr<Expression> getPerAudience(std::string key);
 
 private:
     std::unordered_map<std::string, std::unique_ptr<Expression>> constants;

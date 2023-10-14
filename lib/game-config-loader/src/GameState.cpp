@@ -20,18 +20,19 @@ void GameState::addPerAudience(std::string key, std::unique_ptr<Expression> valu
     perAudience[key] = std::move(value);
 }
 
-Expression* GameState::getConstant(std::string key) {
-    return constants[key].get();
+std::unique_ptr<Expression> GameState::getConstant(std::string key) {
+    return std::move(constants.at(key));
 }
 
-Expression* GameState::getVariable(std::string key) {
-    return variables[key].get();
+std::unique_ptr<Expression> GameState::getVariable(std::string key) {
+    return std::move(variables.at(key));
 }
 
-Expression* GameState::getPerPlayer(std::string key) {
-    return perPlayer[key].get();
+std::unique_ptr<Expression> GameState::getPerPlayer(std::string key) {
+    return std::move(perPlayer.at(key));
 }
 
-Expression* GameState::getPerAudience(std::string key) {
-    return perAudience[key].get();
+
+std::unique_ptr<Expression> GameState::getPerAudience(std::string key) {
+    return std::move(perAudience.at(key));
 }
