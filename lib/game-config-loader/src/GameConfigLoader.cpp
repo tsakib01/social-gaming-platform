@@ -33,8 +33,8 @@ GameConfigLoader::createGameRules() {
 // TODO: Change implementation of handling game state to use std::variant
 std::unique_ptr<GameState>
 GameConfigLoader::createGameState() {
-    auto gameSateLoader = std::make_shared<GameStateLoader>(m_source);
-    auto gameState = std::make_unique<GameState>(gameSateLoader);
+    auto gameStateLoader = std::make_shared<GameStateLoader>(m_source);
+    auto gameState = std::make_unique<GameState>(gameStateLoader);
     ts::Language language = tree_sitter_socialgaming();
     ts::Parser parser{language};
 

@@ -17,16 +17,16 @@ using Environment = std::map<Identifier, Value>;
 class GameStateLoader{
 private:
     std::string_view source;
-    bool isPrimitive(ts::Node node);
-    bool isList(ts::Node node);
-    bool isMap(ts::Node node);
-    Primitive convertNodeToPrimitive(ts::Node node);
-    List convertNodeToList(ts::Node node);
-    Map convertNodeToMap(ts::Node node);
+    bool isPrimitive(const ts::Node& node);
+    bool isList(const ts::Node& node);
+    bool isMap(const ts::Node& node);
+    Primitive convertNodeToPrimitive(const ts::Node& node);
+    List convertNodeToList(const ts::Node& node);
+    Map convertNodeToMap(const ts::Node& node);
 public:
     GameStateLoader(std::string_view source);
     void printByLevelOrder(const ts::Node& node);
     // Need to pass the root of value_map
-    std::unique_ptr<Environment> getEnvironment(ts::Node root);
+    std::unique_ptr<Environment> getEnvironment(const ts::Node& root);
 };
 #endif

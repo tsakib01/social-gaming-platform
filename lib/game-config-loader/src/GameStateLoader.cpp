@@ -17,22 +17,22 @@ GameStateLoader::GameStateLoader(std::string_view source)
 :source(source)
 {}
 
-bool GameStateLoader::isPrimitive(ts::Node node){
+bool GameStateLoader::isPrimitive(const ts::Node& node){
     int symbol = node.getSymbol();
     return symbol == SYMBOL::NUMBER || symbol == SYMBOL::STRING || symbol == SYMBOL::BOOL;
 }
 
-bool GameStateLoader::isList(ts::Node node){
+bool GameStateLoader::isList(const ts::Node& node){
     int symbol = node.getSymbol();
     return symbol == SYMBOL::LIST;
 }
 
-bool GameStateLoader::isMap(ts::Node node){
+bool GameStateLoader::isMap(const ts::Node& node){
     int symbol = node.getSymbol();
     return symbol == SYMBOL::MAP;
 }
 
-Primitive GameStateLoader::convertNodeToPrimitive(ts::Node node){
+Primitive GameStateLoader::convertNodeToPrimitive(const ts::Node& node){
     Primitive toReturn;
     if (node.getSymbol() == SYMBOL::NUMBER){
         toReturn = std::stoi(std::string(node.getSourceRange(source)));
@@ -48,7 +48,7 @@ Primitive GameStateLoader::convertNodeToPrimitive(ts::Node node){
     return toReturn;
 }
 
-List GameStateLoader::convertNodeToList(ts::Node node){
+List GameStateLoader::convertNodeToList(const ts::Node& node){
     ts::Node listNode = node.getNamedChild(0);
     std::vector<std::variant<Primitive, Map>> toReturn;
     for (uint32_t i = 0; i < listNode.getNumNamedChildren(); i++){
@@ -66,7 +66,7 @@ List GameStateLoader::convertNodeToList(ts::Node node){
     return toReturn;
 }
 
-Map GameStateLoader::convertNodeToMap(ts::Node node){
+Map GameStateLoader::convertNodeToMap(const ts::Node& node){
     std::map<std::string_view, Primitive> toReturn;
     for (uint32_t i = 0; i < node.getNumNamedChildren(); i++){
         ts::Node mapEntry = node.getNamedChild(i);
@@ -88,7 +88,7 @@ Map GameStateLoader::convertNodeToMap(ts::Node node){
     return toReturn;
 }
 
-std::unique_ptr<Environment> GameStateLoader::getEnvironment(ts::Node root){
+std::unique_ptr<Environment> GameStateLoader::getEnvironment(const ts::Node& root){
     std::unique_ptr<Environment> environment = std::make_unique<Environment>();
 
     // Loop each map entry
