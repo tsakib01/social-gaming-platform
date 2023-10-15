@@ -1,6 +1,13 @@
-add_executable(main main.cpp)
+add_executable(main
+    main.cpp
+)
 
-target_link_libraries(main gameConfigLoader gameRuleEngine)
+target_link_libraries(main 
+    gameConfigLoader 
+    gameInstance
+    gameInstanceManager
+    cpp-tree-sitter
+)
 
 install(TARGETS main
     RUNTIME DESTINATION bin
