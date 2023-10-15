@@ -23,7 +23,10 @@ struct is_same_or_assignable {
 };
 
 template<typename T, class TContainer>
-/// @brief Checks if a type is contained in a container or assignable to a type in the container
+/// @brief
+/// Checks if a type is contained in a container or assignable to a type in the container.
+/// Container refers to std::variant, std::vector, std::map, or any other type containing elements that
+/// implements a specialization of this template.
 struct is_contained_assignable_in : std::false_type {};
 
 template<
