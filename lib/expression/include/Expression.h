@@ -1,18 +1,12 @@
 #ifndef EXPRESSION__H
 #define EXPRESSION__H
 
-#include <string>
 #include <string_view>
 #include <vector>
 #include <memory>
 #include <variant>
-#include <unordered_map>
 #include <map>
-
-using Primitive = std::variant<int, bool, std::string_view>;
-using Map = std::map<std::string_view, Primitive>;
-using List = std::vector<std::variant<Primitive, Map>>;
-using Value = std::variant<Primitive, Map, List>;
+#include "GameStateLoader.h"
 
 template<typename T, typename S>
 /// @brief Checks if a type is the same or assignable to another type
