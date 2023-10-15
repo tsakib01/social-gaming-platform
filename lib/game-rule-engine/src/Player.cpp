@@ -1,8 +1,8 @@
 #include "Player.h"
 
 int Player::getUserID(){
-    return userID;
+    return m_userID;
 }
 std::string Player::getName(){
-    return playerName;
+    return m_playerName;
 }

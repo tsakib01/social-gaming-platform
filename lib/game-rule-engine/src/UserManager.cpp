@@ -1,35 +1,43 @@
 #include "UserManager.h"
 
-std::vector<Player> UserManager::getPlayers(){
-    return players;
-}
+// std::vector<Player> UserManager::getPlayers(){
+//     return m_players;
+// }
+
+// std::vector<Spectator> UserManager::getSpectators(){
+//     return m_spectators;
+// }
 
 //Initial setup of per_player map.
 void UserManager::setPlayers(std::vector<Player> playerList){
     for(Player player : playerList){
-        per_player[player.getName()];
+        m_playerStates[player.getName()];
     }
 }
 
 // Update whole set of player's assignment values; is there a way for us to just update
 // a smaller, select number of values instead? Maybe here or elsewhere?
 void UserManager::setPlayerValues(Player player, std::vector<Value> values){
-    per_player[player.getName()] = values;
+    m_playerStates[player.getName()] = values;
 }
 
-std::vector<Spectator> UserManager::getSpectators(){
-    return spectators;
+std::map<std::string, std::vector<Value>> UserManager::getAllPlayerStates(){
+    return m_playerStates;
 }
-
 
 // Initial setup of maps for spectators
 void UserManager::setSpectators(std::vector<Spectator> spectatorList){
     for(Spectator spectator : spectatorList){
-        per_spectator[spectator.getUserID()];
+        m_spectatorStates[spectator.getUserID()];
     }
 }
 
-void UserManager::setSpectatorValue(Spectator spectator, std::vector<Value> value){ 
-    per_spectator[spectator.getUserID()] = value;
+void UserManager::setSpectatorValues(Spectator spectator, std::vector<Value> value){ 
+    m_spectatorStates[spectator.getUserID()] = value;
 }
-//TODO: create functions that will update the maps from setPlayers and setSpectators
+
+std::map<int, std::vector<Value>> UserManager::getAllSpectatorStates(){
+    return m_spectatorStates;
+}
+
+// TODO: Figure out how/where we can get a specific player or spectator.

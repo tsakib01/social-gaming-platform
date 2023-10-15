@@ -5,16 +5,16 @@
 class Spectator{
     public:
     Spectator(int userID, bool isHost){
-        userID = userID;
-        isHost = isHost;
+        m_userID = userID;
+        m_isHost = isHost;
     }
     int getUserID();
     bool isHost();
     ~Spectator();
     
     private:
-    int userID;
-    bool isAHost;
+    int m_userID;
+    bool m_isHost;
 };
 
 #endif

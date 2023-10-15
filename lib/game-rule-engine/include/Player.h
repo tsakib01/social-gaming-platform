@@ -6,8 +6,8 @@
 class Player{
     public:
     Player(int userID, std::string playerName){
-        userID = userID;
-        playerName = playerName;
+        m_userID = userID;
+        m_playerName = playerName;
     }
 
     ~Player();
@@ -15,8 +15,8 @@ class Player{
     std::string getName();
 
     private:
-    int userID;
-    std::string playerName;
+    int m_userID;
+    std::string m_playerName;
 };
 
 #endif

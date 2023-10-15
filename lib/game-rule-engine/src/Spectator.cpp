@@ -1,9 +1,9 @@
 #include "Spectator.h"
 
 int Spectator::getUserID(){
-    return userID;
+    return m_userID;
 }
 
 bool Spectator::isHost(){
-    return isAHost;
+    return m_isHost;
 }
