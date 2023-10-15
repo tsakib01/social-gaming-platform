@@ -16,9 +16,8 @@ public:
     void sendInviteCode();
     void createGameInstance(std::string_view gameFilePath);
 
-    void addGameToActiveList();
-    void removeGameFromActiveList();
-
+    void startGame();
+    void finishGame();
     void runCycle();
 
 private:

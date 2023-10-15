@@ -26,6 +26,8 @@ GameInstanceManager::generateInviteCode() {
 
 void 
 GameInstanceManager::sendInviteCode() {
+    // Blocked until there's a MessageHandler
+
     // The MessageHandler should be able to ask for the invite code
     // GameInstanceManager should return the invite code for that specified / created game
 }
@@ -41,25 +43,25 @@ GameInstanceManager::createGameInstance(std::string_view gameFilePath) {
 }
 
 void 
-GameInstanceManager::addGameToActiveList() {
-    
+GameInstanceManager::startGame() {
+    // Blocked until there's a MessageHandler
 }
 
 void 
-GameInstanceManager::removeGameFromActiveList() {
-
+GameInstanceManager::finishGame() {
+    // Should remove the game from both m_gameList and m_activeGameList
 }
 
 void 
 GameInstanceManager::runCycle() {
     while (true) {
         for (std::unique_ptr<GameInstance>& game : m_gameList) {
-            if (!(*game).executeNextInstruction()) {
+            if (!(game->executeNextInstruction())) {
                 m_gameList.erase(std::remove(m_gameList.begin(), m_gameList.end(), game));
             }
         }
 
-        // TODO There shouldn't be a break here, ideally have a way continuously search and wait for games
+        // TODO There shouldn't be a break here, replace once we have working networking
         if (m_gameList.empty()) break; 
     }
 }
