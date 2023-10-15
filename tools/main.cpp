@@ -48,8 +48,9 @@ int main(int argc, char** argv) {
     std::vector<std::pair<std::string, std::vector<std::pair<std::string,std::string>>>> setups;
     for(int index=3;index<configCount;index++){
         ts::Extent identifierRange=configuration.getNamedChild(index).getChild(0).getByteRange();
+        // identifier is the name of each setup;
         std::string identifier=sourcecode.substr(identifierRange.start,identifierRange.end-identifierRange.start);
-
+        //get the num of named children 
         int childCount =configuration.getNamedChild(index).getNumChildren();
         std::vector<std::pair<std::string,std::string>> values;
         for(int j=2;j<childCount-1;j+=2){
