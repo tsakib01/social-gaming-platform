@@ -11,7 +11,8 @@ class GameInstance {
 public:
     GameInstance(std::shared_ptr<GameRules> rules, std::unique_ptr<GameState> state, int inviteCode);
     ~GameInstance() {};
-    bool executeNextInstruction();
+    void executeNextInstruction();
+    bool gameIsFinished();
     int getInviteCode();
 
 private:

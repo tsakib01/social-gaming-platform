@@ -1,8 +1,6 @@
 #include "GameInstanceManager.h"
 
-GameInstanceManager::GameInstanceManager() {
-    std::cout << "GameInstanceManager created." << std::endl;
-}
+GameInstanceManager::GameInstanceManager() {}
 
 int 
 GameInstanceManager::generateInviteCode() {
@@ -45,6 +43,9 @@ GameInstanceManager::createGameInstance(std::string_view gameFilePath) {
 void 
 GameInstanceManager::startGame() {
     // Blocked until there's a MessageHandler
+
+    // The MessageHandler should get a signal from the owner to start and then call this function
+    // Should add the game being started from m_gameList to m_activeGameList
 }
 
 void 
@@ -54,14 +55,14 @@ GameInstanceManager::finishGame() {
 
 void 
 GameInstanceManager::runCycle() {
-    while (true) {
+    while (!m_gameList.empty()) {
         for (std::unique_ptr<GameInstance>& game : m_gameList) {
-            if (!(game->executeNextInstruction())) {
-                m_gameList.erase(std::remove(m_gameList.begin(), m_gameList.end(), game));
-            }
+            game->executeNextInstruction();
         }
 
-        // TODO There shouldn't be a break here, replace once we have working networking
-        if (m_gameList.empty()) break; 
+        m_gameList.erase(std::remove_if(m_gameList.begin(), m_gameList.end(),
+            [](const std::unique_ptr<GameInstance>& game) {
+                return game->gameIsFinished();
+            }), m_gameList.end());
     }
 }

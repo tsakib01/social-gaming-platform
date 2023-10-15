@@ -13,9 +13,9 @@ std::unique_ptr<GameState> gameState, int inviteCode)
     instructionStack.push(firstInstruction);
 }
 
-bool 
+void 
 GameInstance::executeNextInstruction() {
-    if (instructionStack.empty()) return false;
+    if (instructionStack.empty()) return;
 
     std::shared_ptr<Rule> instruction = instructionStack.top();
     std::optional<ts::Node> nextInstructionNode = instruction->execute();
@@ -28,8 +28,11 @@ GameInstance::executeNextInstruction() {
     } else {
         instructionStack.pop();
     }
+}
 
-    return true;
+bool
+GameInstance::gameIsFinished() {
+    return instructionStack.empty();
 }
 
 int 
