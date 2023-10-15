@@ -18,27 +18,34 @@ int main(int argc, char** argv) {
     auto state = gameConfigLoader.createGameState();
     
     GameInstance game = GameInstance(rules, std::move(state));
-    ts::Language language = tree_sitter_socialgaming();
-  ts::Parser parser{language};
 
-  std::ifstream ifs(gameFilePath);
-  std::stringstream buffer;
-  buffer << ifs.rdbuf();
-  std::string sourcecode = buffer.str();
-  ifs.close();
-  std::cout << sourcecode << '\n';
-  ts::Tree tree = parser.parseString(sourcecode);
-  ts::Node root = tree.getRootNode();
-  ts::Node configuration = root.getChildByFieldName("configuration");
-  std::cout<<configuration.getType();
+    //get the game file
+    ts::Language language = tree_sitter_socialgaming();
+    ts::Parser parser{language};
+
+    std::ifstream ifs(gameFilePath);
+    std::stringstream buffer;
+    buffer << ifs.rdbuf();
+    std::string sourcecode = buffer.str();
+    ifs.close();
+    std::cout << sourcecode << '\n';
+    ts::Tree tree = parser.parseString(sourcecode);
+    ts::Node root = tree.getRootNode();
+
+
+    // get configuration node
+    ts::Node configuration = root.getChildByFieldName("configuration");
+    std::cout<<configuration.getType();
     int configCount=configuration.getNumNamedChildren();
     std::cout<<"config"<<std::endl;
-std::vector<std::pair<std::string, std::vector<std::pair<std::string,std::string>>>> setups;
-  std::cout << configuration.getType() <<" | Num Named children:"<<configCount<<'\n'<< " | Num children: " << configuration.getNumChildren() << '\n'<<std::endl;
+    std::cout << configuration.getType() <<" | Num Named children:"<<configCount<<'\n'<< " | Num children: " << configuration.getNumChildren() << '\n'<<std::endl;
     ts::Extent configRange = configuration.getByteRange();
-    std::cout<<"configuration:"<<std::endl;
-    std::cout << sourcecode.substr(configRange.start, configRange.end - configRange.start) << '\n'<<std::endl;
+     std::cout<<"configuration:"<<std::endl;
+     std::cout << sourcecode.substr(configRange.start, configRange.end - configRange.start) << '\n'<<std::endl;
 
+
+    //perser the setup into a vector
+    std::vector<std::pair<std::string, std::vector<std::pair<std::string,std::string>>>> setups;
     for(int index=3;index<configCount;index++){
         ts::Extent identifierRange=configuration.getNamedChild(index).getChild(0).getByteRange();
         std::string identifier=sourcecode.substr(identifierRange.start,identifierRange.end-identifierRange.start);
@@ -57,6 +64,8 @@ std::vector<std::pair<std::string, std::vector<std::pair<std::string,std::string
         setups.push_back(std::make_pair(identifier,values));
 
     }
+
+    //print the setups
     for( auto elem : setups){
         std::cout<<elem.first<<std::endl;
         for(auto& ele:elem.second){
