@@ -9,6 +9,6 @@ target_include_directories(userManager
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-install(TARGETS messageHandler
+install(TARGETS userManager
     ARCHIVE DESTINATION lib
 )
