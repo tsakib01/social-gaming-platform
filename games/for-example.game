@@ -12,9 +12,17 @@ constants {
     "Naoto", "Michael", "Victor", "Ray", "Tosrif", "Allan", "Bryan", "Jack"
   ],
   value:  "naoto",
-  x:  10
+  x:  10,
+  weapons: [
+    { name: "Rock",     beats: "Scissors" },
+    { name: "Paper",    beats: "Rock"     },
+    { name: "Scissors", beats: "Paper"    },
+  ],
+  flag: true
 }
-variables {}
+variables {
+  y:100
+}
 per-player {}
 per-audience {}
 rules {
