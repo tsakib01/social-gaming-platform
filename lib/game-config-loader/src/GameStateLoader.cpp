@@ -51,6 +51,9 @@ Primitive GameStateLoader::convertNodeToPrimitive(const ts::Node& node){
 List GameStateLoader::convertNodeToList(const ts::Node& node){
     ts::Node listNode = node.getNamedChild(0);
     std::vector<std::variant<Primitive, Map>> toReturn;
+    if(listNode.isNull()) {
+        return toReturn;
+    }
     for (uint32_t i = 0; i < listNode.getNumNamedChildren(); i++){
         ts::Node elementNode = listNode.getNamedChild(i).getNamedChild(0);
         std::variant<Primitive, Map> element; 
