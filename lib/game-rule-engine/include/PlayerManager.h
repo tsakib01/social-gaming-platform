@@ -11,9 +11,9 @@ using Map = std::map<std::string_view, Primitive>;
 using List = std::vector<std::variant<Primitive, Map>>;
 using Value = std::variant<Primitive, Map, List>;
 
-class UserManager {
+class PlayerManager {
     public:
-    UserManager(std::vector<Player> players, std::vector<Spectator> spectators){
+    PlayerManager(std::vector<Player> players, std::vector<Spectator> spectators){
         // Having member variables holding the players/spectators may be 
         // redundant if we already have maps...
         // m_players = players;
@@ -38,7 +38,7 @@ class UserManager {
     std::map<int, std::vector<Value>> getAllSpectatorStates();
 
     private:
-    ~UserManager();
+    ~PlayerManager();
 
     // std::vector<Player> m_players;
     // std::vector<Spectator> m_spectators;
