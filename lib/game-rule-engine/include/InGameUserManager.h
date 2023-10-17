@@ -17,31 +17,31 @@ class InGameUserManager {
 
     // TODO: (GameInstance) Figure out when/how to call this class's functions.
     // We will assume that per-player states go to addNewPlayer, and 
-    // per-audience-states go to addNewSpectator.
+    // per-audience-states go to addNewAudience.
     // GameInstance should somehow select the right one to use.
 
-    void addNewPlayer(int userID, std::vector<Environment> playerStates); 
-    void addNewAudience(int userID, std::vector<Environment> audienceStates);
+    void addNewPlayer(int userID, Environment playerStates); 
+    void addNewAudience(int userID, Environment audienceStates);
 
     // Do we want to keep track of states belonging to a Player that has left a game?
     void deletePlayer(int userID);
-    void deleteAudience(int UserID);
+    void deleteAudience(int userID);
 
     // Get a specific user's states from their corresponding map.
-    std::map<int, std::vector<Environment>>::iterator getStatesOfPlayer(int userID);
-    std::map<int, std::vector<Environment>>::iterator getStatesOfAudience(int userID);
+    std::map<int, Environment>::iterator getStatesOfPlayer(int userID);
+    std::map<int, Environment>::iterator getStatesOfAudience(int userID);
     
-    std::map<int, std::vector<Environment>> getStatesOfAllPlayers();
-    std::map<int, std::vector<Environment>> getStatesOfAllAudiences();
+    std::map<int, Environment> getStatesOfAllPlayers();
+    std::map<int, Environment> getStatesOfAllAudiences();
 
     private:
     ~InGameUserManager();
     
-    std::map<int, std::vector<Environment>> m_playerStates;
-    std::map<int, std::vector<Environment>> m_audienceStates;
+    std::map<int, Environment> m_playerStates;
+    std::map<int, Environment> m_audienceStates;
 
-    std::vector<Environment>::iterator m_getStatesOfAllPlayersIterator;
-    std::vector<Environment>::iterator m_getStatesOfAllAudiencesIterator;
+    Environment::iterator m_getStatesOfAllPlayersIterator;
+    Environment::iterator m_getStatesOfAllAudiencesIterator;
 };
 
 #endif
