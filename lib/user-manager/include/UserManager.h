@@ -3,7 +3,7 @@
 
 #include <algorithm>
 #include <vector>
-#include <string>
+#include <string_view>
 #include <cstdint>
 #include <unordered_map>
 
@@ -13,17 +13,17 @@ enum class Role : char {
 
 struct User {
     uint32_t userID;
-    std::string username;
+    std::string_view username;
     Role role;
 
-    User(uint32_t userID, std::string username, Role role) : 
+    User(uint32_t userID, std::string_view username, Role role) : 
         userID{userID}, username{username}, role{role} {}; 
 };
 
 class UserManager {
 public:
     UserManager() {};
-    void addUser(uint32_t userID, std::string username);
+    void addUser(uint32_t userID, std::string_view username);
     void setRole(uint32_t userID, Role role);
     void addToRoom(uint32_t userID, uint8_t roomCode);
 

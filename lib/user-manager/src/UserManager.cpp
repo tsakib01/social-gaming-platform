@@ -3,7 +3,7 @@
 #include <iostream>
 
 void 
-UserManager::addUser(uint32_t userID, std::string username) {
+UserManager::addUser(uint32_t userID, std::string_view username) {
     auto iterator = std::find_if(unassignedUsers.begin(), unassignedUsers.end(), 
                                 [userID] (const User& user) { return user.userID == userID; });
 
