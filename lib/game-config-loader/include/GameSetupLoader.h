@@ -5,19 +5,10 @@
 enum KIND{
     INTEGER, STRING, BOOLEAN, ENUM,
 };
-class GameSetupLoader{
-public:
-    GameSetupLoader(std::string_view source);
-    Setup convertNodetoSetup(const ts::Node& node);
-    std::unique_ptr<std::vector<Setup>>(const ts::Node& node);
-private:
-    std::string_view source;
-
-};
 class Setup{
 public:
     Setup(KIND kind,std::string_view prompt);
-    Setup(KIND kind,std::string_view prompt,);
+    Setup(KIND kind,std::string_view prompt,std::string_view restInfo);
     void intProcess();
     void boolProcess();
     void strProcess();
@@ -29,6 +20,16 @@ private:
     //may change to other type;
     std::string_view restInfo;
 };
+class GameSetupLoader{
+public:
+    GameSetupLoader(std::string_view source);
+    Setup convertNodetoSetup(const ts::Node& node);
+    std::unique_ptr<std::vector<Setup>>getGameSetup (const ts::Node& node);
+private:
+    std::string_view source;
+
+};
+
 //class intSetup:public  Setup{
 //public:
 //    void processSetup();

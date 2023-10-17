@@ -50,6 +50,10 @@ GameConfigLoader::createGameState() {
     return gameState;
 }
 
+std::unique_ptr<GameSetup>
+createGameSetup(){
+//    auto gameSetupLoader = std::make_shared<>()
+}
 
 std::string GameConfigLoader::getSource(std::string_view path) {
     std::ifstream ifs(path.data());
