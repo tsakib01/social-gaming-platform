@@ -94,6 +94,7 @@ public:
 };
 
 template<typename T>
+/// @brief A constant expression that is just a value
 class ConstantExpression : public Expression {
 public:
     ConstantExpression(T value) : m_value(Value(value)) {
