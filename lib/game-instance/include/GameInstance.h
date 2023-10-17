@@ -19,7 +19,7 @@ public:
 private:
     std::shared_ptr<GameRules> m_gameRules;
     std::unique_ptr<GameState> m_gameState;
-    std::stack<std::shared_ptr<Rule>> instructionStack;
+    std::stack<std::shared_ptr<RuleNode>> instructionStack;
     int m_inviteCode;
 };
 
