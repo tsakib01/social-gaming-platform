@@ -1,25 +1,25 @@
 #include "InGameUserManager.h"
 #include <cassert>
 
-    void InGameUserManager::addNewPlayer(int userID, Environment playerStates){
+    void InGameUserManager::addNewPlayer(uint32_t userID, Environment playerStates){
         InGameUserManager::m_playerStates.insert({userID, playerStates});
     }
 
-    void InGameUserManager::addNewAudience(int userID, Environment audienceStates){
+    void InGameUserManager::addNewAudience(uint32_t userID, Environment audienceStates){
         InGameUserManager::m_audienceStates.insert({userID, audienceStates});
     }
 
-    void InGameUserManager::deletePlayer(int userID){
+    void InGameUserManager::deletePlayer(uint32_t userID){
         InGameUserManager::m_playerStates.erase({userID});
     }
 
-    void InGameUserManager::deleteAudience(int userID){
+    void InGameUserManager::deleteAudience(uint32_t userID){
         InGameUserManager::m_audienceStates.erase({userID});
     }
 
     // Get a specific user's states from their corresponding map.
-    std::map<int, Environment>::iterator InGameUserManager::getStatesOfPlayer(int userID){
-        std::map<int, Environment>::iterator m_getStatesOfAllPlayersIterator;
+    std::map<uint32_t, Environment>::iterator InGameUserManager::getStatesOfPlayer(uint32_t userID){
+        std::map<uint32_t, Environment>::iterator m_getStatesOfAllPlayersIterator;
         m_getStatesOfAllPlayersIterator = m_playerStates.find(userID);
 
         // It should never happen that we try looking for a player that doesn't exist.
@@ -29,17 +29,17 @@
         return m_getStatesOfAllPlayersIterator;
     }  
 
-    std::map<int, Environment>::iterator InGameUserManager::getStatesOfAudience(int userID){
-        std::map<int, Environment>::iterator m_getStatesOfAllAudiencesIterator;
+    std::map<uint32_t, Environment>::iterator InGameUserManager::getStatesOfAudience(uint32_t userID){
+        std::map<uint32_t, Environment>::iterator m_getStatesOfAllAudiencesIterator;
         m_getStatesOfAllAudiencesIterator = m_audienceStates.find(userID);
         assert(m_getStatesOfAllAudiencesIterator != m_audienceStates.end());
         return m_getStatesOfAllAudiencesIterator;
     }
     
-    std::map<int, Environment> InGameUserManager::getStatesOfAllPlayers(){
+    std::map<uint32_t, Environment> InGameUserManager::getStatesOfAllPlayers(){
         return m_playerStates;
     }
 
-    std::map<int, Environment> InGameUserManager::getStatesOfAllAudiences(){
+    std::map<uint32_t, Environment> InGameUserManager::getStatesOfAllAudiences(){
         return m_audienceStates;
     }
