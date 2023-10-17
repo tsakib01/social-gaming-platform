@@ -6,12 +6,7 @@
 #include <string>
 #include <vector>
 #include <variant>
-using Primitive = std::variant<int, bool, std::string_view>;
-using Map = std::map<std::string_view, Primitive>;
-using List = std::vector<std::variant<Primitive, Map>>;
-using Value = std::variant<Primitive, Map, List>;
-using Identifier = std::string_view;
-using Environment = std::map<Identifier, Value>;
+#include "GameStateLoader.h"
 
 // Keep track of all users in a particular game.
 // Currently, not specifically distinguishing the Owner of a game from other Spectators.
