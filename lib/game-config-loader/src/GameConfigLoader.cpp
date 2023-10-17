@@ -52,20 +52,20 @@ GameConfigLoader::createGameState() {
     return gameState;
 }
 
-//std::unique_ptr<GameSetup>
-//GameConfigLoader::createGameSetup(){
-//    auto gameSetupLoader = std::make_shared<GameSetupLoader>(m_source);
-//    auto gameSetup = std::make_unique<GameSetup>(gameSetupLoader);
-//    ts::Language language = tree_sitter_socialgaming();
-//    ts::Parser parser{language};
-//    ts::Tree tree = parser.parseString(m_source);
-//    if(tree.getRootNode().getNumChildren() == 0) {
-//        throw std::runtime_error("Error: Empty config.");
-//    }
-//    ts::Node root = tree.getRootNode();
-//    gameSetup->addSetups(root.getChildByFieldName("configuration"));
-//    return gameSetup;
-//}
+std::unique_ptr<GameSetup>
+GameConfigLoader::createGameSetup(){
+    auto gameSetupLoader = std::make_shared<GameSetupLoader>(m_source);
+    auto gameSetup = std::make_unique<GameSetup>(gameSetupLoader);
+    ts::Language language = tree_sitter_socialgaming();
+    ts::Parser parser{language};
+    ts::Tree tree = parser.parseString(m_source);
+    if(tree.getRootNode().getNumChildren() == 0) {
+        throw std::runtime_error("Error: Empty config.");
+    }
+    ts::Node root = tree.getRootNode();
+    gameSetup->addSetups(root.getChildByFieldName("configuration"));
+    return gameSetup;
+}
 
 std::string GameConfigLoader::getSource(std::string_view path) {
     std::ifstream ifs(path.data());
