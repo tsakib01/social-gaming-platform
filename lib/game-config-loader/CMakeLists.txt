@@ -13,8 +13,8 @@ add_library(gameConfigLoader
   src/GameConfigLoader.cpp
   src/GameRules.cpp
   src/GameState.cpp
-  src/GameSetup.cpp
   src/GameStateLoader.cpp
+  src/GameSetup.cpp
   src/GameSetupLoader.cpp
 
 )

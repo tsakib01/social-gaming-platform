@@ -1,3 +1,6 @@
+#ifndef GAME_SETUP_LOADER
+#define GAME_SETUP_LOADER
+
 #include<string_view>
 #include<vector>
 #include <memory>
@@ -53,3 +56,4 @@ private:
 //    std::string_view name;
 //    std::string_view prompt;
 //};
+#endif
