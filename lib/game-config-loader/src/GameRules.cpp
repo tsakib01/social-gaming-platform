@@ -1,5 +1,6 @@
 #include "GameRules.h"
 #include <iostream>
+#include "RuleInterpreter.h"
 
 extern "C" {
     TSLanguage* tree_sitter_socialgaming();
@@ -14,12 +15,12 @@ GameRules::GameRules(std::string_view source)
 {
     ts::Language language = tree_sitter_socialgaming();
     ts::Parser parser{language};
-
+    
     m_exprTree = parser.parseString(m_source);
 
     if(m_exprTree.getRootNode().getNumChildren() == 0) {
         throw std::runtime_error("Error: Empty config.");
     }
-
-    m_rules = m_exprTree.getRootNode().getChildByFieldName("rules");
+    ts::Node bodyRoot = m_exprTree.getRootNode().getChildByFieldName("rules").getNamedChild(0);
+    m_treeRoot = RuleInterpreter::convertNodeTreeToRuleTree(bodyRoot, m_source);
 }
