@@ -7,12 +7,16 @@
 #include <cstdint>
 #include <unordered_map>
 
+enum class Role : char {
+    OWNER, PLAYER, AUDIENCE, NONE
+};
+
 struct User {
     uint32_t userID;
     std::string username;
-    std::string role;
+    Role role;
 
-    User(uint32_t userID, std::string username, std::string role) : 
+    User(uint32_t userID, std::string username, Role role) : 
         userID{userID}, username{username}, role{role} {}; 
 };
 
@@ -20,7 +24,7 @@ class UserManager {
 public:
     UserManager() {};
     void addUser(uint32_t userID, std::string username);
-    void setRole(uint32_t userID, std::string role);
+    void setRole(uint32_t userID, Role role);
     void addToRoom(uint32_t userID, uint8_t roomCode);
 
 private:

@@ -7,12 +7,12 @@ UserManager::addUser(uint32_t userID, std::string username) {
     auto iterator = std::find_if(unassignedUsers.begin(), unassignedUsers.end(), 
                                 [userID] (const User& user) { return user.userID == userID; });
 
-    if(iterator == unassignedUsers.end()) { unassignedUsers.emplace_back(User{userID, username, ""}); }
+    if(iterator == unassignedUsers.end()) { unassignedUsers.emplace_back(User{userID, username, Role::NONE}); }
     else std::cout << "User with " << userID << " already exists." << std::endl;
 }
 
 void 
-UserManager::setRole(uint32_t userID, std::string role) {
+UserManager::setRole(uint32_t userID, Role role) {
     auto iterator = std::find_if(unassignedUsers.begin(), unassignedUsers.end(), 
                                 [userID] (const User& user) { return user.userID == userID; });
     
