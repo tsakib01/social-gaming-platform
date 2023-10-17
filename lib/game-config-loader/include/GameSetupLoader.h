@@ -16,6 +16,7 @@ public:
     void boolProcess();
     void strProcess();
     void processSetup();
+    void print();
 private:
     std::string_view identifier;
     KIND kind;
