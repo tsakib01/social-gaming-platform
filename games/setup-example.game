@@ -1,3 +1,5 @@
+// These are examples of core properties of a game that might be
+// configured when setting up an instance or lobby for a game.
 configuration {
   name: "Rock, Paper, Scissors"
   player range: (2, 4)
@@ -8,6 +10,18 @@ configuration {
       prompt: "The number of rounds to play"
       range: (1, 20)
     }
+    public_voting {
+      kind: boolean
+      prompt: "Player votes are public"
+    }
+    string_example{
+      kind: string
+      prompt: "Do nothing"
+    }
   }
 }
-
+constants {}
+variables {}
+per-player {}
+per-audience {}
+rules {}
