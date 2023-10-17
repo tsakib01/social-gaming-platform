@@ -87,20 +87,10 @@ public:
     /// @param value The value to create the expression from
     /// @return A unique pointer to the expression
     template<typename T>
-    static std::unique_ptr<Expression> 
+    static std::unique_ptr<ConstantExpression<T>>
     createConstExpr(T value) {
-      auto constExpr = std::make_unique<ConstantExpression<T>>(value);
-      return dynamicPtrCast<Expression>(std::move(constExpr));
+        return std::make_unique<ConstantExpression<T>>(value);
     }
-
-private:
-  template<typename T, typename S>
-  static std::unique_ptr<T>
-  dynamicPtrCast(std::unique_ptr<S>&& ptr) {
-    auto converted = std::unique_ptr<T>(dynamic_cast<T*>(ptr.get()));
-    if(converted) ptr.release();
-    return converted;
-  }
 };
 
 template<typename T>
