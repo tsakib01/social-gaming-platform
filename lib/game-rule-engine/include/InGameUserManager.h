@@ -13,7 +13,8 @@ using Value = std::variant<Primitive, Map, List>;
 using Identifier = std::string_view;
 using Environment = std::map<Identifier, Value>;
 
-// Keep track of all users
+// Keep track of all users in a particular game.
+// Currently, not specifically distinguishing the Owner of a game from other Spectators.
 class InGameUserManager {
 
     public:
