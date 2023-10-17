@@ -2,14 +2,27 @@
 #define GAME_INSTANCE_MANAGER_H
 
 #include <iostream>
+#include <vector>
+#include <random>
+#include "GameInstance.h"
+#include "GameConfigLoader.h"
 
 class GameInstanceManager {
 public:
     GameInstanceManager();
     ~GameInstanceManager() {};
-    void createGameInstance();
-    void playGames();
+
+    int generateInviteCode();
+    void sendInviteCode();
+    void createGameInstance(std::string_view gameFilePath);
+
+    void startGame();
+    void finishGame();
+    void runCycle();
+
 private:
+    std::vector<std::unique_ptr<GameInstance>> m_activeGameList;
+    std::vector<std::unique_ptr<GameInstance>> m_gameList;
 };
 
 #endif

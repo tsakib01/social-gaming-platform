@@ -3,8 +3,8 @@
 #include "RuleNode.h"
 
 GameInstance::GameInstance(std::shared_ptr<GameRules> gameRules, 
-std::unique_ptr<GameState> gameState)
-    : m_gameRules(gameRules), m_gameState(std::move(gameState))
+std::unique_ptr<GameState> gameState, int inviteCode)
+    : m_gameRules(gameRules), m_gameState(std::move(gameState)), m_inviteCode(inviteCode)
 {
     const std::shared_ptr<RuleNode> rulesRoot = gameRules->getRules();
     startGame(rulesRoot);
@@ -27,6 +27,8 @@ GameInstance::startGame(std::shared_ptr<RuleNode> rulesRoot) {
 
 void 
 GameInstance::executeNextInstruction() {
+    if (instructionStack.empty()) return;
+
     std::shared_ptr<RuleNode> instruction = instructionStack.top();
     std::optional<std::shared_ptr<RuleNode>> nextInstructionNode = instruction->executeRule();
 
@@ -35,4 +37,14 @@ GameInstance::executeNextInstruction() {
     } else {
         instructionStack.pop();
     }
+}
+
+bool
+GameInstance::gameIsFinished() {
+    return instructionStack.empty();
+}
+
+int 
+GameInstance::getInviteCode() {
+    return m_inviteCode;
 }

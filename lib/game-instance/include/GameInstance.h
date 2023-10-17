@@ -9,15 +9,18 @@
 
 class GameInstance {
 public:
-    GameInstance(std::shared_ptr<GameRules> rules, std::unique_ptr<GameState> state);
+    GameInstance(std::shared_ptr<GameRules> rules, std::unique_ptr<GameState> state, int inviteCode);
     ~GameInstance() {};
     void startGame(std::shared_ptr<RuleNode> rulesRoot);
     void executeNextInstruction();
+    bool gameIsFinished();
+    int getInviteCode();
 
 private:
     std::shared_ptr<GameRules> m_gameRules;
     std::unique_ptr<GameState> m_gameState;
-    std::stack<std::shared_ptr<RuleNode>> instructionStack;
+    std::stack<std::shared_ptr<Rule>> instructionStack;
+    int m_inviteCode;
 };
 
 #endif

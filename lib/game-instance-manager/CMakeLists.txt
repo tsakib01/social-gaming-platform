@@ -12,3 +12,7 @@ target_include_directories(gameInstanceManager
 install(TARGETS gameInstanceManager
     ARCHIVE DESTINATION lib
 )
+
+target_link_libraries(gameInstanceManager
+    gameInstance
+)
