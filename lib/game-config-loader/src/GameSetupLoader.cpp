@@ -3,7 +3,7 @@
 Setup::Setup(KIND kind,std::string_view prompt):kind(kind),prompt(prompt),restInfo(std::string_view{}){}
 
 Setup::Setup(KIND kind,std::string_view prompt,std::string_view restInfo):kind(kind),prompt(prompt),restInfo(restInfo){}
-KIND convertToKind(std::string_view kind){
+KIND convertToKIND(std::string_view kind){
     std::string temp{kind.begin(),kind.end()};
     if(temp=="integer"){
         return KIND::INTEGER;
@@ -66,7 +66,7 @@ Setup GameSetupLoader::convertNodetoSetup(const ts::Node& node){
     if(childCount<7){
         std::runtime_error("no enough information in setup");
     }
-    KIND kind=convertToKind(node.getChild(3).getType());
+    KIND kind=convertToKIND(node.getChild(3).getType());
     std::string_view prompt=node.getChild(5).getSourceRange(source);
     if(childCount>7){
 
