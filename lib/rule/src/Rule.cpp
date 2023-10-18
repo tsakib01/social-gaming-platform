@@ -20,9 +20,12 @@ print(const ts::Node& node, std::string_view source) {
     }
 }
 
-std::optional<ts::Node> 
+std::optional<std::shared_ptr<RuleNode>> 
 MatchRule::execute() {
+    // Note: node's children are match entries
     std::cout << "Executing match\n";
+    return std::nullopt;
+    /**
     ts::Node target = node.getChildByFieldName("target");
     std::cout << target.getSourceRange(source) << std::endl;
     std::vector<ts::Node> matchEntries{};
@@ -38,9 +41,14 @@ MatchRule::execute() {
         std::cout << "MATCHENTRY\n";
         std::cout << m.getSourceRange(source) << '\n';
     }
-
-    return std::nullopt;
+    */
 
     // print(m_node, m_source);
     // std::cout << m_node.getSExpr() << std::endl;
+}
+
+std::optional<std::shared_ptr<RuleNode>> 
+MatchEntryRule::execute() {
+    std::cout << "Executing match entry\n";
+    return std::nullopt;
 }
