@@ -7,13 +7,12 @@ std::unique_ptr<GameState> gameState, int inviteCode)
     : m_gameRules(gameRules), m_gameState(std::move(gameState)), m_inviteCode(inviteCode)
 {
     const std::shared_ptr<RuleNode> rulesRoot = gameRules->getRules();
-    startGame(rulesRoot);
+    instructionStack.push(rulesRoot);
 }
 
 void 
-GameInstance::startGame(std::shared_ptr<RuleNode> rulesRoot) {
+GameInstance::startGame() {
 
-    instructionStack.push(rulesRoot);
     // This function shouldn't exist - it's just a test to see if it will work
     // Should probably be in GameInstanceManager
 
@@ -22,7 +21,6 @@ GameInstance::startGame(std::shared_ptr<RuleNode> rulesRoot) {
         executeNextInstruction();
     }
     std::cout << "Game ended." << std::endl;
-    rulesRoot->deleteReferences();
 }
 
 void 
@@ -41,7 +39,11 @@ GameInstance::executeNextInstruction() {
 
 bool
 GameInstance::gameIsFinished() {
-    return instructionStack.empty();
+    if (instructionStack.empty()) {
+        m_gameRules->getRules()->deleteReferences();
+        return true;
+    }
+    return false;
 }
 
 int 

@@ -10,7 +10,7 @@ BaseRule::execute() {
 
     if (!executed) {
         executed = true;
-        std::shared_ptr<RuleNode> nextNode = node->getChildrenAtIndex(0);
+        std::shared_ptr<RuleNode> nextNode = std::move(node->getChildrenAtIndex(0));
         return nextNode;
     }
 

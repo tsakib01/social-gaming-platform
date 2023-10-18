@@ -37,7 +37,7 @@ GameInstanceManager::createGameInstance(std::string_view gameFilePath) {
     auto state = gameConfigLoader.createGameState();
     int inviteCode = generateInviteCode();
 
-    m_gameList.push_back(std::make_unique<GameInstance>(rules, std::move(state), inviteCode));
+    m_gameList.push_back(std::make_unique<GameInstance>(std::move(rules), std::move(state), inviteCode));
 }
 
 void 

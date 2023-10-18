@@ -15,7 +15,7 @@ class RuleNode;
 class Rule {
 public:
     Rule(std::shared_ptr<RuleNode> node, std::string_view source) 
-        : node(node), source(source)  {}
+        : node(std::move(node)), source(source)  {}
 
     virtual std::optional<std::shared_ptr<RuleNode>> execute() = 0;
     virtual void reset() = 0;

@@ -31,7 +31,7 @@ void RuleNode::resetExecution() {
 }
 
 void RuleNode::deleteReferences() {
-    for (std::shared_ptr child : m_children) {
+    for (std::shared_ptr<RuleNode> child : m_children) {
         child->deleteReferences();
     }
     m_rule.reset();

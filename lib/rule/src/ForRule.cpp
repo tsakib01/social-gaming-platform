@@ -7,7 +7,7 @@ ForRule::execute() {
     }
     std::cout << "Executing For Rule... Iteration:" << iteration << std::endl;
     if (index < node->getChildrenSize()) {
-        std::shared_ptr<RuleNode> nextNode = node->getChildrenAtIndex(index);
+        std::shared_ptr<RuleNode> nextNode = std::move(node->getChildrenAtIndex(index));
         if (index == node->getChildrenSize() - 1) {
             index = 0;
             iteration++;

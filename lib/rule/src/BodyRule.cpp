@@ -9,7 +9,7 @@ BodyRule::execute() {
     // std::cout << "Executing BodyRule..." << std::endl;
 
     if (index < node->getChildrenSize()) {
-        std::shared_ptr<RuleNode> nextNode = node->getChildrenAtIndex(index);
+        std::shared_ptr<RuleNode> nextNode = std::move(node->getChildrenAtIndex(index));
         index++;
         return nextNode;
     } 
