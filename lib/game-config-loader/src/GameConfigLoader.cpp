@@ -31,7 +31,6 @@ GameConfigLoader::createGameRules() {
 //     constantManager.print();
 // }
 
-
 // TODO: Change implementation of handling game state to use std::variant
 std::unique_ptr<GameState>
 GameConfigLoader::createGameState() {

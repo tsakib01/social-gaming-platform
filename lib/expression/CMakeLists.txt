@@ -7,6 +7,8 @@ target_include_directories(expression
 )
 
 target_link_libraries(expression
+    INTERFACE
+        gameConfigLoader
 )
 
 install(TARGETS expression

@@ -1,9 +1,11 @@
 #include <iostream>
 #include <cpp-tree-sitter.h>
+<<<<<<< tools/main.cpp
 #include "GameConfigLoader.h"
-#include "GameSetup.h"
-#include "GameSetupLoader.h"
 #include "GameInstance.h"
+=======
+#include "GameInstanceManager.h"
+>>>>>>> tools/main.cpp
 
 int main(int argc, char** argv) {
     if(argc != 2) {
@@ -14,6 +16,7 @@ int main(int argc, char** argv) {
     std::string_view gameFilePath = argv[1];
     std::cout << "Game file path: " << gameFilePath << "\n";
 
+<<<<<<< tools/main.cpp
     // TODO: Creating GameInstances with configloader should probably be handled by GIM
     GameConfigLoader gameConfigLoader{gameFilePath};
     auto rules = gameConfigLoader.createGameRules();
@@ -21,6 +24,11 @@ int main(int argc, char** argv) {
     auto setup = gameConfigLoader.createGameSetup();
     setup->processGameSetups();
     GameInstance game = GameInstance(rules, std::move(state));
+=======
+    GameInstanceManager gameInstanceManager = GameInstanceManager();
+    gameInstanceManager.createGameInstance(gameFilePath);
+    gameInstanceManager.runCycle();
+>>>>>>> tools/main.cpp
 
     return EXIT_SUCCESS;  
 
