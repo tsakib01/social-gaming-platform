@@ -16,8 +16,6 @@ int main(int argc, char** argv) {
 
     // TODO: Creating GameInstances with configloader should probably be handled by GIM
     GameConfigLoader gameConfigLoader{gameFilePath};
-    auto rules = gameConfigLoader.createGameRules();
-    auto state = gameConfigLoader.createGameState();
     auto setup = gameConfigLoader.createGameSetup();
     setup->processGameSetups();
     GameInstanceManager gameInstanceManager = GameInstanceManager();
