@@ -20,7 +20,6 @@ int main(int argc, char** argv) {
     auto state = gameConfigLoader.createGameState();
     auto setup = gameConfigLoader.createGameSetup();
     setup->processGameSetups();
-    GameInstance game = GameInstance(rules, std::move(state));
     GameInstanceManager gameInstanceManager = GameInstanceManager();
     gameInstanceManager.createGameInstance(gameFilePath);
     gameInstanceManager.runCycle();
