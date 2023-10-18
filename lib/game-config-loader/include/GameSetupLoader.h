@@ -10,8 +10,8 @@ enum KIND{
 };
 class Setup{
 public:
-    Setup(KIND kind,std::string_view prompt);
-    Setup(KIND kind,std::string_view prompt,std::string_view restInfo);
+    Setup(std::string_view identifier,KIND kind,std::string_view prompt);
+    Setup(std::string_view identifier,KIND kind,std::string_view prompt,std::string_view restInfo);
     void intProcess();
     void boolProcess();
     void strProcess();

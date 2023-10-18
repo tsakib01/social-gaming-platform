@@ -1,8 +1,8 @@
 #include "GameSetupLoader.h"
 #include <iostream>
-Setup::Setup(KIND kind,std::string_view prompt):kind(kind),prompt(prompt),restInfo(std::string_view{}){}
+Setup::Setup(std::string_view identifier,KIND kind,std::string_view prompt):identifier(identifier),kind(kind),prompt(prompt),restInfo(std::string_view{}){}
 
-Setup::Setup(KIND kind,std::string_view prompt,std::string_view restInfo):kind(kind),prompt(prompt),restInfo(restInfo){}
+Setup::Setup(std::string_view identifier,KIND kind,std::string_view prompt,std::string_view restInfo):identifier(identifier),kind(kind),prompt(prompt),restInfo(restInfo){}
 KIND convertToKIND(std::string_view kind){
     std::string temp{kind.begin(),kind.end()};
     if(temp=="integer"){
@@ -58,6 +58,7 @@ void Setup::print(){
     std::cout<<KINDToString(kind)<<std::endl;
     std::cout<<prompt<<std::endl;
     std::cout<<restInfo<<std::endl;
+    std::cout<<std::endl;
 }
 GameSetupLoader::GameSetupLoader(std::string_view source):source(source){}
 
@@ -66,6 +67,8 @@ Setup GameSetupLoader::convertNodetoSetup(const ts::Node& node){
     if(childCount<7){
         std::runtime_error("no enough information in setup");
     }
+    ts::Extent  identifierRange=node.getChild(0).getByteRange();
+    std::string_view identifier=source.substr(identifierRange.start,identifierRange.end-identifierRange.start);
     KIND kind=convertToKIND(node.getChild(3).getType());
     std::string_view prompt=node.getChild(5).getSourceRange(source);
     if(childCount>7){
@@ -74,9 +77,9 @@ Setup GameSetupLoader::convertNodetoSetup(const ts::Node& node){
 
         ts::Extent last=node.getChild(childCount-2).getByteRange();
         std::string_view restInfo=source.substr(first.start,last.end-first.start);
-        return {kind,prompt,restInfo};
+        return {identifier,kind,prompt,restInfo};
     }
-    return {kind,prompt};
+    return {identifier,kind,prompt};
 
 }
 std::unique_ptr<std::vector<Setup>> GameSetupLoader::getGameSetup (const ts::Node& node){
