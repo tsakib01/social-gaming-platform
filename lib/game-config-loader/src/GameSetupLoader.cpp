@@ -4,26 +4,27 @@ Setup::Setup(std::string_view identifier,KIND kind,std::string_view prompt):iden
 
 Setup::Setup(std::string_view identifier,KIND kind,std::string_view prompt,std::string_view restInfo):identifier(identifier),kind(kind),prompt(prompt),restInfo(restInfo){}
 KIND convertToKIND(std::string_view kind){
-    std::string temp{kind.begin(),kind.end()};
-    if(temp=="integer"){
+    if(kind!="integer"&&kind!="string"&&kind!="boolean"&&kind!="enum"){
+        throw std::runtime_error("kind not support");
+    }
+    if(kind=="integer"){
         return KIND::INTEGER;
     }
-    else if(temp=="string"){
+    else if(kind=="string"){
         return KIND::STRING;
     }
-    else if(temp=="boolean"){
+    else if(kind=="boolean"){
         return KIND::BOOLEAN;
     }
-    else if(temp=="enum"){
+    else {
         return KIND::ENUM;
     }
-    else {
-        std::runtime_error("kind not support");
-    }
-
 }
-constexpr const char* KINDToString(KIND kind) noexcept
+constexpr std::string_view KINDToString(KIND kind)
 {
+    if(kind!=KIND::INTEGER&&kind!=KIND::STRING&&kind!=KIND::BOOLEAN&&kind!=KIND::ENUM){
+        throw std::runtime_error("kind not support yet");
+    }
     switch (kind)
     {
     case KIND::INTEGER: return "integer";
@@ -31,7 +32,7 @@ constexpr const char* KINDToString(KIND kind) noexcept
     case KIND::BOOLEAN: return "boolean";
     case KIND::ENUM: return "enum";
     }
-    std::runtime_error("kind not support yet");
+
 }
 void Setup::intProcess(){
     this->print();
@@ -62,11 +63,11 @@ void Setup::print(){
 }
 GameSetupLoader::GameSetupLoader(std::string_view source):source(source){}
 
-Setup GameSetupLoader::convertNodetoSetup(const ts::Node& node){
-    int childCount =node.getNumChildren();
-    if(childCount<7){
-        std::runtime_error("no enough information in setup");
+std::unique_ptr<Setup> GameSetupLoader::convertNodetoSetup(const ts::Node& node){
+    if(node.getNumChildren()<7){
+        throw std::runtime_error("no enough information in setup");
     }
+    int childCount =node.getNumChildren();
     ts::Extent  identifierRange=node.getChild(0).getByteRange();
     std::string_view identifier=source.substr(identifierRange.start,identifierRange.end-identifierRange.start);
     KIND kind=convertToKIND(node.getChild(3).getType());
@@ -77,18 +78,18 @@ Setup GameSetupLoader::convertNodetoSetup(const ts::Node& node){
 
         ts::Extent last=node.getChild(childCount-2).getByteRange();
         std::string_view restInfo=source.substr(first.start,last.end-first.start);
-        return {identifier,kind,prompt,restInfo};
+        return std::make_unique<Setup>(Setup{identifier,kind,prompt,restInfo});
     }
-    return {identifier,kind,prompt};
+    return std::make_unique<Setup>(Setup{identifier,kind,prompt});
 
 }
-std::unique_ptr<std::vector<Setup>> GameSetupLoader::getGameSetup (const ts::Node& node){
+std::vector<std::unique_ptr<Setup>> GameSetupLoader::getGameSetup (const ts::Node& node){
     int numChildCount=node.getNumNamedChildren();
 
-    std::unique_ptr<std::vector<Setup>> setups=std::make_unique<std::vector<Setup>>();
+    std::vector< std::unique_ptr<Setup>> setups;
 
     for(int index=3;index<numChildCount;index++){
-        setups->push_back(convertNodetoSetup(node.getNamedChild(index)));
+        setups.push_back(convertNodetoSetup(node.getNamedChild(index)));
     }
     return setups;
 }

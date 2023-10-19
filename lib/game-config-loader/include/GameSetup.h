@@ -12,7 +12,7 @@ public:
     void addSetups(ts::Node node);
     void processGameSetups();
 private:
-    std::unique_ptr<std::vector<Setup>> setups;
+    std::vector<std::unique_ptr<Setup>> setups;
     std::shared_ptr<GameSetupLoader> SetupLoader;
 };
 #endif

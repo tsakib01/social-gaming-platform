@@ -27,8 +27,8 @@ private:
 class GameSetupLoader{
 public:
     GameSetupLoader(std::string_view source);
-    Setup convertNodetoSetup(const ts::Node& node);
-    std::unique_ptr<std::vector<Setup>>getGameSetup (const ts::Node& node);
+    std::unique_ptr<Setup> convertNodetoSetup(const ts::Node& node);
+    std::vector<std::unique_ptr<Setup>>getGameSetup (const ts::Node& node);
 private:
     std::string_view source;
 

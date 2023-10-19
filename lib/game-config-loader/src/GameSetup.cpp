@@ -1,5 +1,5 @@
 #include "GameSetup.h"
-GameSetup::GameSetup (std::shared_ptr<GameSetupLoader> SetupLoader):setups(std::make_unique<std::vector<Setup>>()), SetupLoader(SetupLoader){}
+GameSetup::GameSetup (std::shared_ptr<GameSetupLoader> SetupLoader):setups(std::vector<std::unique_ptr<Setup>>()), SetupLoader(SetupLoader){}
 
 void GameSetup::addSetups(ts::Node node){
     setups=std::move(SetupLoader->getGameSetup(node));
@@ -9,7 +9,7 @@ void GameSetup::addSetups(ts::Node node){
 //    }
 }
 void GameSetup::processGameSetups(){
-    for(auto setup : *setups){
-        setup.processSetup();
+    for(auto const& setup : setups){
+        setup->processSetup();
     }
 }
