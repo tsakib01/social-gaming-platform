@@ -14,6 +14,9 @@ add_library(gameConfigLoader
   src/GameRules.cpp
   src/GameState.cpp
   src/GameStateLoader.cpp
+  src/GameSetup.cpp
+  src/GameSetupLoader.cpp
+
 )
 target_include_directories(gameConfigLoader
   PUBLIC
