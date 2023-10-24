@@ -8,6 +8,10 @@
 #include <map>
 #include "GameStateLoader.h"
 
+enum class Operator{
+    PLUS, SUBTRACT, MULTIPLY, DIVISION, OR, IDENTIFIER, DOT
+};
+
 template<typename T, typename S>
 /// @brief Checks if a type is the same or assignable to another type
 /// @tparam T The type to check
@@ -73,41 +77,59 @@ struct is_contained_assignable_in<std::vector<TElm>, List> {
 template<typename T>
 /// @brief A constant expression that is just a value
 /// @tparam T The type of the value
-class ConstantExpression;
+class LiteralExpression;
 
 /// @brief Base expression factory class
 class Expression {
 public:
-    virtual ~Expression() = default;
-    /// @brief Get the value of the expression
-    /// @return A variant of the valid types
-    virtual Value getValue() = 0;
-
     /// @brief Create a constant expression from a value
     /// @param value The value to create the expression from
     /// @return A unique pointer to the expression
     template<typename T>
-    static std::unique_ptr<ConstantExpression<T>>
+    static std::unique_ptr<LiteralExpression<T>>
     createConstExpr(T value) {
-        return std::make_unique<ConstantExpression<T>>(value);
+        return std::make_unique<LiteralExpression<T>>(value);
     }
 };
 
 template<typename T>
 /// @brief A constant expression that is just a value
-class ConstantExpression : public Expression {
+class LiteralExpression : public Expression {
 public:
-    ConstantExpression(T value) : m_value(Value(value)) {
+    LiteralExpression(T value) : m_value(Value(value)) {
         static_assert(
             is_contained_assignable_in<T, Value>::value,
             "Invalid type for ConstantExpression"
         );
     }
+    Value value;
+};
 
-    Value getValue() override { return m_value; }
+class IdentifierExpression : public Expression{
+public:
+    IdentifierExpression(Identifier identifier) : identifier(identifier){}
+    Identifier identifier;
+};
 
-private:
-    Value m_value;
+class BinaryExpression : public Expression {
+public:
+    BinaryExpression(std::unique_ptr<Expression> leftOperand, std::unique_ptr<Expression> rightOperand, Operator op)
+    : leftOperand(std::move(leftOperand)), rightOperand(std::move(rightOperand)), op(op)
+    {}
+
+    std::unique_ptr<Expression> leftOperand;
+    std::unique_ptr<Expression> rightOperand;
+    Operator op;
+};
+
+class UnaryExpression : public Expression{
+public:
+    UnaryExpression(std::unique_ptr<Expression> operand, Operator op)
+    : operand(std::move(operand)), op(op)
+    {}
+
+    Operator op;
+    std::unique_ptr<Expression> operand;
 };
 
 #endif
