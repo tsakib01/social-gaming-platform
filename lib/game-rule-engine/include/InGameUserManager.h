@@ -29,6 +29,8 @@ class InGameUserManager {
     std::map<uint32_t, Environment> getStatesOfAllPlayers();
     std::map<uint32_t, Environment> getStatesOfAllAudiences();
 
+    void setStatesOfUser(uint32_t userID, Environment states);
+
     private:
     ~InGameUserManager();
     

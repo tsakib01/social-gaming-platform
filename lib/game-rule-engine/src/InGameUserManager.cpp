@@ -17,6 +17,21 @@
         InGameUserManager::m_audienceStates.erase({userID}) != 0);
     }
 
+    void InGameUserManager::setStatesOfUser(uint32_t userID, Environment states){
+        std::map<uint32_t, Environment>::iterator m_getStatesOfAllPlayersIterator;
+        std::map<uint32_t, Environment>::iterator m_getStatesOfAllAudiencesIterator;
+        m_getStatesOfAllPlayersIterator = m_playerStates.find(userID);
+        m_getStatesOfAllAudiencesIterator = m_audienceStates.find(userID);
+        assert(m_getStatesOfAllPlayersIterator != m_playerStates.end()
+        || m_getStatesOfAllAudiencesIterator != m_audienceStates.end());
+
+        if (m_getStatesOfAllPlayersIterator != m_playerStates.end()){
+            m_playerStates[userID] = states;
+        } else {
+            m_audienceStates[userID] = states;
+        }
+    }
+
     Environment InGameUserManager::getStatesOfUser(uint32_t userID){
         std::map<uint32_t, Environment>::iterator m_getStatesOfAllPlayersIterator;
         std::map<uint32_t, Environment>::iterator m_getStatesOfAllAudiencesIterator;
