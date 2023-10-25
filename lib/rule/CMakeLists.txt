@@ -1,8 +1,15 @@
 add_library(rule
-    src/Rule.cpp
+    src/AssignmentRule.cpp
     src/BaseRule.cpp
     src/BodyRule.cpp
+    src/DiscardRule.cpp
+    src/ExtendRule.cpp
+    src/ForRule.cpp
+    src/InputRule.cpp
     src/MessageRule.cpp
+    src/ParallelForRule.cpp
+    src/Rule.cpp
+    src/ScoresRule.cpp
 )
 
 target_include_directories(rule
@@ -14,6 +21,7 @@ target_include_directories(rule
 )
 
 target_link_libraries(rule
+    ruleNode
     cpp-tree-sitter
 )
 
