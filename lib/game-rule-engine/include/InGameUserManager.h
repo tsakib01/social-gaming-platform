@@ -37,8 +37,6 @@ class InGameUserManager {
     std::map<uint32_t, Environment> m_playerStates;
     std::map<uint32_t, Environment> m_audienceStates;
 
-    Environment::iterator m_getStatesOfAllPlayersIterator;
-    Environment::iterator m_getStatesOfAllAudiencesIterator;
 };
 
 #endif
