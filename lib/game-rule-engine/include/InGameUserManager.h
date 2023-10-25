@@ -22,13 +22,10 @@ class InGameUserManager {
     void addNewAudience(uint32_t userID, Environment audienceStates);
 
     // Do we want to keep track of states belonging to a Player that has left a game?
-    void deletePlayer(uint32_t userID);
-    void deleteAudience(uint32_t userID);
+    void deleteUser(uint32_t userID);
 
     // Get a specific user's states from their corresponding map.
-    std::map<uint32_t, Environment>::iterator getStatesOfPlayer(uint32_t userID);
-    std::map<uint32_t, Environment>::iterator getStatesOfAudience(uint32_t userID);
-    
+    Environment getStatesOfUser(uint32_t userID);
     std::map<uint32_t, Environment> getStatesOfAllPlayers();
     std::map<uint32_t, Environment> getStatesOfAllAudiences();
 
