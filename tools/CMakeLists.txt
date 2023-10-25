@@ -12,3 +12,6 @@ target_link_libraries(main
 install(TARGETS main
     RUNTIME DESTINATION bin
 )
+
+add_subdirectory(server)
+add_subdirectory(client-ncurses)
