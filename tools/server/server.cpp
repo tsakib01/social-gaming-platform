@@ -7,6 +7,7 @@
 
 
 #include "Server.h"
+#include "UserManager.h"
 
 #include <fstream>
 #include <iostream>
@@ -22,7 +23,6 @@ using networking::Message;
 
 
 std::vector<Connection> clients;
-
 
 void
 onConnect(Connection c) {
@@ -98,6 +98,8 @@ main(int argc, char* argv[]) {
   const unsigned short port = std::stoi(argv[1]);
   Server server{port, getHTTPMessage(argv[2]), onConnect, onDisconnect};
 
+  UserManager userManager;
+  
   while (true) {
     bool errorWhileUpdating = false;
     try {
@@ -109,6 +111,15 @@ main(int argc, char* argv[]) {
 
     const auto incoming = server.receive();
     const auto [log, shouldQuit] = processMessages(server, incoming);
+
+    // Add to userManager
+    if (clients.size() > 0) { 
+      for (auto client : clients) {
+         userManager.addUser(client);
+      }
+      clients.clear();
+    }
+
     const auto outgoing = buildOutgoing(log);
     server.send(outgoing);
 

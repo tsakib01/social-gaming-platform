@@ -3,37 +3,71 @@
 #include <iostream>
 
 void 
-UserManager::addUser(uint32_t userID, std::string_view username) {
-    auto iterator = std::find_if(users.begin(), users.end(), 
-                                [userID] (const User& user) { return user.userID == userID; });
+UserManager::addUser(Connection userID) {
+    auto it = std::find_if(users.begin(), users.end(), [userID](const User& user) {
+        return user.userID == userID;
+    });
 
-    if(iterator == users.end()) { users.emplace_back(User{userID, username, Role::NONE, 0}); }
-    else std::cout << "User with " << userID << " already exists." << std::endl;
+    if (it == users.end()) {
+        users.emplace_back(User{userID});
+    } else {
+        throw std::runtime_error("Adding a user that already exists.");
+    }
 }
 
 void 
-UserManager::setRole(uint32_t userID, Role role) {
-    auto iterator = std::find_if(users.begin(), users.end(), 
-                                [userID] (const User& user) { return user.userID == userID; });
+UserManager::setUserName(Connection userID, std::string_view username) {
+    auto it = std::find_if(users.begin(), users.end(), [userID](const User& user) {
+        return user.userID == userID;
+    });
+
+    it->username = username;
+}
+
+void 
+UserManager::setUserRole(Connection userID, Role role) {
+    auto it = std::find_if(users.begin(), users.end(), [userID] (const User& user) { 
+        return user.userID == userID; 
+    });
     
-    if(iterator != users.end()) { iterator->role = role; }
-    else std::cout << "User with " << userID << " doesn't exist." << std::endl;
+    it->role = role;
+}
+
+void
+UserManager::setUserRoomCode(Connection userID, uint8_t roomCode) {
+    auto it = std::find_if(users.begin(), users.end(), [userID](const User& user) {
+        return user.userID == userID;
+    });
+
+    it->roomCode = roomCode;
 }
 
 void 
-UserManager::setRoom(uint32_t userID, uint8_t roomCode) {
-    auto iterator = std::find_if(users.begin(), users.end(), 
-                                [userID] (const User& user) { return user.userID == userID; });
+UserManager::removeUser(Connection userID) {
+    auto it = std::remove_if(users.begin(), users.end(), [userID] (const User& user) { 
+        return user.userID == userID; 
+    });
+
+    users.erase(it, users.end());
+}
+
+std::vector<User>
+UserManager::getUsersInGame(Connection userID) {
+    std::vector<User> usersInGame;
     
-    if(iterator != users.end()) { iterator->roomCode = roomCode; }
-    else std::cout << "User with " << userID << " doesn't exist." << std::endl;
+    uint8_t userRoomCode = getUserGameCode(userID);
+    std::copy_if(users.begin(), users.end(), std::back_inserter(usersInGame), [userRoomCode] (const User& user) {
+        return user.roomCode == userRoomCode;
+    });
+    
+    return usersInGame;
 }
 
-void 
-UserManager::removeUser(uint32_t userID) {
-    auto iterator = std::remove_if(users.begin(), users.end(), 
-                                    [userID] (const User& user) { return user.userID == userID; });
+uint8_t
+UserManager::getUserGameCode(Connection userID) {
+    auto it = std::find_if(users.begin(), users.end(), [userID](const User& user) {
+        return user.userID == userID;
+    });
 
-    users.erase(iterator, users.end());
+    return it->roomCode;
 }
-

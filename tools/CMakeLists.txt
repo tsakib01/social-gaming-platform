@@ -13,5 +13,5 @@ install(TARGETS main
     RUNTIME DESTINATION bin
 )
 
-add_subdirectory(server)
 add_subdirectory(client-ncurses)
+add_subdirectory(server)

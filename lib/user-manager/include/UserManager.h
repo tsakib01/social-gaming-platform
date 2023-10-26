@@ -5,28 +5,33 @@
 #include <vector>
 #include <string_view>
 #include <cstdint>
+#include "Server.h"
+
+using networking::Connection;
 
 enum class Role : char {
     OWNER, PLAYER, AUDIENCE, NONE
 };
 
 struct User {
-    uint32_t userID;
+    Connection userID;
     std::string_view username;
     Role role;
     uint8_t roomCode;
 
-    User(uint32_t userID, std::string_view username, Role role, uint8_t roomCode) : 
-        userID{userID}, username{username}, role{role}, roomCode{roomCode} {}; 
+    User(Connection userID) : userID{userID} {};
 };
 
 class UserManager {
 public:
     UserManager() {};
-    void addUser(uint32_t userID, std::string_view username);
-    void setRole(uint32_t userID, Role role);
-    void setRoom(uint32_t userID, uint8_t roomCode);
-    void removeUser(uint32_t userID);
+    void addUser(Connection userID);
+    void setUserName(Connection userID, std::string_view username);
+    void setUserRole(Connection userID, Role role);
+    void setUserRoomCode(Connection userID, uint8_t roomCode);
+    void removeUser(Connection userID);
+    std::vector<User> getUsersInGame(Connection userID);
+    uint8_t getUserGameCode(Connection userID);
 
 private:
     std::vector<User> users;
