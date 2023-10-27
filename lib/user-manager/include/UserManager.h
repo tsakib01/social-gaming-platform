@@ -35,6 +35,7 @@ public:
 
 private:
     std::vector<User> users;
+    std::vector<User>::iterator findUserByID(Connection userID);
 };
 
 #endif
