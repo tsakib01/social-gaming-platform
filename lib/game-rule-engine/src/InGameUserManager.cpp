@@ -17,15 +17,13 @@
         assert(InGameUserManager::m_userStates.erase({userID}) != 0); 
     }
 
+    // Ref: https://www.javatpoint.com/post/cpp-map-find-function
     Environment InGameUserManager::getStatesOfUser(uint32_t userID, Role role){
-        std::map<uint32_t, std::map<Role, Environment>>::iterator statesIteratorByID;
-        std::map<Role, Environment>::iterator statesIteratorByRole;
-        statesIteratorByID = m_userStates.find(userID);
-        assert(statesIteratorByID != m_userStates.end());
-        std::map<Role, Environment> statesToGet = statesIteratorByID -> second;
-        statesIteratorByRole = statesToGet.find(role);
-        assert(statesIteratorByRole != statesToGet.end());
-        return statesIteratorByRole -> second;
+        auto iterator = m_userStates.find(userID);
+        assert(iterator != m_userStates.end());
+        std::map<Role, Environment> statesToGet = iterator -> second;
+        assert(statesToGet.find(role) != statesToGet.end());
+        return statesToGet[role];
     }
     
     // Recall that m_userStates is of type std::map<uint32_t, std::map<Role, Environment>>

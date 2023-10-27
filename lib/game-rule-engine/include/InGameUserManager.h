@@ -23,7 +23,7 @@ class InGameUserManager {
     private:
     ~InGameUserManager();
     std::map<uint32_t, std::map<Role, Environment>> m_userStates;
-    
+
 };
 
 #endif
