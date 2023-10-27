@@ -7,6 +7,7 @@
 #include <algorithm>
 #include "GameState.h"
 #include "GameRules.h"
+#include "GameSetup.h"
 #include <iostream>
 
 class GameConfigLoader {
@@ -21,7 +22,9 @@ public:
     // Creates a GameState for a GameInstance
     // Transfers ownership of state to a GameInstance
     [[nodiscard]] std::unique_ptr<GameState> 
-    createGameState(); 
+    createGameState();
+    [[nodiscard]] std::unique_ptr<GameSetup>
+    createGameSetup();
 private:
     // TODO: Move handling of loading constants into loadGameState
     // void loadConstants(const ts::Node& root);
