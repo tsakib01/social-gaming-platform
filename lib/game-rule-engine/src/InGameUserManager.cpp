@@ -1,56 +1,40 @@
 #include "InGameUserManager.h"
 #include <cassert>
 
-    void InGameUserManager::addNewPlayer(uint32_t userID, Environment playerStates){
-        InGameUserManager::m_playerStates.insert({userID, playerStates});
-    }
-
-    void InGameUserManager::addNewAudience(uint32_t userID, Environment audienceStates){
-        InGameUserManager::m_audienceStates.insert({userID, audienceStates});
+    // Assume the role is passed as an Enum (stored within UserManager).
+    void InGameUserManager::addNewUser(uint32_t userID, Role role, Environment userStates){
+        std::map<Role, Environment> userStartingStates;
+        userStartingStates.insert({role, userStates});
+        InGameUserManager::m_userStates.insert({userID, userStartingStates});
     }
 
     void InGameUserManager::deleteUser(uint32_t userID){
         // erase returns 0 if something was not erased.
         // If assert failed, that means the user already doesn't exist in this game
         // which should never happen if this is called.
-        assert(InGameUserManager::m_playerStates.erase({userID}) != 0 && 
-        InGameUserManager::m_audienceStates.erase({userID}) != 0);
+        assert(InGameUserManager::m_userStates.erase({userID}) != 0); 
     }
 
-    void InGameUserManager::setStatesOfUser(uint32_t userID, Environment states){
-        std::map<uint32_t, Environment>::iterator m_getStatesOfAllPlayersIterator;
-        std::map<uint32_t, Environment>::iterator m_getStatesOfAllAudiencesIterator;
-        m_getStatesOfAllPlayersIterator = m_playerStates.find(userID);
-        m_getStatesOfAllAudiencesIterator = m_audienceStates.find(userID);
-        assert(m_getStatesOfAllPlayersIterator != m_playerStates.end()
-        || m_getStatesOfAllAudiencesIterator != m_audienceStates.end());
+    Environment InGameUserManager::getStatesOfUser(uint32_t userID, Role role){
+        std::map<uint32_t, std::map<Role, Environment>>::iterator statesIteratorByID;
+        std::map<Role, Environment>::iterator statesIteratorByRole;
 
-        if (m_getStatesOfAllPlayersIterator != m_playerStates.end()){
-            m_playerStates[userID] = states;
-        } else {
-            m_audienceStates[userID] = states;
-        }
+        statesIteratorByID = m_userStates.find(userID);
+        assert(statesIteratorByID != m_userStates.end());
+        std::map<Role, Environment> statesToGet = statesIteratorByID -> second;
+        statesIteratorByRole = statesToGet.find(role);
+        assert(statesIteratorByRole != statesToGet.end());
+        return statesIteratorByRole -> second;
     }
+    // Change what is mapped to using the role.
+    void InGameUserManager::setStatesOfUser(uint32_t userID, Role role, Environment states){
 
-    Environment InGameUserManager::getStatesOfUser(uint32_t userID){
-        std::map<uint32_t, Environment>::iterator m_getStatesOfAllPlayersIterator;
-        std::map<uint32_t, Environment>::iterator m_getStatesOfAllAudiencesIterator;
-        m_getStatesOfAllPlayersIterator = m_playerStates.find(userID);
-        m_getStatesOfAllAudiencesIterator = m_audienceStates.find(userID);
-        assert(m_getStatesOfAllPlayersIterator != m_playerStates.end()
-        || m_getStatesOfAllAudiencesIterator != m_audienceStates.end());
+        // Recall that m_userStates is of type std::map<uint32_t, std::map<Role, Environment>>
+        std::map<uint32_t, std::map<Role, Environment>>::iterator statesIteratorByID;
+        statesIteratorByID = m_userStates.find(userID);
 
-        // Instead of returning a whole iterator, return the second value which is just the states.
-        if(m_getStatesOfAllPlayersIterator != m_playerStates.end()){
-            return m_getStatesOfAllPlayersIterator->second;
-        }
-        return m_getStatesOfAllAudiencesIterator->second;
-    }
-    
-    std::map<uint32_t, Environment> InGameUserManager::getStatesOfAllPlayers(){
-        return m_playerStates;
-    }
-
-    std::map<uint32_t, Environment> InGameUserManager::getStatesOfAllAudiences(){
-        return m_audienceStates;
+        // Create a new map to replace the existing one that the User ID maps to.
+        std::map<Role, Environment> statesToSet;
+        statesToSet.insert({role, states});
+        m_userStates[userID] = statesToSet;
     }
