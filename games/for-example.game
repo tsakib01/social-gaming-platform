@@ -9,7 +9,7 @@ constants {
     "Naoto", "Michael", "Victor", "Ray", "Tosrif", "Allan", "Bryan", "Jack"
   ],
   names_copy: [
-    "Naoto", "Michael", "Victor", "Ray", "Tosrif", "Allan", "Bryan", "Jack"
+    "Naoto", "Michael", "Victor", "Ray", "Tosrif", "Allan", "Bryan", "Jack", ["Naoto", "Naoto2", true], [1, 2, 3], {hello: "yay!"}
   ],
   value:  "naoto",
   x:  10,

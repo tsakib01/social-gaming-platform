@@ -8,7 +8,6 @@
 #include "GameState.h"
 #include "GameRules.h"
 #include "GameSetup.h"
-#include <iostream>
 
 class GameConfigLoader {
 public:

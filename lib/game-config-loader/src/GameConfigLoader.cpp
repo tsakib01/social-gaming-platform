@@ -1,6 +1,6 @@
 #include "GameConfigLoader.h"
 #include "RuleInterpreter.h"
-#include "GameState.h"
+#include "GameEnvironment.h"
 #include "GameStateLoader.h"
 #include "GameSetup.h"
 #include "GameSetupLoader.h"
@@ -35,7 +35,7 @@ GameConfigLoader::createGameRules() {
 std::unique_ptr<GameState>
 GameConfigLoader::createGameState() {
     auto gameStateLoader = std::make_shared<GameStateLoader>(m_source);
-    auto gameState = std::make_unique<GameState>(gameStateLoader);
+    auto gameState = std::make_unique<GameState>();
     ts::Language language = tree_sitter_socialgaming();
     ts::Parser parser{language};
 
@@ -46,8 +46,9 @@ GameConfigLoader::createGameState() {
     }
 
     ts::Node root = tree.getRootNode();
-    gameState->addEnvironment(root.getChildByFieldName("constants").getNamedChild(0));
-    gameState->addEnvironment(root.getChildByFieldName("variables").getNamedChild(0));
+    gameState->addEnvironment(gameStateLoader->getEnvironment(root.getChildByFieldName("constants").getNamedChild(0)));
+    gameState->addEnvironment(gameStateLoader->getEnvironment(root.getChildByFieldName("variables").getNamedChild(0)));
+    gameState->print();
     return gameState;
 }
 

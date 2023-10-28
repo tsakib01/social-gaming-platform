@@ -32,67 +32,80 @@ bool GameStateLoader::isMap(const ts::Node& node){
     return symbol == SYMBOL::MAP;
 }
 
-Primitive GameStateLoader::convertNodeToPrimitive(const ts::Node& node){
-    Primitive toReturn;
+std::unique_ptr<GameEnvironment::Value> GameStateLoader::convertNodeToValue(const ts::Node& node){
+    auto value = std::make_unique<GameEnvironment::Value>(); 
+    if (isPrimitive(node)){  
+        value = convertNodeToPrimitive(node);
+    }
+    else if (isList(node)){
+        value = convertNodeToList(node);
+    }
+    else if (isMap(node)){
+        value = convertNodeToMap(node);
+    }
+    else{
+        std::runtime_error("Not supported type");
+    }
+    return value;
+}
+
+std::unique_ptr<GameEnvironment::Value> GameStateLoader::convertNodeToPrimitive(const ts::Node& node){
+    auto toReturn = std::make_unique<GameEnvironment::Value>();
     if (node.getSymbol() == SYMBOL::NUMBER){
-        toReturn = std::stoi(std::string(node.getSourceRange(source)));
+        toReturn->value = std::stoi(std::string(node.getSourceRange(source)));
     }
     else if (node.getSymbol() == SYMBOL::BOOL){
         std::string upperCaseString(node.getSourceRange(source));
         std::transform(upperCaseString.begin(), upperCaseString.end(), upperCaseString.begin(), ::toupper);
-        toReturn = (upperCaseString == "TRUE");
+        toReturn->value = (upperCaseString == "TRUE");
     }
     else if (node.getSymbol() == SYMBOL::STRING){
-        toReturn = node.getSourceRange(source);
+        toReturn->value = node.getSourceRange(source);
     }
     return toReturn;
 }
 
-List GameStateLoader::convertNodeToList(const ts::Node& node){
+std::unique_ptr<GameEnvironment::Value> GameStateLoader::convertNodeToList(const ts::Node& node){
     ts::Node listNode = node.getNamedChild(0);
-    std::vector<std::variant<Primitive, Map>> toReturn;
+    auto toReturn = std::make_unique<GameEnvironment::Value>();
+    
     if(listNode.isNull()) {
         return toReturn;
     }
+    
+    auto list = std::make_unique<GameEnvironment::List>();
     for (uint32_t i = 0; i < listNode.getNumNamedChildren(); i++){
         ts::Node elementNode = listNode.getNamedChild(i).getNamedChild(0);
-        std::variant<Primitive, Map> element; 
-        if (isPrimitive(elementNode)){  
-            element = convertNodeToPrimitive(elementNode);
-        }else if (isMap(elementNode)){
-            element = convertNodeToMap(elementNode);
-        }else{
-            std::runtime_error("Not supported type");
-        }
-        toReturn.push_back(element);
+        auto value = convertNodeToValue(elementNode);
+        list->value.push_back(std::move(value));
     }
+    toReturn->value = std::move(list);
     return toReturn;
 }
 
-Map GameStateLoader::convertNodeToMap(const ts::Node& node){
-    std::map<std::string_view, Primitive> toReturn;
+std::unique_ptr<GameEnvironment::Value> GameStateLoader::convertNodeToMap(const ts::Node& node){
+    auto toReturn = std::make_unique<GameEnvironment::Value>();
+
+    auto map = std::make_unique<GameEnvironment::Map>();
+
     for (uint32_t i = 0; i < node.getNumNamedChildren(); i++){
         ts::Node mapEntry = node.getNamedChild(i);
         ts::Node identifierNode = mapEntry.getNamedChild(0);
         ts::Node valueNode = mapEntry.getNamedChild(1);
 
         // Convert an identifier of a node to string 
-        std::string_view identifier = identifierNode.getSourceRange(source);
+        GameEnvironment::Identifier identifier = identifierNode.getSourceRange(source);
         ts::Node value = valueNode.getNamedChild(0);
-        Primitive toStore;
-        if (isPrimitive(value)){
-            toStore = convertNodeToPrimitive(value);
-        }
-        else{
-            std::runtime_error("Not supported type");
-        }
-        toReturn.insert(std::make_pair(identifier, toStore));
+        auto toStore = convertNodeToValue(value);
+        map->value.insert(std::make_pair(identifier, std::move(toStore)));
     }
+    
+    toReturn->value = std::move(map);
     return toReturn;
 }
 
-std::unique_ptr<Environment> GameStateLoader::getEnvironment(const ts::Node& root){
-    std::unique_ptr<Environment> environment = std::make_unique<Environment>();
+std::unique_ptr<GameEnvironment::Environment> GameStateLoader::getEnvironment(const ts::Node& root){
+    std::unique_ptr<GameEnvironment::Environment> environment = std::make_unique<GameEnvironment::Environment>();
 
     // Loop each map entry
     for (uint32_t i = 0; i < root.getNumNamedChildren(); i++){
@@ -105,20 +118,8 @@ std::unique_ptr<Environment> GameStateLoader::getEnvironment(const ts::Node& roo
         std::string_view identifier = identifierNode.getSourceRange(source);
 
         ts::Node value = valueNode.getNamedChild(0);
-        Value toStore;
-        if (isPrimitive(value)){
-            toStore = convertNodeToPrimitive(value);
-        }
-        else if (value.getSymbol() == SYMBOL::LIST){
-            toStore = convertNodeToList(value);
-        }
-        else if (value.getSymbol() == SYMBOL::MAP){
-            toStore = convertNodeToMap(value);
-        }
-        else{
-            std::runtime_error("Not supported type");
-        }
-        environment->insert(std::make_pair(identifier, toStore));
+        auto toStore = convertNodeToValue(value);
+        environment->insert(std::make_pair(identifier, std::move(toStore)));
     }
     return environment;
 }

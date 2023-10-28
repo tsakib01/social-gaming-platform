@@ -1,21 +1,20 @@
 #ifndef GAME_STATE
 #define GAME_STATE
 
-#include "GameStateLoader.h"
+#include "GameEnvironment.h"
 #include <string_view>
 #include <variant>
 #include <map>
 
 class GameState{
 public:
-    GameState(std::shared_ptr<GameStateLoader> gameStateLoader);
-    void addEnvironment(ts::Node root);
-    void addState(Identifier identifier, Value value);
-    void updateState(Identifier identifier, Value value);
-    Value getData(Identifier identifier);
+    GameState();
+    void addEnvironment(std::unique_ptr<GameEnvironment::Environment> newEnvironment);
+    void addState(GameEnvironment::Identifier identifier, std::unique_ptr<GameEnvironment::Value> value);
+    void updateState(GameEnvironment::Identifier identifier, std::unique_ptr<GameEnvironment::Value> value);
+    //GameEnvironment::Value& getValue(GameEnvironment::Identifier identifier);
     void print();
 private:
-    std::unique_ptr<Environment> environment;
-    std::shared_ptr<GameStateLoader> gameStateLoader;
+    std::unique_ptr<GameEnvironment::Environment> environment;
 };
 #endif
