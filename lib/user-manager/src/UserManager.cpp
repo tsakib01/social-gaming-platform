@@ -2,41 +2,50 @@
 
 #include <iostream>
 
-void 
+bool 
 UserManager::addUser(Connection userID) {
     auto it = findUserByID(userID);
 
     if (it == users.end())
         users.emplace_back(User{userID});
     else
-        throw std::runtime_error("Adding a user that already exists.");
+        return false;
+
+    return true;
 }
 
-void 
+bool 
 UserManager::setUserName(Connection userID, std::string_view username) {
     auto it = findUserByID(userID);
+    if (it == users.end()) return false;
     it->username = username;
+    return true;
 }
 
-void 
+bool 
 UserManager::setUserRole(Connection userID, Role role) {
     auto it = findUserByID(userID);    
+    if (it == users.end()) return false;
     it->role = role;
+    return true;
 }
 
-void
+bool
 UserManager::setUserRoomCode(Connection userID, uint8_t roomCode) {
     auto it = findUserByID(userID);
+    if (it == users.end()) return false;
     it->roomCode = roomCode;
+    return true;
 }
 
-void 
+bool 
 UserManager::removeUser(Connection userID) {
     auto it = std::remove_if(users.begin(), users.end(), [userID] (const User& user) { 
         return user.userID == userID; 
     });
-
+    if (it == users.end()) return false;
     users.erase(it, users.end());
+    return true;
 }
 
 std::vector<User>

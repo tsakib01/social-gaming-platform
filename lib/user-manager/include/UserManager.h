@@ -25,11 +25,11 @@ struct User {
 class UserManager {
 public:
     UserManager() {};
-    void addUser(Connection userID);
-    void setUserName(Connection userID, std::string_view username);
-    void setUserRole(Connection userID, Role role);
-    void setUserRoomCode(Connection userID, uint8_t roomCode);
-    void removeUser(Connection userID);
+    bool addUser(Connection userID);
+    bool setUserName(Connection userID, std::string_view username);
+    bool setUserRole(Connection userID, Role role);
+    bool setUserRoomCode(Connection userID, uint8_t roomCode);
+    bool removeUser(Connection userID);
     std::vector<User> getUsersInGame(Connection userID);
     uint8_t getUserGameCode(Connection userID);
 
