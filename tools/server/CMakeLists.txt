@@ -13,6 +13,7 @@ find_package(Threads REQUIRED)
 
 target_link_libraries(server
   userManager
+  gameInstanceManager
   networking
   ${CMAKE_THREAD_LIBS_INIT}
 )

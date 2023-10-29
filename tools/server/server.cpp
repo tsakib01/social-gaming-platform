@@ -8,6 +8,7 @@
 
 #include "Server.h"
 #include "UserManager.h"
+#include "GameInstanceManager.h"
 
 #include <fstream>
 #include <iostream>
@@ -99,6 +100,7 @@ main(int argc, char* argv[]) {
   Server server{port, getHTTPMessage(argv[2]), onConnect, onDisconnect};
 
   UserManager userManager;
+  GameInstanceManager gameInstanceManager;
   
   while (true) {
     bool errorWhileUpdating = false;
