@@ -46,3 +46,13 @@ Run all tests.
 ```
 ./bin/runAllTests
 ```
+
+## Run the Server
+From within the build directory, after running make, run the `server` executable
+```
+./bin/server 8000 ../social-gaming/webchat.html
+```
+To add clients to join, run the `client` executable
+```
+./bin/client-ncurses localhost 8000
+```

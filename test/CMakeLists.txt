@@ -7,7 +7,10 @@ find_package(GTest REQUIRED)
 
 enable_testing()
 
-add_executable(runAllTests expressionTests.cpp)
+add_executable(runAllTests 
+    expressionTests.cpp
+)
+
 target_link_libraries(runAllTests
     GTest::gtest_main
     expression
