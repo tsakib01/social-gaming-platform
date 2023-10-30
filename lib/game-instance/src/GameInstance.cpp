@@ -52,6 +52,6 @@ GameInstance::getRoomCode() {
 }
 
 void 
-GameInstance::insertUsers(std::vector<User> users) {
+GameInstance::insertUsers(std::vector<std::shared_ptr<User>> users) {
     m_users = users;
 }

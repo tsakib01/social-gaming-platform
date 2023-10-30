@@ -17,7 +17,7 @@ public:
     bool gameIsFinished();
     uint16_t getRoomCode();
 
-    void insertUsers(std::vector<User> users);
+    void insertUsers(std::vector<std::shared_ptr<User>> users);
 
 private:
     std::shared_ptr<GameRules> m_gameRules;
@@ -25,7 +25,7 @@ private:
     std::stack<std::shared_ptr<RuleNode>> instructionStack;
     uint16_t m_roomCode;
 
-    std::vector<User> m_users;
+    std::vector<std::shared_ptr<User>> m_users;
 };
 
 #endif

@@ -20,7 +20,7 @@ public:
     void finishGame();
     void runCycle();
     
-    void insertUsersIntoGame(std::vector<User> users, uint16_t roomCode);
+    void insertUsersIntoGame(std::vector<std::shared_ptr<User>> users, uint16_t roomCode);
 
 private:
     std::vector<std::unique_ptr<GameInstance>> m_activeGameList;
