@@ -3,8 +3,8 @@
 #include "RuleNode.h"
 
 GameInstance::GameInstance(std::shared_ptr<GameRules> gameRules, 
-std::unique_ptr<GameState> gameState, int inviteCode)
-    : m_gameRules(gameRules), m_gameState(std::move(gameState)), m_inviteCode(inviteCode)
+std::unique_ptr<GameState> gameState, int roomCode)
+    : m_gameRules(gameRules), m_gameState(std::move(gameState)), m_roomCode(roomCode)
 {
     const std::shared_ptr<RuleNode> rulesRoot = gameRules->getRules();
     instructionStack.push(rulesRoot);
@@ -46,7 +46,12 @@ GameInstance::gameIsFinished() {
     return false;
 }
 
-int 
-GameInstance::getInviteCode() {
-    return m_inviteCode;
+uint16_t 
+GameInstance::getRoomCode() {
+    return m_roomCode;
+}
+
+void 
+GameInstance::insertUsers(std::vector<User> users) {
+    m_users = users;
 }

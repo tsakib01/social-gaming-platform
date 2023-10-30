@@ -17,7 +17,7 @@ struct User {
     Connection userID;
     std::string_view username;
     Role role;
-    uint8_t roomCode;
+    uint16_t roomCode;
 
     User(Connection userID) : userID{userID} {};
 };
@@ -28,10 +28,10 @@ public:
     bool addUser(Connection userID);
     bool setUserName(Connection userID, std::string_view username);
     bool setUserRole(Connection userID, Role role);
-    bool setUserRoomCode(Connection userID, uint8_t roomCode);
+    bool setUserRoomCode(Connection userID, uint16_t roomCode);
     bool removeUser(Connection userID);
     std::vector<User> getUsersInGame(Connection userID);
-    uint8_t getUserGameCode(Connection userID);
+    uint16_t getUserRoomCode(Connection userID);
 
 private:
     std::vector<User> users;

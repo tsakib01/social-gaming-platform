@@ -12,13 +12,14 @@ public:
     GameInstanceManager();
     ~GameInstanceManager() {};
 
-    int generateInviteCode();
-    void sendInviteCode();
+    uint16_t generateRoomCode();
     void createGameInstance(std::string_view gameFilePath);
 
     void startGame();
     void finishGame();
     void runCycle();
+    
+    void insertUsersIntoGame(std::vector<User> users, uint16_t roomCode);
 
 private:
     std::vector<std::unique_ptr<GameInstance>> m_activeGameList;
