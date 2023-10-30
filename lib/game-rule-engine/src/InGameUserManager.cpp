@@ -5,8 +5,9 @@
     void InGameUserManager::addNewUser(uint32_t userID, Role role, Environment userStates){
         // Have to make a new map which will be inserted as the value.
         // Might it be possible for Role and Environment to be passed in the arguments as a map?
-        std::map<Role, Environment> userStartingStates;
-        userStartingStates.insert({role, userStates});
+        std::pair<Role, Environment> userStartingStates;
+        userStartingStates.first = role;
+        userStartingStates.second = userStates;
         InGameUserManager::m_userStates.insert({userID, userStartingStates});
     }
 
@@ -21,15 +22,15 @@
     Environment InGameUserManager::getStatesOfUser(uint32_t userID, Role role){
         auto iterator = m_userStates.find(userID);
         assert(iterator != m_userStates.end());
-        std::map<Role, Environment> statesToGet = iterator -> second;
-        assert(statesToGet.find(role) != statesToGet.end());
-        return statesToGet[role];
+        std::pair<Role, Environment> statesToGet = iterator -> second;
+        return statesToGet.second;
     }
     
     // Recall that m_userStates is of type std::map<uint32_t, std::map<Role, Environment>>
     // Create a new map to replace the existing one that the User ID maps to.
     void InGameUserManager::setStatesOfUser(uint32_t userID, Role role, Environment states){
-        std::map<Role, Environment> statesToSet;
-        statesToSet.insert({role, states});
-        m_userStates[userID] = statesToSet;
+        std::pair<Role, Environment> statesToSet;
+        statesToSet.first = role;
+        statesToSet.second = states;
+        InGameUserManager::m_userStates.insert({userID, statesToSet});
     }

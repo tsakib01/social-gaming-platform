@@ -6,7 +6,7 @@
 #include <variant>
 #include "GameStateLoader.h"
 
-enum Role {Player, Audience, Owner};
+enum class Role {Player, Audience, Owner};
 
 class InGameUserManager {
 
@@ -22,7 +22,7 @@ class InGameUserManager {
 
     private:
     ~InGameUserManager();
-    std::map<uint32_t, std::map<Role, Environment>> m_userStates;
+    std::map<uint32_t, std::pair<Role, Environment>> m_userStates;
 
 };
 
