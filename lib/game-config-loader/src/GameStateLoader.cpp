@@ -5,6 +5,7 @@
 #include<algorithm>
 #include <queue>
 
+// symbol for node that represents a data type in ts::Node
 namespace SYMBOL{
     const int NUMBER = 81;
     const int STRING = 84;
@@ -79,13 +80,13 @@ std::unique_ptr<GameEnvironment::Value> GameStateLoader::convertNodeToList(const
         auto value = convertNodeToValue(elementNode);
         list->value.push_back(std::move(value));
     }
+    
     toReturn->value = std::move(list);
     return toReturn;
 }
 
 std::unique_ptr<GameEnvironment::Value> GameStateLoader::convertNodeToMap(const ts::Node& node){
     auto toReturn = std::make_unique<GameEnvironment::Value>();
-
     auto map = std::make_unique<GameEnvironment::Map>();
 
     for (uint32_t i = 0; i < node.getNumNamedChildren(); i++){

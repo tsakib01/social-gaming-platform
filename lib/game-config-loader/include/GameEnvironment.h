@@ -8,7 +8,14 @@
 #include<vector>
 #include <memory>
 
+/**
+ * This namespace represents an environment in the game state.
+ * Environment is a map which maps from identifier to the value.
+ * Value must be either an Integer, a string, bool, a map or a list.
+ * Map and List can contain anything valid Value can contain.
+*/
 namespace GameEnvironment{
+    // Identifier of value
     using Identifier = std::string_view;
 
     class Value;
@@ -18,15 +25,13 @@ namespace GameEnvironment{
         ~Map(){};
     };
 
-
     class Value;
     class List{
     public:
         std::vector<std::unique_ptr<Value>> value;
         ~List(){};
     };
-
-
+    
     class Value{
     public:
         std::variant<int, bool, std::string_view, std::unique_ptr<Map>, std::unique_ptr<List>> value;

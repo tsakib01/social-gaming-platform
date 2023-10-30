@@ -46,6 +46,7 @@ GameConfigLoader::createGameState() {
     }
 
     ts::Node root = tree.getRootNode();
+    // Add constants and variables fields to game state.
     gameState->addEnvironment(gameStateLoader->getEnvironment(root.getChildByFieldName("constants").getNamedChild(0)));
     gameState->addEnvironment(gameStateLoader->getEnvironment(root.getChildByFieldName("variables").getNamedChild(0)));
     gameState->print();

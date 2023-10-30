@@ -8,6 +8,10 @@
 #include "GameEnvironment.h"
 #include <cpp-tree-sitter.h>
 
+/**
+ * This class takes a root of filed's ts::Node and converts it to GameEnvironment::Environment
+ * Currently, it can support variables, constants, per-player and per-audience fields.
+*/
 class GameStateLoader{
 private:
     std::string_view source;
