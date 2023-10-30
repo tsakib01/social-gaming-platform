@@ -6,6 +6,7 @@
 #include <random>
 #include "GameInstance.h"
 #include "GameConfigLoader.h"
+#include "UserManager.h"
 
 class GameInstanceManager {
 public:

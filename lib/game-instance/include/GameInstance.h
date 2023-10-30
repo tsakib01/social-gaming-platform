@@ -4,6 +4,7 @@
 #include "RuleInterpreter.h"
 #include "GameRules.h"
 #include "GameState.h"
+#include "UserManager.h"
 #include <stack>
 #include <iostream>
 
@@ -16,7 +17,7 @@ public:
     bool gameIsFinished();
     uint16_t getRoomCode();
 
-    void insertUsers(vector<User> users);
+    void insertUsers(std::vector<User> users);
 
 private:
     std::shared_ptr<GameRules> m_gameRules;
