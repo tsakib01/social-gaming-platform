@@ -12,3 +12,7 @@ target_include_directories(userManager
 install(TARGETS userManager
     ARCHIVE DESTINATION lib
 )
+
+target_link_libraries(userManager
+  networking
+)
