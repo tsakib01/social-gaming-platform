@@ -9,11 +9,6 @@
 #include <map>
 #include "Expresssion.h"
 
-/// The types of an input that can be prompted for
-enum class InputType {
-    CHOICE
-};
-
 /// A rule interface that represents a control flow statement in the game config
 class Rule {};
 
@@ -69,10 +64,9 @@ public:
     const BodyRule* body;
 };
 
-/// A rule that represents a prompt for input from a player
-class InputRule : public Rule {
+/// A rule that represents a prompt for a choice styled input from a player
+class InputChoiceRule : public Rule {
 public:
-    InputType inputType;
     /// An IdentifierExpression that evaluates to the player to prompt for input
     const IdentifierExpression* to;
     /// The prompt to display to the player
