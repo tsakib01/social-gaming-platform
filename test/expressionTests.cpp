@@ -14,39 +14,39 @@ void assertListValuePrimitive(List::value_type value, T expected) {
 }
 
 TEST(ExpressionTests, CreateConstIntExpression) {
-  auto expr = Expression::createConstExpr(5);
-  auto value = expr->getValue();
+  auto expr = LiteralExpression(5);
+  auto value = expr.value;
   assertPrimitiveValue(value, 5);
 }
 
 TEST(ExpressionTests, CreateConstBoolExpression) {
-  auto trueExpr = Expression::createConstExpr(true);
-  auto value = trueExpr->getValue();
+  auto trueExpr = LiteralExpression(true);
+  auto value = trueExpr.value;
   assertPrimitiveValue(value, true);
 
-  auto falseExpr = Expression::createConstExpr(false);
-  value = falseExpr->getValue();
+  auto falseExpr = LiteralExpression(false);
+  value = falseExpr.value;
   assertPrimitiveValue(value, false);
 }
 
 TEST(ExpressionTests, CreateConstStringExpression) {
-  auto str1 = Expression::createConstExpr<std::string_view>("test1");
-  auto value = str1->getValue();
+  auto str1 = LiteralExpression<std::string_view>("test1");
+  auto value = str1.value;
   assertPrimitiveValue(value, std::string_view("test1"));
 
   auto str2 = std::string("test2");
-  auto strExpr1 = Expression::createConstExpr<std::string_view>(str2);
-  value = strExpr1->getValue();
+  auto strExpr1 = LiteralExpression<std::string_view>(str2);
+  value = strExpr1.value;
   assertPrimitiveValue(value, std::string_view("test2"));
 
   auto str3 = "test3";
-  auto strExpr2 = Expression::createConstExpr<std::string_view>(str3);
-  value = strExpr2->getValue();
+  auto strExpr2 = LiteralExpression<std::string_view>(str3);
+  value = strExpr2.value;
   assertPrimitiveValue(value, std::string_view("test3"));
 
   std::string_view strview = "test4";
-  auto strExpr4 = Expression::createConstExpr(strview);
-  value = strExpr4->getValue();
+  auto strExpr4 = LiteralExpression(strview);
+  value = strExpr4.value;
   assertPrimitiveValue(value, std::string_view("test4"));
 }
 
@@ -57,8 +57,8 @@ TEST(ExpressionTests, CreateConstPrimitiveListExpression) {
   list.push_back(std::string_view("test"));
   auto expectedSize = list.size();
 
-  auto listExpr = Expression::createConstExpr(list);
-  auto value = listExpr->getValue();
+  auto listExpr = LiteralExpression(list);
+  auto value = listExpr.value;
 
   auto listVal = std::get<List>(value);
   ASSERT_EQ(listVal.size(), expectedSize);
@@ -84,8 +84,8 @@ TEST(ExpressionTests, CreateConstListOfMapExpression) {
   list.push_back(map2);
   auto expectedSize = list.size();
 
-  auto listExpr = Expression::createConstExpr(list);
-  auto value = listExpr->getValue();
+  auto listExpr = LiteralExpression(list);
+  auto value = listExpr.value;
 
   auto listVal = std::get<List>(value);
   ASSERT_EQ(listVal.size(), expectedSize);
@@ -108,8 +108,8 @@ TEST(ExpressionTests, CreateConstMapExpression) {
   map.insert(std::make_pair("key3", std::string_view("test")));
   auto expectedSize = map.size();
 
-  auto mapExpr = Expression::createConstExpr(map);
-  auto value = mapExpr->getValue();
+  auto mapExpr = LiteralExpression(map);
+  auto value = mapExpr.value;
 
   auto mapVal = std::get<Map>(value);
   ASSERT_EQ(mapVal.size(), expectedSize);
