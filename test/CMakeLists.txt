@@ -2,8 +2,11 @@ if (BUILD_TESTS STREQUAL OFF)
     return()
 endif()
 
-# requires GoogleTest is installed > sudo apt-get install libgtest-dev
-find_package(GTest REQUIRED)
+CPMAddPackage(
+  NAME googletest
+  GITHUB_REPOSITORY google/googletest
+  GIT_TAG release-1.12.1
+)
 
 enable_testing()
 
