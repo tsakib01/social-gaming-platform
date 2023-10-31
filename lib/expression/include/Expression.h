@@ -74,31 +74,17 @@ enum class Operator{
     PLUS, SUBTRACT, MULTIPLY, DIVISION, OR, IDENTIFIER, DOT
 };
 
-/// A constant expression that is just a value
-/// @tparam T The type of the value
-template<typename T>
-class LiteralExpression;
-
 /// An expression interface that represents a statements in the game config that can be evaluated to a value
 /// This also serves as a factory for creating Expressions
-class Expression {
-public:
-    /// Create a constant expression from a value
-    /// @param value The value to create the expression from
-    /// @return A unique pointer to the expression
-    template<typename T>
-    static std::unique_ptr<LiteralExpression<T>>
-    createConstExpr(T value) {
-        return std::make_unique<LiteralExpression<T>>(value);
-    }
-};
+class Expression {};
 
 /// A constant expression that is just a literal value
+/// @tparam T The type of the value
 /// Example: `myVar + 1` -> `1` is a LiteralExpression
 template<typename T>
 class LiteralExpression : public Expression {
 public:
-    LiteralExpression(T value) : m_value(Value(value)) {
+    LiteralExpression(T value) : value(Value(value)) {
         static_assert(
             is_contained_assignable_in<T, Value>::value,
             "Invalid type for LiteralExpression"
@@ -120,12 +106,12 @@ public:
 /// Example:  `myVar + 1` -> The entire statement is a BinaryExpression operating on two Expressions with a + operator
 class BinaryExpression : public Expression {
 public:
-    BinaryExpression(std::unique_ptr<Expression> leftOperand, std::unique_ptr<Expression> rightOperand, Operator op)
-    : leftOperand(std::move(leftOperand)), rightOperand(std::move(rightOperand)), op(op)
+    BinaryExpression(const Expression& leftOperand, const Expression& rightOperand, Operator op)
+    : leftOperand(&leftOperand), rightOperand(&rightOperand), op(op)
     {}
 
-    std::unique_ptr<Expression> leftOperand;
-    std::unique_ptr<Expression> rightOperand;
+    const Expression* leftOperand;
+    const Expression* rightOperand;
     Operator op;
 };
 
@@ -133,12 +119,12 @@ public:
 /// Example: `!myCond` -> The entire statement is a UnaryExpression operating on a single Expression with a ! operator
 class UnaryExpression : public Expression {
 public:
-    UnaryExpression(std::unique_ptr<Expression> operand, Operator op)
-    : operand(std::move(operand)), op(op)
+    UnaryExpression(const Expression& operand, Operator op)
+    : operand(&operand), op(op)
     {}
 
+    const Expression* operand;
     Operator op;
-    std::unique_ptr<Expression> operand;
 };
 
 #endif
