@@ -60,13 +60,13 @@ GameInstanceManager::runCycle() {
 }
 
 void 
-GameInstanceManager::insertUsersIntoGame(std::vector<std::shared_ptr<User>> incomingUsers, uint16_t roomCode) {
+GameInstanceManager::insertUsersIntoGame(std::vector<std::unique_ptr<User>> incomingUsers, uint16_t roomCode) {
     auto gameInstanceItr = std::find_if(m_gameList.begin(), m_gameList.end(), 
         [roomCode](const std::unique_ptr<GameInstance>& game) {
             return game->getRoomCode() == roomCode;
         });
 
     if (gameInstanceItr != m_gameList.end()) {
-        (*gameInstanceItr)->insertUsers(incomingUsers);
+        (*gameInstanceItr)->insertUsers(std::move(incomingUsers));
     }
 }
