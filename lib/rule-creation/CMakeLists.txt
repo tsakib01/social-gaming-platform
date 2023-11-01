@@ -1,5 +1,0 @@
-add_subdirectory(expression)
-add_subdirectory(game-rule-engine)
-add_subdirectory(rule)
-add_subdirectory(rule-interpreter)
-add_subdirectory(rule-node)
