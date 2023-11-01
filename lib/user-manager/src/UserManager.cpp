@@ -6,10 +6,11 @@ void
 UserManager::addUser(Connection userID) {
     auto it = findUserByID(userID);
 
-    if (it == users.end())
+    if (it == users.end()) {
         users.emplace_back(User{userID});
-    else
-        std::runtime_error("User already exists!");
+    } else {
+        throw std::runtime_error("User already exists!");
+    }
 }
 
 void 
