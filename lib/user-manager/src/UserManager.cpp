@@ -2,59 +2,50 @@
 
 #include <iostream>
 
-bool 
+void 
 UserManager::addUser(Connection userID) {
     auto it = findUserByID(userID);
 
-    if (it == users.end())
-        users.emplace_back(User{userID});
-    else
-        return false;
-
-    return true;
+    if (it == users.end()) {
+        users.emplace_back(std::make_shared<User>(userID));
+    } else {
+        throw std::runtime_error("User already exists!");
+    }
 }
 
-bool 
+void 
 UserManager::setUserName(Connection userID, std::string_view username) {
     auto it = findUserByID(userID);
-    if (it == users.end()) return false;
-    it->username = username;
-    return true;
+    (*it)->username = username;
 }
 
-bool 
+void 
 UserManager::setUserRole(Connection userID, Role role) {
-    auto it = findUserByID(userID);    
-    if (it == users.end()) return false;
-    it->role = role;
-    return true;
+    auto it = findUserByID(userID);
+    (*it)->role = role;
 }
 
-bool
+void
 UserManager::setUserRoomCode(Connection userID, uint16_t roomCode) {
     auto it = findUserByID(userID);
-    if (it == users.end()) return false;
-    it->roomCode = roomCode;
-    return true;
+    (*it)->roomCode = roomCode;
 }
 
-bool 
+void 
 UserManager::removeUser(Connection userID) {
-    auto it = std::remove_if(users.begin(), users.end(), [userID] (const User& user) { 
-        return user.userID == userID; 
+    auto it = std::remove_if(users.begin(), users.end(), [userID] (const std::shared_ptr<User>& user) { 
+        return user->userID == userID; 
     });
-    if (it == users.end()) return false;
     users.erase(it, users.end());
-    return true;
 }
 
-std::vector<User>
+std::vector<std::shared_ptr<User>>
 UserManager::getUsersInGame(Connection userID) {
-    std::vector<User> usersInGame;
+    std::vector<std::shared_ptr<User>> usersInGame;
     
     uint16_t userRoomCode = getUserRoomCode(userID);
-    std::copy_if(users.begin(), users.end(), std::back_inserter(usersInGame), [userRoomCode] (const User& user) {
-        return user.roomCode == userRoomCode;
+    std::copy_if(users.begin(), users.end(), std::back_inserter(usersInGame), [userRoomCode] (const std::shared_ptr<User>& user) {
+        return user->roomCode == userRoomCode;
     });
     
     return usersInGame;
@@ -63,12 +54,12 @@ UserManager::getUsersInGame(Connection userID) {
 uint16_t
 UserManager::getUserRoomCode(Connection userID) {
     auto it = findUserByID(userID);
-    return it->roomCode;
+    return (*it)->roomCode;
 }
 
-std::vector<User>::iterator 
+std::vector<std::shared_ptr<User>>::iterator 
 UserManager::findUserByID(Connection userID) {
-    return std::find_if(users.begin(), users.end(), [userID](const User& user) {
-        return user.userID == userID;
+    return std::find_if(users.begin(), users.end(), [userID](const std::shared_ptr<User>& user) {
+        return user->userID == userID;
     });
 }
