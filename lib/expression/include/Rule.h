@@ -7,13 +7,13 @@
 #include <memory>
 #include <variant>
 #include <map>
-#include "Expresssion.h"
+#include "Expression.h"
 
 /// A rule interface that represents a control flow statement in the game config
 class Rule {};
 
 /// A rule that represents a series of rules in sequential order - e.x. the body of a for loop
-class BodyRule : Rule {
+class BodyRule : public Rule {
 public:
     std::vector<Rule> rules;
 };

@@ -1,13 +1,13 @@
 #include "GameConfigLoader.h"
-#include "RuleInterpreter.h"
 #include "GameState.h"
 #include "GameStateLoader.h"
 #include "GameSetup.h"
 #include "GameSetupLoader.h"
+#include "Translator.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include<queue>
+#include <queue>
 
 extern "C" {
     TSLanguage* tree_sitter_socialgaming();
@@ -17,9 +17,15 @@ GameConfigLoader::GameConfigLoader(std::string_view path)
 : m_source(getSource(path))
 {}
 
-std::shared_ptr<GameRules> 
+std::unique_ptr<RuleTree> 
 GameConfigLoader::createGameRules() { 
-    return std::make_unique<GameRules>(m_source);
+    ts::Language language = tree_sitter_socialgaming();
+    ts::Parser parser{language};
+    ts::Tree tree = parser.parseString(m_source);
+    ts::Node root = tree.getRootNode();
+    
+    Translator translator{createTranslator(m_source)};
+    return translator.translate(root);
 }
 
 
