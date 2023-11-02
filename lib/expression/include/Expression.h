@@ -97,8 +97,7 @@ public:
 /// Example: `!myCond`   -> `myCond` is an IdentifierExpression
 class IdentifierExpression : public Expression {
 public:
-    IdentifierExpression() = default;
-    IdentifierExpression(Identifier identifier) : identifier(identifier){}
+        IdentifierExpression(Identifier identifier) : identifier(identifier){}
     Identifier identifier;
 };
 
