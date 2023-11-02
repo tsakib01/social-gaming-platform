@@ -74,8 +74,7 @@ enum class Operator{
     PLUS, SUBTRACT, MULTIPLY, DIVISION, OR, IDENTIFIER, DOT
 };
 
-/// An expression interface that represents a statements in the game config that can be evaluated to a value
-/// This also serves as a factory for creating Expressions
+/// An expression interface that represents a statement in the game config that can be evaluated to a value
 class Expression {};
 
 /// A constant expression that is just a literal value
@@ -98,6 +97,7 @@ public:
 /// Example: `!myCond`   -> `myCond` is an IdentifierExpression
 class IdentifierExpression : public Expression {
 public:
+    IdentifierExpression() = default;
     IdentifierExpression(Identifier identifier) : identifier(identifier){}
     Identifier identifier;
 };
@@ -106,12 +106,12 @@ public:
 /// Example:  `myVar + 1` -> The entire statement is a BinaryExpression operating on two Expressions with a + operator
 class BinaryExpression : public Expression {
 public:
-    BinaryExpression(const Expression& leftOperand, const Expression& rightOperand, Operator op)
-    : leftOperand(&leftOperand), rightOperand(&rightOperand), op(op)
+    BinaryExpression(std::unique_ptr<Expression> leftOperand, std::unique_ptr<Expression> rightOperand, Operator op)
+    : leftOperand(std::move(leftOperand)), rightOperand(std::move(rightOperand)), op(op)
     {}
 
-    const Expression* leftOperand;
-    const Expression* rightOperand;
+    std::unique_ptr<Expression> leftOperand;
+    std::unique_ptr<Expression> rightOperand;
     Operator op;
 };
 
@@ -119,11 +119,11 @@ public:
 /// Example: `!myCond` -> The entire statement is a UnaryExpression operating on a single Expression with a ! operator
 class UnaryExpression : public Expression {
 public:
-    UnaryExpression(const Expression& operand, Operator op)
-    : operand(&operand), op(op)
+    UnaryExpression(std::unique_ptr<Expression> operand, Operator op)
+    : operand(std::move(operand)), op(op)
     {}
 
-    const Expression* operand;
+    std::unique_ptr<Expression> operand;
     Operator op;
 };
 

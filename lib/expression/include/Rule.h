@@ -7,50 +7,52 @@
 #include <memory>
 #include <variant>
 #include <map>
-#include "Expresssion.h"
+#include "Expression.h"
+#include "GameStateLoader.h"
 
 /// A rule interface that represents a control flow statement in the game config
 class Rule {};
 
 /// A rule that represents a series of rules in sequential order - e.x. the body of a for loop
-class BodyRule : Rule {
+class BodyRule : public Rule {
 public:
-    std::vector<Rule> rules;
+    std::vector<std::unique_ptr<Rule>> rules;
 };
 
 /// A rule that represents a for loop executing a body rule for each item in a list
 class ForRule : public Rule {
 public:
     /// An expression that evaluates to the current item in the list
-    const IdentifierExpression* currentItem;
-    /// An expression that evaluates to the list that the for rule will iterate over
-    const Expression* list;
-    const BodyRule* body; 
+    IdentifierExpression currentItem;
+    /// An expression that evaluates to the list that the for rule will iterate over.
+    /// Use unique_ptr to hold a base Expression class to leverage polymorphism
+    std::unique_ptr<Expression> list;
+    BodyRule body; 
 };
 
 /// A rule that represents a pattern matching statement
 class MatchRule : public Rule {
 public:
     /// The target expression to match against
-    const Expression* target;
+    std::unique_ptr<Expression> target;
     /// A map of the cases to match the target against.
     /// If a match is found, the corresponding body rule represents the path to take
-    std::map<const Expression*, const BodyRule*> cases; 
+    std::map<std::unique_ptr<Expression>, BodyRule> cases; 
 };
 
 /// A rule that removes an item from a list at a given index
 class DiscardRule : public Rule {
 public:
-    const Expression* index;
-    const Expression* list;
+    std::unique_ptr<Expression> index;
+    std::unique_ptr<Expression> list;
 };
 
 /// A rule that represents a message to be sent to a list of players
 class MessageRule : public Rule {
 public:
-    const Expression* message;
+    std::unique_ptr<Expression> message;
     /// An expression that evaluates to the list of players to message
-    const Expression* toList;
+    std::unique_ptr<Expression> toList;
 };
 
 /// A rule that represents a for loop executing a body rule for each item in a list.
@@ -58,34 +60,34 @@ public:
 class ParallelForRule : public Rule {
 public:
     /// An expression that evaluates to the current item in the list
-    const IdentifierExpression* currentItem;
+    IdentifierExpression currentItem;
     /// An expression that evaluates to the list that the for rule will iterate over
-    const Expression* list;
-    const BodyRule* body;
+    std::unique_ptr<Expression> list;
+    BodyRule body;
 };
 
 /// A rule that represents a prompt for a choice styled input from a player
 class InputChoiceRule : public Rule {
 public:
     /// An IdentifierExpression that evaluates to the player to prompt for input
-    const IdentifierExpression* to;
+    IdentifierExpression to;
     /// The prompt to display to the player
-    const Expression* prompt;
+    std::unique_ptr<Expression> prompt;
     /// The choices the player can make
-    const Expression* choices;
+    std::unique_ptr<Expression> choices;
     /// The name of the player to prompt. (Not sure about this?)
-    const Expression* target;
+    std::unique_ptr<Expression> target;
     /// The timeout of the prompt
-    const Expression* timeout;
+    std::unique_ptr<Expression> timeout;
 };
 
 /// A rule that adds an item to a list
 class ExtendRule : public Rule {
 public:
     /// The list to add to
-    const Expression* target;
+    std::unique_ptr<Expression> target;
     /// The item to add
-    const Expression* source;
+    std::unique_ptr<Expression> source;
 };
 
 #endif

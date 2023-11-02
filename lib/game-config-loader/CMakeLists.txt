@@ -11,12 +11,11 @@ add_grammar_from_repo(tree-sitter-socialgaming
 
 add_library(gameConfigLoader
   src/GameConfigLoader.cpp
-  src/GameRules.cpp
   src/GameState.cpp
   src/GameStateLoader.cpp
   src/GameSetup.cpp
   src/GameSetupLoader.cpp
-
+  src/Translator.cpp
 )
 target_include_directories(gameConfigLoader
   PUBLIC
@@ -29,9 +28,6 @@ target_include_directories(gameConfigLoader
 target_link_libraries(gameConfigLoader
   tree-sitter-socialgaming
   cpp-tree-sitter
-  ruleNode
-  ruleInterpreter
-  rule
   expression
 )
 
