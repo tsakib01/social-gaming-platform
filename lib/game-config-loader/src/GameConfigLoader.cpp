@@ -23,9 +23,10 @@ GameConfigLoader::createGameRules() {
     ts::Parser parser{language};
     ts::Tree tree = parser.parseString(m_source);
     ts::Node root = tree.getRootNode();
+    ts::Node rootBodyNode = root.getChildByFieldName("rules").getNamedChild(0);
     
     Translator translator{createTranslator(m_source)};
-    return translator.translate(root);
+    return translator.translate(rootBodyNode);
 }
 
 

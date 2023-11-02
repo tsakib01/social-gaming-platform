@@ -13,7 +13,7 @@
 
 class Translator;
 
-// A RuleTree is just the root BodyRule (a list of rules)
+// A RuleTree is a thin wrapper around the root BodyRule (a list of rules)
 class RuleTree final {
 public:
     RuleTree(std::unique_ptr<Rule> root)
@@ -45,11 +45,23 @@ public:
     }
 
 protected:
-    // Some Rules need to be created recursively, so they need access to translator
+    // Some Rules need to be created recursively, so the factory needs access to the 
+    // translator that it is part of
     const Translator* translator;
 
 private:
     virtual std::unique_ptr<Rule> createImpl(const ts::Node&, std::string_view) = 0;
+};
+
+// Creates the child rule of this node for nodes that look like
+//      (rule
+//         (some child rule)
+//      )
+class DummyRuleFactory final : public RuleFactory {
+public:
+    DummyRuleFactory(const Translator* translator) : RuleFactory(translator) {}
+private:
+    std::unique_ptr<Rule> createImpl(const ts::Node& node, std::string_view source);
 };
 
 
@@ -57,62 +69,43 @@ class BodyFactory final : public RuleFactory {
 public:
     BodyFactory(const Translator* translator) : RuleFactory(translator) {}
 private:
-    std::unique_ptr<Rule> 
-    createImpl(const ts::Node& node, std::string_view source) {
-        // Create the body rule here
-        std::cout << "Body Rule Created\n";
-        return std::make_unique<BodyRule>();
-    }
+    std::unique_ptr<Rule> createImpl(const ts::Node& node, std::string_view source);
 };
 
 
 class ForFactory final : public RuleFactory {
 public:
     ForFactory(const Translator* translator) : RuleFactory(translator) {}
+
 private:
-    std::unique_ptr<Rule>
-    createImpl(const ts::Node& node, std::string_view source) {
-        // Create the for rule here
-        std::cout << "For Rule Created\n";
-        return std::make_unique<ForRule>();
-    }
+    std::unique_ptr<Rule> createImpl(const ts::Node& node, std::string_view source);
 };
 
 
 class MatchFactory final : public RuleFactory {
 public:
     MatchFactory(const Translator* translator) : RuleFactory(translator) {}
+
 private:
-    std::unique_ptr<Rule>
-    createImpl(const ts::Node& node, std::string_view source) {
-        // Create the match rule here
-        return std::make_unique<MatchRule>();
-    }
+    std::unique_ptr<Rule> createImpl(const ts::Node& node, std::string_view source); 
 };
 
 
 class DiscardFactory final : public RuleFactory {
 public:
     DiscardFactory(const Translator* translator) : RuleFactory(translator) {}
+
 private:
-    std::unique_ptr<Rule>
-    createImpl(const ts::Node& node, std::string_view source) {
-        // Create the discard rule here
-        return std::make_unique<DiscardRule>();
-    }
+    std::unique_ptr<Rule> createImpl(const ts::Node& node, std::string_view source);
 };
 
 
 class MessageFactory final : public RuleFactory {
 public:
     MessageFactory(const Translator* translator) : RuleFactory(translator) {}
+
 private:
-    std::unique_ptr<Rule>
-    createImpl(const ts::Node& node, std::string_view source) {
-        // auto messageRule = std::make_unique<MessageRule>();
-        // messageRule->message = translator->createExpression(node.getNamedChild(0));
-        // messageRule->toList = translator->createExpression(node.getNamedChild(1));
-    }
+    std::unique_ptr<Rule> createImpl(const ts::Node& node, std::string_view source);
 };
 
 
@@ -136,7 +129,8 @@ public:
     }
 
 protected:
-    // Expressions need to be created recursively, so they need access to translator
+    // Expressions need to be created recursively, so factories need access to 
+    // the translator they are part of
     const Translator* translator;
 
 private:
@@ -144,30 +138,25 @@ private:
 };
 
 
-// Just creates the child expression of this node for nodes that look like
-// (expression
-//      (some child expression)
-// )
-class BaseExpressionFactory final : public ExpressionFactory {
+// Creates the child expression of this node for nodes that look like
+//      (expression
+//         (some child expression)
+//      )
+class DummyExpressionFactory final : public ExpressionFactory {
 public:
-    BaseExpressionFactory(const Translator* translator) : ExpressionFactory(translator) {}
+    DummyExpressionFactory(const Translator* translator) : ExpressionFactory(translator) {}
+    
 private:
-    std::unique_ptr<Expression>
-    createImpl(const ts::Node& node, std::string_view source) {
-        // return translator->createExpression(node.getNamedChild(0)); 
-        return {};
-    } 
+    std::unique_ptr<Expression> createImpl(const ts::Node& node, std::string_view source); 
 };
 
 
 class IdentifierFactory final : public ExpressionFactory {
 public:
     IdentifierFactory(const Translator* translator) : ExpressionFactory(translator) {}
+
 private:
-    std::unique_ptr<Expression>
-    createImpl(const ts::Node& node, std::string_view source) {
-        return std::make_unique<IdentifierExpression>(node.getSourceRange(source));
-    }
+    std::unique_ptr<Expression> createImpl(const ts::Node& node, std::string_view source); 
 };
 
 
