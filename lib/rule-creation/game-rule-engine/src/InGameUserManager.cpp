@@ -1,45 +1,34 @@
 #include "InGameUserManager.h"
 #include <cassert>
 
-    void InGameUserManager::addNewPlayer(uint32_t userID, Environment playerStates){
-        InGameUserManager::m_playerStates.insert({userID, playerStates});
+    // Assume the role is passed as an Enum (stored within UserManager).
+    void InGameUserManager::addNewUser(uint32_t userID, Role role, Environment userStates){
+        std::pair<Role, Environment> userStartingStates;
+        userStartingStates.first = role;
+        userStartingStates.second = userStates;
+        InGameUserManager::m_userStates.insert({userID, userStartingStates});
     }
 
-    void InGameUserManager::addNewAudience(uint32_t userID, Environment audienceStates){
-        InGameUserManager::m_audienceStates.insert({userID, audienceStates});
+    void InGameUserManager::deleteUser(uint32_t userID){
+        // erase returns 0 if something was not erased.
+        // If assert failed, that means the user already doesn't exist in this game
+        // which should never happen if this is called.
+        assert(InGameUserManager::m_userStates.erase({userID}) != 0); 
     }
 
-    void InGameUserManager::deletePlayer(uint32_t userID){
-        InGameUserManager::m_playerStates.erase({userID});
-    }
-
-    void InGameUserManager::deleteAudience(uint32_t userID){
-        InGameUserManager::m_audienceStates.erase({userID});
-    }
-
-    // Get a specific user's states from their corresponding map.
-    std::map<uint32_t, Environment>::iterator InGameUserManager::getStatesOfPlayer(uint32_t userID){
-        std::map<uint32_t, Environment>::iterator m_getStatesOfAllPlayersIterator;
-        m_getStatesOfAllPlayersIterator = m_playerStates.find(userID);
-
-        // It should never happen that we try looking for a player that doesn't exist.
-        // But this may prove useful when, for example, we are trying to make sure this class
-        // and others are all keeping track of a user having been deleted.
-        assert(m_getStatesOfAllPlayersIterator != m_playerStates.end());
-        return m_getStatesOfAllPlayersIterator;
-    }  
-
-    std::map<uint32_t, Environment>::iterator InGameUserManager::getStatesOfAudience(uint32_t userID){
-        std::map<uint32_t, Environment>::iterator m_getStatesOfAllAudiencesIterator;
-        m_getStatesOfAllAudiencesIterator = m_audienceStates.find(userID);
-        assert(m_getStatesOfAllAudiencesIterator != m_audienceStates.end());
-        return m_getStatesOfAllAudiencesIterator;
+    // Ref: https://www.javatpoint.com/post/cpp-map-find-function
+    Environment InGameUserManager::getStatesOfUser(uint32_t userID, Role role){
+        auto iterator = m_userStates.find(userID);
+        assert(iterator != m_userStates.end());
+        std::pair<Role, Environment> statesToGet = iterator -> second;
+        return statesToGet.second;
     }
     
-    std::map<uint32_t, Environment> InGameUserManager::getStatesOfAllPlayers(){
-        return m_playerStates;
-    }
-
-    std::map<uint32_t, Environment> InGameUserManager::getStatesOfAllAudiences(){
-        return m_audienceStates;
+    // Recall that m_userStates is of type std::map<uint32_t, std::map<Role, Environment>>
+    // Create a new pair to replace the existing one that the User ID maps to.
+    void InGameUserManager::setStatesOfUser(uint32_t userID, Role role, Environment states){
+        std::pair<Role, Environment> statesToSet;
+        statesToSet.first = role;
+        statesToSet.second = states;
+        InGameUserManager::m_userStates.insert({userID, statesToSet});
     }

@@ -6,8 +6,8 @@
 #include <memory>
 #include <algorithm>
 #include "GameState.h"
-#include "GameRules.h"
 #include "GameSetup.h"
+#include "Translator.h"
 #include <iostream>
 
 class GameConfigLoader {
@@ -16,7 +16,7 @@ public:
 
     // Creates a GameRules for a GameInstance 
     // @param path Path to a game file 
-    [[nodiscard]] std::shared_ptr<GameRules> 
+    [[nodiscard]] std::unique_ptr<RuleTree> 
     createGameRules();
 
     // Creates a GameState for a GameInstance

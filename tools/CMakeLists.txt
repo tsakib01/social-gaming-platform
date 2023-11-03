@@ -15,3 +15,4 @@ install(TARGETS main
 
 add_subdirectory(client-ncurses)
 add_subdirectory(server)
+add_subdirectory(server-manager)

@@ -1,48 +1,51 @@
 #include "GameInstance.h"
 #include "GameConfigLoader.h"
-#include "RuleNode.h"
 
-GameInstance::GameInstance(std::shared_ptr<GameRules> gameRules, 
+GameInstance::GameInstance(std::unique_ptr<RuleTree> gameRules, 
 std::unique_ptr<GameState> gameState, int inviteCode)
-    : m_gameRules(gameRules), m_gameState(std::move(gameState)), m_inviteCode(inviteCode)
+    : m_gameRules(std::move(gameRules)), m_gameState(std::move(gameState)), m_inviteCode(inviteCode)
 {
-    const std::shared_ptr<RuleNode> rulesRoot = gameRules->getRules();
-    instructionStack.push(rulesRoot);
+    // const std::shared_ptr<RuleNode> rulesRoot = gameRules->getRules();
+    // instructionStack.push(rulesRoot);
+
+    // UNIMPLEMENTED While Rule Execution is restructured
 }
 
 void 
 GameInstance::startGame() {
+    // UNIMPLEMENTED While Rule Execution is restructured
 
-    // This function shouldn't exist - it's just a test to see if it will work
-    // Should probably be in GameInstanceManager
-
-    std::cout << "\nGame started." << std::endl;
-    while (!instructionStack.empty()) {
-        executeNextInstruction();
-    }
-    std::cout << "Game ended." << std::endl;
+    // std::cout << "\nGame started." << std::endl;
+    // while (!instructionStack.empty()) {
+    //     executeNextInstruction();
+    // }
+    // std::cout << "Game ended." << std::endl;
 }
 
 void 
 GameInstance::executeNextInstruction() {
-    if (instructionStack.empty()) return;
+    // UNIMPLEMENTED While Rule Execution is restructured
 
-    std::shared_ptr<RuleNode> instruction = instructionStack.top();
-    std::optional<std::shared_ptr<RuleNode>> nextInstructionNode = instruction->executeRule();
+    // if (instructionStack.empty()) return;
 
-    if (nextInstructionNode.has_value()) {
-        instructionStack.push(nextInstructionNode.value());
-    } else {
-        instructionStack.pop();
-    }
+    // std::shared_ptr<RuleNode> instruction = instructionStack.top();
+    // std::optional<std::shared_ptr<RuleNode>> nextInstructionNode = instruction->executeRule();
+
+    // if (nextInstructionNode.has_value()) {
+    //     instructionStack.push(nextInstructionNode.value());
+    // } else {
+    //     instructionStack.pop();
+    // }
 }
 
 bool
 GameInstance::gameIsFinished() {
-    if (instructionStack.empty()) {
-        m_gameRules->getRules()->deleteReferences();
-        return true;
-    }
+    // UNIMPLEMENTED While Rule Execution is restructured
+
+    // if (instructionStack.empty()) {
+    //     m_gameRules->getRules()->deleteReferences();
+    //     return true;
+    // }
     return false;
 }
 
