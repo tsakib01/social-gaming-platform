@@ -32,6 +32,7 @@ public:
     void removeUser(Connection userID);
     std::vector<User> getUsersInGame(Connection userID);
     uint8_t getUserGameCode(Connection userID);
+    std::vector<User> getAllUsers() const { return users; }
     std::vector<User>::iterator findUserByID(Connection userID);
 
 private:
