@@ -55,14 +55,16 @@ GameInstanceManager::finishGame() {
 
 void 
 GameInstanceManager::runCycle() {
-    while (!m_gameList.empty()) {
-        for (std::unique_ptr<GameInstance>& game : m_gameList) {
-            game->executeNextInstruction();
-        }
+    // BLOCKED While Rules are being restructured
 
-        m_gameList.erase(std::remove_if(m_gameList.begin(), m_gameList.end(),
-            [](const std::unique_ptr<GameInstance>& game) {
-                return game->gameIsFinished();
-            }), m_gameList.end());
-    }
+    // while (!m_gameList.empty()) {
+    //     for (std::unique_ptr<GameInstance>& game : m_gameList) {
+    //         game->executeNextInstruction();
+    //     }
+
+    //     m_gameList.erase(std::remove_if(m_gameList.begin(), m_gameList.end(),
+    //         [](const std::unique_ptr<GameInstance>& game) {
+    //             return game->gameIsFinished();
+    //         }), m_gameList.end());
+    // }
 }
