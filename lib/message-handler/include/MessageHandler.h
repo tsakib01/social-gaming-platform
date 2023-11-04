@@ -21,7 +21,7 @@ enum class HandlerMessage {
     messages[CREATE_ERROR] = "ERROR: The file you selected cannot be used. Please try again."
     messages[JOIN_PROMPT] = "ERROR: This room does not exist, please try again.";
     messages[JOIN_ERROR] = "ERROR: The room ID you entered could not be found. Please try again.";
-    messages[LEAVE_GAME_PROMPT] = "Are you sure you would like to leave this game? Type Y for yes, N for no."
+    messages[LEAVE_GAME_PROMPT] = "Are you sure you would like to leave this game? Type Y for yes, N for no.";
     messages[ROOM_CREATED_MESSAGE] = "Your room has been successfully created. Code for joining the game: ";
 
 enum class ClientAction : char {
