@@ -12,9 +12,7 @@ set_target_properties(server
 find_package(Threads REQUIRED)
 
 target_link_libraries(server
-  userManager
-  gameInstanceManager
-  networking
+  serverManager
   ${CMAKE_THREAD_LIBS_INIT}
 )
 
