@@ -5,7 +5,7 @@
 
 /// Context for executing a rule
 struct ExecuteContext {
-    std::unique_ptr<GameState> gameState;
+    GameState& gameState;
 };
 
 /// Represents a rule executor. Requires the rule and the context to execute.
