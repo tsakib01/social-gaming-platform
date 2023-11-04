@@ -17,7 +17,7 @@ class InGameUserManager {
     void addNewUser(uint32_t userID, Role role, Environment userStates);
     void deleteUser(uint32_t userID);
     Environment getStatesOfUser(uint32_t userID, Role role);
-    std::map<uint32_t, std::map<Role, Environment>> getAllUserStates();
+    // std::map<uint32_t, std::map<Role, Environment>> getAllUserStates();
     void setStatesOfUser(uint32_t userID, Role role, Environment states);
 
     private:
