@@ -2,11 +2,6 @@
 
 #include "Rule.h"
 #include "GameState.h"
-#include <memory>
-#include <optional>
-#include <map>
-#include <algorithm>
-#include <iostream>
 
 /// Context for executing a rule
 struct ExecuteContext {
