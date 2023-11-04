@@ -1,7 +1,6 @@
 #ifndef RULE_H
 #define RULE_H
 
-
 #include <string_view>
 #include <vector>
 #include <memory>
