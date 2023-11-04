@@ -2,7 +2,6 @@
 
 #include <random>
 #include <iostream>
-
 MessageHandler::MessageHandler() : server{server} {};
 
 std::string
@@ -30,9 +29,7 @@ MessageHandler::createRoom(ClientToRoom::ClientToRoom& clientToRoom) {
     client1.role = clientToRoom.role;
 
     clients[roomCode].push_back(client);
-    std::cout << "Room created" << std::endl;
-    std::cout << "Code for joining the game: " << roomCode << std::endl;
-    
+    std::cout << MessageHandler::messages.find(ROOM_CREATED_MESSAGE)->second << roomCode << std::endl;
     return roomCode;
 }
 
@@ -60,7 +57,6 @@ Response::Response&
 MessageHandler::handleInputs(std::string roomID) {
     return "Not Implemented Yet";
 }
-
 
 std::any
 MessageHandler::receive(ClientAction::ClientAction& action, ClientToRoom::ClientToRoom& clientToRoom) {

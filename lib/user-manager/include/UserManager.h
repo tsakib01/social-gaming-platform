@@ -13,6 +13,7 @@ enum class Role : char {
     OWNER, PLAYER, AUDIENCE, NONE
 };
 
+
 struct User {
     Connection userID;
     std::string_view username;
