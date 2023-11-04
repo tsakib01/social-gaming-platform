@@ -21,28 +21,28 @@ private:
 
 #define RULE_EXECUTE void executeImpl(Rule& rule, ExecuteContext& context) override;
 
-class BodyRuleExecute : public Execute {
+class BodyRuleExecute final : public Execute {
 private: RULE_EXECUTE
 };
-class ForRuleExecute : public Execute {
+class ForRuleExecute final : public Execute {
 private: RULE_EXECUTE
 };
-class MatchRuleExecute : public Execute {
+class MatchRuleExecute final : public Execute {
 private: RULE_EXECUTE
 };
-class DiscardRuleExecute : public Execute {
+class DiscardRuleExecute final : public Execute {
 private: RULE_EXECUTE
 };
-class MessageRuleExecute : public Execute {
+class MessageRuleExecute final : public Execute {
 private: RULE_EXECUTE
 };
-class ParallelForRuleExecute : public Execute {
+class ParallelForRuleExecute final : public Execute {
 private: RULE_EXECUTE
 };
-class InputChoiceRuleExecute : public Execute {
+class InputChoiceRuleExecute final : public Execute {
 private: RULE_EXECUTE
 };
-class ExtendRuleExecute : public Execute {
+class ExtendRuleExecute final : public Execute {
 private: RULE_EXECUTE
 };
 
