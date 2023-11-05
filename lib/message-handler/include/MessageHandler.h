@@ -15,26 +15,25 @@
 using networking::Message;
 using networking::Server;
 
-struct MessageResult {
-  std::string result;
-  bool shouldShutdown;
-};
-
 // struct Actions {
   // uint8_t roomCode;
   // std::map<std::string_view, std::vector<std::string_view>> actions;
   // < "choices" /// "rock","paper","scissors" >
 // }
 
+/**
+ * MessageHandler is in charge of receiving and creating Messages.
+ * Based on the unique connection ID of each User, it will check which state of the
+ * program the User is in, and call a corresponding method assigned to each state
+ * that handles validity checking differently.
+*/
 class MessageHandler {
 public:
     MessageHandler(std::shared_ptr<UserManager> userManager) : m_userManager(userManager) {}
-    
-    std::deque<Message> handleMessage(const std::deque<Message>& incoming);
 
-    std::deque<Message> buildOutgoing(const std::string_view& log);
-    // MessageResult processMessages(std::unique_ptr<Server> server, const std::deque<Message>& incoming);
-
+    // Takes in a list of Messages, and builds responses by going through them one 
+    // at a time and calls the corresponding method in stateMap
+    std::deque<Message> buildOutgoing(const std::deque<Message>& incoming);
 
     // void assignAction(uint8_t roomCode, std::vector<std::string_view>> actions); //called by game instance
 

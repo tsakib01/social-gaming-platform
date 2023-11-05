@@ -22,16 +22,11 @@ ServerManager::startServer() {
         }
 
         const auto incoming = server->receive();
-        // const auto [log, shouldQuit] = messageHandler->processMessages(server, incoming);
-        // const auto outgoing = messageHandler->buildOutgoing(log);
+        
 
-        // server->send(outgoing);
+        // gameInstanceManager->runCycle();
 
-        // if (shouldQuit || errorWhileUpdating) {
-            // break;
-        // }
-
-        std::deque outgoing = messageHandler->handleMessage(incoming);
+        std::deque outgoing = messageHandler->buildOutgoing(incoming);
         server->send(outgoing);
 
         sleep(1);
@@ -42,10 +37,7 @@ void
 ServerManager::onConnect(Connection client) {
   std::cout << "New connection: " << client.id << "\n";
   userManager->addUser(client);
-
-  std::deque<Message> intro;
-  intro.push_back({client, "Welcome! Type J to join, C to create a game.\n"});
-  server->send(intro);
+  server->send(std::deque<Message>(1, {client, "Welcome! Type J to join, C to create a game.\n"}));
 }
 
 void 
