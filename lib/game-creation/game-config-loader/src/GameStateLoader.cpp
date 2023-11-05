@@ -159,6 +159,18 @@ void GameStateLoader::printByLevelOrder(const ts::Node& node){
     }
 };
 
+void GameStateLoader::registerConversion(int symbol, std::unique_ptr<ConvertInterface> convert){
+    nodeSymbolToConvert[symbol] = std::move(convert);
+}
+
+std::string_view GameStateLoader::getSource() const {
+    return source;
+}
+
+const std::map<int, std::unique_ptr<ConvertInterface>>* GameStateLoader::getNodeSymbolToConvert() const {
+    return &nodeSymbolToConvert;
+}
+
 GameStateLoader GameStateLoader::createDefaultGameStateLoader(std::string_view source){
     GameStateLoader gameStateLoader(source);
     gameStateLoader.registerConversion(SYMBOL::NUMBER, std::make_unique<ConvertNodeToNumber>(&gameStateLoader));
