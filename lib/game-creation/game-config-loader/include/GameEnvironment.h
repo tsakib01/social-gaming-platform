@@ -19,23 +19,12 @@ namespace GameEnvironment{
     using Identifier = std::string_view;
 
     class Value;
-    class Map{
-    public:
-        std::map<Identifier, std::unique_ptr<Value>> value;
-        ~Map(){};
-    };
-
-    class Value;
-    class List{
-    public:
-        std::vector<std::unique_ptr<Value>> value;
-        ~List(){};
-    };
-    
+    using Map = std::map<Identifier, std::unique_ptr<Value>>;
+    using List = std::vector<std::unique_ptr<Value>>;
+        
     class Value{
     public:
         std::variant<int, bool, std::string_view, std::unique_ptr<Map>, std::unique_ptr<List>> value;
-        ~Value(){};
     };
 
     using Environment = std::map<Identifier, std::unique_ptr<Value>>;

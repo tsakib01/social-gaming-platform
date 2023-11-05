@@ -5,32 +5,37 @@ GameState::GameState()
 :environment(std::make_unique<GameEnvironment::Environment>())
 {}
 
-void GameState::addEnvironment(std::unique_ptr<GameEnvironment::Environment> newEnvironment){
-    // Check there are no same identifiers
-    for (const auto& [identifier, value] : *newEnvironment){
-        if (environment->count(identifier)){
+void GameState::addEnvironment(GameEnvironment::Environment& newEnvironment){
+    // Insert variables to environment
+    for (auto& [identifier, value] : newEnvironment){
+        auto [it, succeeded] = environment->try_emplace(identifier, std::move(value));
+        if (!succeeded){
             std::runtime_error("Top-level identifier should be same.");
         }
-    }
-    
-    // Insert variables to environment
-    for (auto& [identifier, value] : *newEnvironment){
-        environment->insert(std::make_pair(identifier, std::move(value)));
     }
 }
 
 void GameState::addState(GameEnvironment::Identifier identifier, std::unique_ptr<GameEnvironment::Value> value){
-    if (environment->count(identifier)){
+    auto [it, succeeded]  = environment->try_emplace(identifier, std::move(value));
+    if (!succeeded){
         std::runtime_error ("The identifier already exists in the environment");
     }
-    environment->insert(std::make_pair(identifier,  std::move(value)));
+}
+
+const GameEnvironment::Value* GameState::getValue(GameEnvironment::Identifier identifier){
+    auto variable = environment->find(identifier);
+    if (variable == environment->end()){
+        std::runtime_error ("The identifier does not exists in the environment");
+    }
+    return variable->second.get();
 }
 
 void GameState::updateState(GameEnvironment::Identifier identifier, std::unique_ptr<GameEnvironment::Value>  value){
-    if (environment->count(identifier)){
+    auto variable = environment->find(identifier);
+    if (variable == environment->end()){
         std::runtime_error ("The identifier does not exists in the environment");
     }
-    environment->insert(std::make_pair(identifier,  std::move(value)));
+    variable->second = std::move(value);
 }
 
 struct PrintVisitor {
@@ -48,7 +53,7 @@ struct PrintVisitor {
 
     void operator()(const std::unique_ptr<GameEnvironment::Map>& value) const {
         std::cout << "Map found..." << std::endl;
-        for (const auto& [key, val] : value->value) {
+        for (const auto& [key, val] : *value) {
             std::cout << key << ": ";
             std::visit(PrintVisitor{}, val->value);
             std::cout << std::endl;
@@ -57,7 +62,7 @@ struct PrintVisitor {
 
     void operator()(const std::unique_ptr<GameEnvironment::List>& value) const {
         std::cout << "List found..." << std::endl;
-        for (const auto& item : value->value) {
+        for (const auto& item : *value) {
             std::visit(PrintVisitor{}, item->value);
         }
     }
