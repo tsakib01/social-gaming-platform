@@ -22,17 +22,13 @@ using networking::Server;
 // }
 
 /**
- * MessageHandler is in charge of receiving and creating Messages.
- * Based on the unique connection ID of each User, it will check which state of the
- * program the User is in, and call a corresponding method assigned to each state
- * that handles validity checking differently.
+ * GameCommunicator is in charge of receiving Messages and Inputs from GameInstances.
+ * It will store these values into lists, and then be checked from the ServerManager
+ * for error handling and receiving inputs from players.
 */
 class GameCommunicator {
 public:
     GameCommunicator() {}
-
-    // Takes in a list of Messages, and builds responses by going through them one 
-    // at a time and calls the corresponding method in stateMap
     
     // void assignAction(uint8_t roomCode, std::vector<std::string_view>> actions); //called by game instance
 
@@ -40,15 +36,6 @@ private:
     // std::shared_ptr<UserManager> m_userManager;
     // std::vector<Actions> actions;
     // std::map<Connection, std::string_view> userToInputMap; 
-
-    // Message ProcessInput(const Message& message);
-
-    // std::map<UserState, std::function<Message(const Message&)>> stateMap = {
-    //   {UserState::NEW, std::bind(&MessageHandler::ProcessNew, this, std::placeholders::_1)},
-    //   {UserState::JOIN, std::bind(&MessageHandler::ProcessJoin, this, std::placeholders::_1)},
-    //   {UserState::CREATE, std::bind(&MessageHandler::ProcessCreate, this, std::placeholders::_1)}
-    //   // {UserState::GAME_INPUT, std::bind(&MessageHandler::ProcessInput, this, std::placeholders::_1)}
-    // };
 };
 
 #endif

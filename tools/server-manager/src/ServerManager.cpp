@@ -22,7 +22,6 @@ ServerManager::startServer() {
 
         const auto incoming = server->receive();
         
-
         // gameInstanceManager->runCycle();
 
         std::deque outgoing = buildOutgoing(incoming);
@@ -36,7 +35,7 @@ void
 ServerManager::onConnect(Connection client) {
   std::cout << "New connection: " << client.id << "\n";
   userManager->addUser(client);
-  server->send(std::deque<Message>(1, {client, "Welcome! Type J to join, C to create a game.\n"}));
+  server->send(std::deque<Message>(1, {client, "Enter your name.\n"}));
 }
 
 void 
@@ -69,14 +68,28 @@ ServerManager::buildOutgoing(const std::deque<Message>& incoming) {
 }
 
 Message 
-ServerManager::ProcessNewState(const Message& message) {
+ServerManager::ProcessNew(const Message& message) {
+	if (message.text != "") {
+		userManager->setUserName(message.connection, message.text);
+		userManager->setUserState(message.connection, UserState::INTRO);
+		return Message{message.connection, 
+			"Welcome, " + message.text + "! Type J to join, C to create a game.\n"};
+	}
+
+	else {
+		return Message{message.connection, "Invalid, try again.\n"};
+	}
+}
+
+Message
+ServerManager::ProcessIntro(const Message& message) {
 	if (message.text == "J") {
-		userManager->setUserState(message.connection, UserState::JOIN);
+		userManager->setUserState(message.connection, UserState::JOIN_GAME);
 		return Message{message.connection, "Please enter a room code.\n"};
 	}
 
 	else if (message.text == "C") {
-		userManager->setUserState(message.connection, UserState::CREATE);
+		userManager->setUserState(message.connection, UserState::GAME_CREATE);
 		return Message{message.connection, "Choose a game to play.\n"}; 
 	}
 
@@ -86,7 +99,7 @@ ServerManager::ProcessNewState(const Message& message) {
 }
     
 Message
-ServerManager::ProcessJoinState(const Message& message) {	
+ServerManager::ProcessJoinGame(const Message& message) {	
     std::vector<User> users = userManager->getAllUsers();
     // bool gameFound = std::any_of(users.begin(), users.end(), [message.];
 
@@ -100,13 +113,39 @@ ServerManager::ProcessJoinState(const Message& message) {
 }
 
 Message
-ServerManager::ProcessCreateState(const Message& message) {
+ServerManager::ProcessGameCreate(const Message& message) {
 	if (message.text == "games/rock-paper-scissors.game") {
-		// gameInstanceManager.createGame("games/rock-paper-scissors.game");
-		// return game room code to user
+		gameInstanceManager->createGameInstance(message.text);
+		userManager->setUserState(message.connection, UserState::GAME_WAIT);
+		return Message{message.connection, 
+			"Here is your room code: UNFINISHED! Type \"start\" when ready.\n"};
 	}
 
 	else {
 		return Message{message.connection, "Invalid, try again.\n"};
 	}
+}
+
+Message
+ServerManager::ProcessGameConfig(const Message& message) {
+	// Not implemented yet.
+}
+
+Message
+ServerManager::ProcessGameWait(const Message& message) {
+	// Not implemented yet.
+	if (message.text == "start") {
+		userManager->setUserState(message.connection, UserState::GAME_RUN);
+		return Message{message.connection, "Moving to GAME_RUN state\n"};
+	}
+
+	else {
+		return Message{message.connection, "Invalid, try again.\n"};
+	}
+}
+
+Message
+ServerManager::ProcessGameRunning(const Message& message) {
+	// Not implemented yet.
+	return Message{message.connection, "Inside GAME_RUN state.\n"};
 }

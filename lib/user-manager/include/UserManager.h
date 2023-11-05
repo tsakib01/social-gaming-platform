@@ -10,11 +10,20 @@
 using networking::Connection;
 
 enum class Role : char {
-    OWNER, PLAYER, AUDIENCE, NONE
+    OWNER, 
+    PLAYER, 
+    AUDIENCE, 
+    NONE
 };
 
 enum class UserState : char {
-    NEW, JOIN, CREATE, CHOOSE_GAME, SET_CONFIG, START_GAME, GAME_INPUT, GAME_INACTIVE
+    NEW, 
+    INTRO, 
+    JOIN_GAME, 
+    GAME_CREATE, 
+    GAME_CONFIG,
+    GAME_WAIT,
+    GAME_RUN 
 };
 
 struct User {

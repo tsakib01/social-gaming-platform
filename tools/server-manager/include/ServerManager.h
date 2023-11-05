@@ -31,15 +31,25 @@ private:
     void onDisconnect(Connection client);
     std::string getHTTPMessage(const char* htmlLocation);
 
+    // Takes in a list of Messages, and builds responses by going through them one 
+    // at a time and calls the corresponding method in stateMap
     std::deque<Message> buildOutgoing(const std::deque<Message>& incoming);
     
-    Message ProcessNewState(const Message& message);
-    Message ProcessJoinState(const Message& message);
-    Message ProcessCreateState(const Message& message);
-
+    Message ProcessNew(const Message& message);
+    Message ProcessIntro(const Message& message);
+    Message ProcessJoinGame(const Message& message);
+    Message ProcessGameCreate(const Message& message);
+    Message ProcessGameConfig(const Message& message);
+    Message ProcessGameWait(const Message& message);
+    Message ProcessGameRunning(const Message& message);
+    
     std::map<UserState, std::function<Message(const Message&)>> stateMap = {
-        {UserState::NEW, std::bind(&ServerManager::ProcessNewState, this, std::placeholders::_1)},
-        {UserState::JOIN, std::bind(&ServerManager::ProcessJoinState, this, std::placeholders::_1)},
-        {UserState::CREATE, std::bind(&ServerManager::ProcessCreateState, this, std::placeholders::_1)}
+        {UserState::NEW, std::bind(&ServerManager::ProcessNew, this, std::placeholders::_1)},
+        {UserState::INTRO, std::bind(&ServerManager::ProcessIntro, this, std::placeholders::_1)},
+        {UserState::JOIN_GAME, std::bind(&ServerManager::ProcessJoinGame, this, std::placeholders::_1)},
+        {UserState::GAME_CREATE, std::bind(&ServerManager::ProcessGameCreate, this, std::placeholders::_1)},
+        {UserState::GAME_CONFIG, std::bind(&ServerManager::ProcessGameConfig, this, std::placeholders::_1)},
+        {UserState::GAME_WAIT, std::bind(&ServerManager::ProcessGameWait, this, std::placeholders::_1)},
+        {UserState::GAME_RUN, std::bind(&ServerManager::ProcessGameRunning, this, std::placeholders::_1)},
     };
 };
