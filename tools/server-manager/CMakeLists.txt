@@ -1,5 +1,5 @@
 add_library(serverManager
-    ServerManager.cpp)
+    src/ServerManager.cpp)
 
 target_include_directories(serverManager
     PUBLIC
@@ -12,6 +12,7 @@ target_include_directories(serverManager
 target_link_libraries(serverManager
   networking
   userManager
+  messageHandler
   gameInstanceManager
 )
 

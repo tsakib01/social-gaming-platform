@@ -2,6 +2,7 @@
 #include "Server.h"
 #include "UserManager.h"
 #include "GameInstanceManager.h"
+#include "MessageHandler.h"
 
 #include <fstream>
 #include <iostream>
@@ -22,12 +23,12 @@ public:
     void startServer();
 
 private:
-    std::shared_ptr<Server> server;
+    std::unique_ptr<Server> server;
     std::unique_ptr<GameInstanceManager> gameInstanceManager;
-    std::unique_ptr<UserManager> userManager;
+    std::shared_ptr<UserManager> userManager;
+    std::unique_ptr<MessageHandler> messageHandler;
 
     void onConnect(Connection client);
     void onDisconnect(Connection client);
-    std::deque<Message> buildOutgoing(const std::string_view& log);
     std::string getHTTPMessage(const char* htmlLocation);
 };

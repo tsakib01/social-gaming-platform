@@ -1,34 +1,13 @@
 #include "ServerManager.h"
 
 ServerManager::ServerManager(const unsigned short port, const char* htmlFile) {
-    server = std::make_shared<Server>(
+    server = std::make_unique<Server>(
                   port, getHTTPMessage(htmlFile),
                   std::bind(&ServerManager::onConnect, this, std::placeholders::_1),
                   std::bind(&ServerManager::onDisconnect, this, std::placeholders::_1));
     gameInstanceManager = std::make_unique<GameInstanceManager>();
-    userManager = std::make_unique<UserManager>();
-}
-
-struct MessageResult {
-  std::string result;
-  bool shouldShutdown;
-};
-
-MessageResult
-processMessages(std::shared_ptr<Server> server, const std::deque<Message>& incoming) {
-  std::ostringstream result;
-  bool quit = false;
-  for (const auto& message : incoming) {
-    if (message.text == "quit") {
-      server->disconnect(message.connection);
-    } else if (message.text == "shutdown") {
-      std::cout << "Shutting down.\n";
-      quit = true;
-    } else {
-      result << message.connection.id << "> " << message.text << "\n";
-    }
-  }
-  return MessageResult{result.str(), quit};
+    userManager = std::make_shared<UserManager>();
+    messageHandler = std::make_unique<MessageHandler>(userManager);
 }
 
 void 
@@ -43,14 +22,17 @@ ServerManager::startServer() {
         }
 
         const auto incoming = server->receive();
-        const auto [log, shouldQuit] = processMessages(server, incoming);
+        // const auto [log, shouldQuit] = messageHandler->processMessages(server, incoming);
+        // const auto outgoing = messageHandler->buildOutgoing(log);
 
-        const auto outgoing = buildOutgoing(log);
+        // server->send(outgoing);
+
+        // if (shouldQuit || errorWhileUpdating) {
+            // break;
+        // }
+
+        std::deque outgoing = messageHandler->handleMessage(incoming);
         server->send(outgoing);
-
-        if (shouldQuit || errorWhileUpdating) {
-            break;
-        }
 
         sleep(1);
     }
@@ -60,26 +42,16 @@ void
 ServerManager::onConnect(Connection client) {
   std::cout << "New connection: " << client.id << "\n";
   userManager->addUser(client);
+
+  std::deque<Message> intro;
+  intro.push_back({client, "Welcome! Type J to join, C to create a game.\n"});
+  server->send(intro);
 }
 
 void 
 ServerManager::onDisconnect(Connection client) {
   std::cout << "Connection lost: " << client.id << "\n";
   userManager->removeUser(client);
-}
-
-
-std::deque<Message>
-ServerManager::buildOutgoing(const std::string_view& log) {
-  std::deque<Message> outgoing;
-  std::vector<User> clients = userManager->getAllUsers();
-  for (auto& client : clients) {
-      Message message;
-      message.connection = client.userID;
-      message.text = log;
-      outgoing.push_back(message);
-  }
-  return outgoing;
 }
 
 std::string 

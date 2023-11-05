@@ -12,3 +12,8 @@ target_include_directories(messageHandler
 install(TARGETS messageHandler
     ARCHIVE DESTINATION lib
 )
+
+target_link_libraries(messageHandler
+  networking
+  userManager
+)
