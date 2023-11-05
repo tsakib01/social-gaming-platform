@@ -90,4 +90,11 @@ public:
     std::unique_ptr<Expression> source;
 };
 
+// A rule that prints a scoreboard on the global display using the given attribute(s) of each player defined by the key list.
+class ScoresRule : public Rule {
+public:
+    /// The list of keys
+    std::unique_ptr<Expression> listOfKeys;
+};
+
 #endif
