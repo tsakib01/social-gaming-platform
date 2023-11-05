@@ -79,8 +79,8 @@ TEST(TranslatorTest, BodyRuleTest) {
     std::unique_ptr<Rule> rule = mockTranslator.createRule(rules.getNamedChild(0));
     BodyRule* bodyRule = (dynamic_cast<BodyRule*>(rule.release()));
     ASSERT_NE(bodyRule, nullptr);
+    // Check elements in BodyRule
     ASSERT_EQ(bodyRule->rules.size(), 3);
-    // Check elements in BodyRule's rules
     DiscardRule* discardRule = (dynamic_cast<DiscardRule*>(bodyRule->rules.at(0).release()));
     ASSERT_NE(discardRule, nullptr);
     MessageRule* messageRule = (dynamic_cast<MessageRule*>(bodyRule->rules.at(1).release()));
@@ -121,8 +121,8 @@ TEST(TranslatorTest, ForRuleTest) {
     ForRule* forRule = (dynamic_cast<ForRule*>(bodyRule->rules.at(0).release()));
     ASSERT_NE(forRule, nullptr);
     ASSERT_EQ(forRule->currentItem.identifier, "player");
-    ASSERT_EQ(forRule->body.rules.size(), 3);
     // Check elements in ForRule's BodyRule
+    ASSERT_EQ(forRule->body.rules.size(), 3);
     InputChoiceRule* inputRule = (dynamic_cast<InputChoiceRule*>(forRule->body.rules.at(0).release()));
     ASSERT_NE(inputRule, nullptr);
     MessageRule* messageRule = (dynamic_cast<MessageRule*>(forRule->body.rules.at(1).release()));
