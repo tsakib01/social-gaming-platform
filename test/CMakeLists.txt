@@ -13,10 +13,13 @@ enable_testing()
 add_executable(runAllTests 
     expressionTests.cpp
     userManagerTests.cpp
+    ruleFactoryTests.cpp
 )
 
 target_link_libraries(runAllTests
     GTest::gtest_main
+    gmock
     expression
     userManager
+    gameConfigLoader
 )
