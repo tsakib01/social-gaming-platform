@@ -7,7 +7,6 @@ ServerManager::ServerManager(const unsigned short port, const char* htmlFile) {
                   std::bind(&ServerManager::onDisconnect, this, std::placeholders::_1));
     gameInstanceManager = std::make_unique<GameInstanceManager>();
     userManager = std::make_shared<UserManager>();
-    messageHandler = std::make_unique<MessageHandler>(userManager);
 }
 
 void 
@@ -26,7 +25,7 @@ ServerManager::startServer() {
 
         // gameInstanceManager->runCycle();
 
-        std::deque outgoing = messageHandler->buildOutgoing(incoming);
+        std::deque outgoing = buildOutgoing(incoming);
         server->send(outgoing);
 
         sleep(1);
@@ -50,12 +49,64 @@ std::string
 ServerManager::getHTTPMessage(const char* htmlLocation) {
   if (access(htmlLocation, R_OK ) != -1) {
     std::ifstream infile{htmlLocation};
-    return std::string{std::istreambuf_iterator<char>(infile),
-                       std::istreambuf_iterator<char>()};
-
+    return std::string{std::istreambuf_iterator<char>(infile), std::istreambuf_iterator<char>()};
   }
 
-  std::cerr << "Unable to open HTML index file:\n"
-            << htmlLocation << "\n";
+  std::cerr << "Unable to open HTML index file:\n" << htmlLocation << "\n";
   std::exit(-1);
+}
+
+std::deque<Message> 
+ServerManager::buildOutgoing(const std::deque<Message>& incoming) {
+    std::deque<Message> outgoing;
+
+	for (const Message& message : incoming) {
+		User user = *(userManager->findUserByID(message.connection));
+		outgoing.push_back(stateMap[user.state](message));
+    }
+
+    return outgoing;
+}
+
+Message 
+ServerManager::ProcessNewState(const Message& message) {
+	if (message.text == "J") {
+		userManager->setUserState(message.connection, UserState::JOIN);
+		return Message{message.connection, "Please enter a room code.\n"};
+	}
+
+	else if (message.text == "C") {
+		userManager->setUserState(message.connection, UserState::CREATE);
+		return Message{message.connection, "Choose a game to play.\n"}; 
+	}
+
+	else {
+		return Message{message.connection, "Invalid, try again.\n"};
+	}
+}
+    
+Message
+ServerManager::ProcessJoinState(const Message& message) {	
+    std::vector<User> users = userManager->getAllUsers();
+    // bool gameFound = std::any_of(users.begin(), users.end(), [message.];
+
+    if (true) {
+      return Message{message.connection, "Joined game. Waiting on host...\n"};
+    }
+
+    else {
+      return Message{message.connection, "Invalid, try again.\n"};
+    }
+}
+
+Message
+ServerManager::ProcessCreateState(const Message& message) {
+	if (message.text == "games/rock-paper-scissors.game") {
+		// gameInstanceManager.createGame("games/rock-paper-scissors.game");
+		// return game room code to user
+	}
+
+	else {
+		return Message{message.connection, "Invalid, try again.\n"};
+	}
 }

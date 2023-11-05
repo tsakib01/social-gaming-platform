@@ -29,30 +29,26 @@ using networking::Server;
 */
 class MessageHandler {
 public:
-    MessageHandler(std::shared_ptr<UserManager> userManager) : m_userManager(userManager) {}
+    MessageHandler(std::shared_ptr<UserManager> userManager) {}
 
     // Takes in a list of Messages, and builds responses by going through them one 
     // at a time and calls the corresponding method in stateMap
-    std::deque<Message> buildOutgoing(const std::deque<Message>& incoming);
-
+    
     // void assignAction(uint8_t roomCode, std::vector<std::string_view>> actions); //called by game instance
 
 private:
-    std::shared_ptr<UserManager> m_userManager;
+    // std::shared_ptr<UserManager> m_userManager;
     // std::vector<Actions> actions;
     // std::map<Connection, std::string_view> userToInputMap; 
 
-    Message ProcessNew(const Message& message);
-    Message ProcessJoin(const Message& message);
-    Message ProcessCreate(const Message& message);
     // Message ProcessInput(const Message& message);
 
-    std::map<UserState, std::function<Message(const Message&)>> stateMap = {
-      {UserState::NEW, std::bind(&MessageHandler::ProcessNew, this, std::placeholders::_1)},
-      {UserState::JOIN, std::bind(&MessageHandler::ProcessJoin, this, std::placeholders::_1)},
-      {UserState::CREATE, std::bind(&MessageHandler::ProcessCreate, this, std::placeholders::_1)}
-      // {UserState::GAME_INPUT, std::bind(&MessageHandler::ProcessInput, this, std::placeholders::_1)}
-    };
+    // std::map<UserState, std::function<Message(const Message&)>> stateMap = {
+    //   {UserState::NEW, std::bind(&MessageHandler::ProcessNew, this, std::placeholders::_1)},
+    //   {UserState::JOIN, std::bind(&MessageHandler::ProcessJoin, this, std::placeholders::_1)},
+    //   {UserState::CREATE, std::bind(&MessageHandler::ProcessCreate, this, std::placeholders::_1)}
+    //   // {UserState::GAME_INPUT, std::bind(&MessageHandler::ProcessInput, this, std::placeholders::_1)}
+    // };
 };
 
 #endif
