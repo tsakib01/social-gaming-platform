@@ -12,7 +12,7 @@ target_include_directories(serverManager
 target_link_libraries(serverManager
   networking
   userManager
-  messageHandler
+  gameCommunicator
   gameInstanceManager
 )
 

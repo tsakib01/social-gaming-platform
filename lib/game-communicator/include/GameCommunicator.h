@@ -27,9 +27,9 @@ using networking::Server;
  * program the User is in, and call a corresponding method assigned to each state
  * that handles validity checking differently.
 */
-class MessageHandler {
+class GameCommunicator {
 public:
-    MessageHandler(std::shared_ptr<UserManager> userManager) {}
+    GameCommunicator() {}
 
     // Takes in a list of Messages, and builds responses by going through them one 
     // at a time and calls the corresponding method in stateMap

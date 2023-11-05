@@ -2,7 +2,7 @@
 #include "Server.h"
 #include "UserManager.h"
 #include "GameInstanceManager.h"
-#include "MessageHandler.h"
+#include "GameCommunicator.h"
 
 #include <fstream>
 #include <iostream>
@@ -25,7 +25,7 @@ private:
     std::unique_ptr<Server> server;
     std::unique_ptr<GameInstanceManager> gameInstanceManager;
     std::shared_ptr<UserManager> userManager;
-    std::unique_ptr<MessageHandler> messageHandler;
+    std::unique_ptr<GameCommunicator> gameCommunicator;
 
     void onConnect(Connection client);
     void onDisconnect(Connection client);

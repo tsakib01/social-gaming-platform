@@ -1,4 +1,4 @@
-#include "MessageHandler.h"
+#include "GameCommunicator.h"
 
 #include <random>
 #include <iostream>
