@@ -27,6 +27,7 @@ enum class UserState : char {
     NONE
 };
 
+
 struct User {
     Connection userID;
     std::string_view username;

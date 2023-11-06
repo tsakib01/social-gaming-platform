@@ -110,8 +110,7 @@ ServerManager::ProcessIntro(const Message& message) {
 
 	else if (message.text == "C") {
 		userManager->setUserState(message.connection, UserState::GAME_SELECT);
-		return Message{message.connection, 
-			"Choose a game to play.\n"}; 
+		return ProcessGameFiles(message); 
 	}
 
 	else {
@@ -151,19 +150,28 @@ ServerManager::ProcessJoinGame(const Message& message) {
 
 Message
 ServerManager::ProcessGameSelect(const Message& message) {
-	// TODO: Instead of hard coding the path, make it a list of options grabbed from games directory
-	if (message.text == "games/rock-paper-scissors.game") {
-		uint16_t roomCode = gameInstanceManager->generateRoomCode();
-		userManager->setUserRole(message.connection, Role::OWNER);
-		userManager->setUserRoomCode(message.connection, roomCode);
-		userManager->setUserState(message.connection, UserState::GAME_WAIT);
-		return Message{message.connection, 
-			"Room Code: " + std::to_string(roomCode) + ".     Type (S) to start.\n"};
+	std::vector<std::string> games = GetGameFiles();
+
+	try {
+		uint8_t choice = std::stoi(message.text);
+		if (choice > 0 && choice <= games.size()) {
+			uint16_t roomCode = gameInstanceManager->generateRoomCode();
+			userManager->setUserRole(message.connection, Role::OWNER);
+			userManager->setUserRoomCode(message.connection, roomCode);
+			userManager->setUserState(message.connection, UserState::GAME_WAIT);
+			return Message{message.connection, 
+				"Room Code: " + std::to_string(roomCode) + ".     Type (S) to start.\n"};
+		}
+
+		else {
+			return Message{message.connection, 
+				"Invalid, try again.\n"};
+		}
 	}
 
-	else {
-		return Message{message.connection, 
-			"Invalid, try again.\n"};
+	catch (const std::invalid_argument& e) {
+		return Message{message.connection,
+			"Please enter an option.\n"};
 	}
 }
 
@@ -191,7 +199,32 @@ ServerManager::ProcessGameWait(const Message& message) {
 Message
 ServerManager::ProcessGameRunning(const Message& message) {
 	// Not implemented yet.
+	return Message{message.connection, "Inside GAME_RUN state.\n"};
+}
 
-	return Message{message.connection, 
-		"Inside GAME_RUN state.\n"};
+Message 
+ServerManager::ProcessGameFiles(const Message& message){
+	std::vector<std::string> gameFiles = GetGameFiles();
+	std::string gameFilesToPrint = "Enter the number for which game you'd like to play:\n";
+	int fileCount = 1;
+	std::stringstream stringStream;
+	
+	for (std::string file : gameFiles){
+		gameFilesToPrint.append(std::to_string(fileCount) + ": " + file + "\n");
+		fileCount++;
+	}
+
+	return Message{message.connection, gameFilesToPrint};
+}
+
+std::vector<std::string> 
+ServerManager::GetGameFiles(){
+	std::vector<std::string> gameFiles;
+	std::string gamePath = "games";
+	
+	for (const auto & gameFile: std::filesystem::directory_iterator(gamePath)){
+		gameFiles.push_back(gameFile.path());
+	}
+
+	return gameFiles;
 }
