@@ -20,12 +20,15 @@ ServerManager::startServer() {
             errorWhileUpdating = true;
         }
 
-        const auto incoming = server->receive();
-        
-        // gameInstanceManager->runCycle();
+		gameInstanceManager->runCycle();
 
-        std::deque outgoing = buildOutgoing(incoming);
-        server->send(outgoing);
+		const auto incoming = server->receive();
+		
+		// std::deque gameMessages = gameCommunicator->getMessages();
+		// server->send(gameMessages);
+
+        std::deque responses = buildResponses(incoming);
+        server->send(responses);
 
         sleep(1);
     }
@@ -56,20 +59,20 @@ ServerManager::getHTTPMessage(const char* htmlLocation) {
 }
 
 std::deque<Message> 
-ServerManager::buildOutgoing(const std::deque<Message>& incoming) {
-    std::deque<Message> outgoing;
+ServerManager::buildResponses(const std::deque<Message>& incoming) {
+    std::deque<Message> responses;
 
 	for (const Message& message : incoming) {
 		User user = *(userManager->findUserByID(message.connection));
-		outgoing.push_back(stateMap[user.state](message));
+		responses.push_back(stateMap[user.state](message));
     }
 
-    return outgoing;
+    return responses;
 }
 
 Message 
 ServerManager::ProcessNew(const Message& message) {
-	if (message.text != "") {
+	if (!message.text.empty()) {
 		userManager->setUserName(message.connection, message.text);
 		userManager->setUserState(message.connection, UserState::INTRO);
 		return Message{message.connection, 
@@ -85,12 +88,14 @@ Message
 ServerManager::ProcessIntro(const Message& message) {
 	if (message.text == "J") {
 		userManager->setUserState(message.connection, UserState::JOIN_GAME);
-		return Message{message.connection, "Please enter a room code.\n"};
+		return Message{message.connection, 
+			"Please enter a room code.\n"};
 	}
 
 	else if (message.text == "C") {
 		userManager->setUserState(message.connection, UserState::GAME_SELECT);
-		return Message{message.connection, "Choose a game to play.\n"}; 
+		return Message{message.connection, 
+			"Choose a game to play.\n"}; 
 	}
 
 	else {
