@@ -151,7 +151,7 @@ ServerManager::ProcessGameRunning(const Message& message) {
 }
 
 Message ServerManager::ProcessGameFiles(const Message& message){
-	std::vector<std::string> gameFiles = DisplayGameFiles();
+	std::vector<std::string> gameFiles = GetGameFiles();
 	std::string gameFilesToPrint = "Files found in \"games\" folder:\n";
 	int fileCount = 1;
 	std::stringstream stringStream;
@@ -162,7 +162,7 @@ Message ServerManager::ProcessGameFiles(const Message& message){
 	return Message{message.connection, gameFilesToPrint};
 }
 
-std::vector<std::string> ServerManager::DisplayGameFiles(){
+std::vector<std::string> ServerManager::GetGameFiles(){
 	std::vector<std::string> gameFiles;
 	std::string gamePath = "games";
 	for(const auto & gameFile: std::filesystem::directory_iterator(gamePath)){

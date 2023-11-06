@@ -45,7 +45,7 @@ private:
     Message ProcessGameWait(const Message& message);
     Message ProcessGameRunning(const Message& message);
     Message ProcessGameFiles(const Message& message);
-    std::vector<std::string> DisplayGameFiles();
+    std::vector<std::string> GetGameFiles();
 
     std::map<UserState, std::function<Message(const Message&)>> stateMap = {
         {UserState::NEW, std::bind(&ServerManager::ProcessNew, this, std::placeholders::_1)},
