@@ -4,6 +4,7 @@
 #include "GameSetup.h"
 #include "GameSetupLoader.h"
 #include "Translator.h"
+#include "Evaluator.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
