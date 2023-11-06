@@ -48,6 +48,7 @@ public:
     std::vector<User> getUsersInGame(Connection userID);
     uint8_t getUserGameCode(Connection userID);
     std::vector<User> getAllUsers() const { return users; }
+    std::vector<User> getUsersByRoomCode(uint8_t roomCode);
     std::vector<User>::iterator findUserByID(Connection userID);
 
 private:

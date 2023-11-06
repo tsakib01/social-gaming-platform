@@ -57,6 +57,17 @@ UserManager::getUsersInGame(Connection userID) {
     return usersInGame;
 }
 
+std::vector<User> 
+UserManager::getUsersByRoomCode(uint8_t roomCode) {
+    std::vector<User> usersInRoom;
+
+    std::copy_if(users.begin(), users.end(), std::back_inserter(usersInRoom), [roomCode] (const User& user) {
+        return user.roomCode == roomCode;
+    });
+    
+    return usersInRoom;
+}
+
 uint8_t
 UserManager::getUserGameCode(Connection userID) {
     auto it = findUserByID(userID);
