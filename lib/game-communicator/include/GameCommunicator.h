@@ -16,9 +16,9 @@
 using networking::Message;
 using networking::Server;
 
-struct Actions {
+struct GameChoices {
   uint8_t roomCode;
-  std::map<std::string_view, std::vector<std::string_view>> actions; // {"choices", {"rock","paper","scissors"}}
+  std::vector<std::string_view> choices; // {"choices", {"rock","paper","scissors"}}
 };
 
 struct UserInput{
@@ -33,16 +33,16 @@ struct UserInput{
 */
 class GameCommunicator {
 public:
-    GameCommunicator(std::shared_ptr<UserManager>& userManager) : userManager{userManager} {}
+    GameCommunicator() {}
     
-    void assignAction(uint8_t roomCode, const std::map<std::string_view, std::vector<std::string_view>>& actions); //called by game instance
-    std::vector<std::string_view> getOptionsForUser(const Message& message, std::string_view key) const;
-    std::string_view getCurrentUserInput(Connection userID) const;
+    void setGameChoices(uint8_t roomCode, const std::vector<std::string_view>& choices); //called by game instance
     void storeCurrentUserInput(const Message& message); // stores the current user input to use later for sending all at once to the game instance
 
+    std::vector<std::string_view> getChoicesForUser(uint8_t roomCode) const;
+    std::string_view getCurrentUserInput(Connection userID) const;
+
 private:
-    std::shared_ptr<UserManager> userManager;
-    std::vector<Actions> actions;
+    std::vector<GameChoices> gameChoices;
     std::vector<UserInput> userInputs; 
 };
 
