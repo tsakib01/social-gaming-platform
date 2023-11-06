@@ -149,3 +149,24 @@ ServerManager::ProcessGameRunning(const Message& message) {
 	// Not implemented yet.
 	return Message{message.connection, "Inside GAME_RUN state.\n"};
 }
+
+Message ServerManager::ProcessGameFiles(const Message& message){
+	std::vector<std::string> gameFiles = DisplayGameFiles();
+	std::string gameFilesToPrint = "Files found in \"games\" folder:\n";
+	int fileCount = 1;
+	std::stringstream stringStream;
+	for (std::string file : gameFiles){
+		gameFilesToPrint.append(std::to_string(fileCount) + ": " + file + "\n");
+		fileCount++;
+	}
+	return Message{message.connection, gameFilesToPrint};
+}
+
+std::vector<std::string> ServerManager::DisplayGameFiles(){
+	std::vector<std::string> gameFiles;
+	std::string gamePath = "games";
+	for(const auto & gameFile: std::filesystem::directory_iterator(gamePath)){
+		gameFiles.push_back(gameFile.path());
+	}
+	return gameFiles;
+}

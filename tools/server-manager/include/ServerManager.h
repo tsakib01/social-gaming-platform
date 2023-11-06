@@ -10,6 +10,8 @@
 #include <string>
 #include <unistd.h>
 #include <vector>
+#include <filesystem>
+#include <sstream>
 
 using networking::Server;
 using networking::Connection;
@@ -42,7 +44,9 @@ private:
     Message ProcessGameConfig(const Message& message);
     Message ProcessGameWait(const Message& message);
     Message ProcessGameRunning(const Message& message);
-    
+    Message ProcessGameFiles(const Message& message);
+    std::vector<std::string> DisplayGameFiles();
+
     std::map<UserState, std::function<Message(const Message&)>> stateMap = {
         {UserState::NEW, std::bind(&ServerManager::ProcessNew, this, std::placeholders::_1)},
         {UserState::INTRO, std::bind(&ServerManager::ProcessIntro, this, std::placeholders::_1)},
