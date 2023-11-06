@@ -2,14 +2,14 @@
 
 GameInstanceManager::GameInstanceManager() {}
 
-int 
+uint16_t 
 GameInstanceManager::generateInviteCode() {
     std::random_device rd;
     std::mt19937 generator(rd());
-    std::uniform_int_distribution<int> distribution(1000, 9999);
+    std::uniform_int_distribution<uint16_t> distribution(1000, 9999);
 
     while (true) {
-        int inviteCode = distribution(generator);
+        uint16_t inviteCode = distribution(generator);
 
         auto codeExists = std::find_if(m_gameList.begin(), m_gameList.end(), 
             [inviteCode](const std::unique_ptr<GameInstance>& game) {

@@ -100,8 +100,8 @@ ServerManager::ProcessIntro(const Message& message) {
     
 Message
 ServerManager::ProcessJoinGame(const Message& message) {	
-    std::vector<User> users = userManager->getAllUsers();
-    // bool gameFound = std::any_of(users.begin(), users.end(), [message.];
+    // std::vector<User> users = userManager->getAllUsers();
+    // find if user is inside a game
 
     if (true) {
       return Message{message.connection, "Joined game. Waiting on host...\n"};
@@ -133,7 +133,6 @@ ServerManager::ProcessGameConfig(const Message& message) {
 
 Message
 ServerManager::ProcessGameWait(const Message& message) {
-	// Not implemented yet.
 	if (message.text == "start") {
 		userManager->setUserState(message.connection, UserState::GAME_RUN);
 		return Message{message.connection, "Moving to GAME_RUN state\n"};

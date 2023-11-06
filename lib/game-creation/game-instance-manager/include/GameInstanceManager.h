@@ -12,7 +12,7 @@ public:
     GameInstanceManager();
     ~GameInstanceManager() {};
 
-    int generateInviteCode();
+    uint16_t generateInviteCode();
     void sendInviteCode();
     void createGameInstance(std::string_view gameFilePath);
 
