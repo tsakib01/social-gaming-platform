@@ -26,6 +26,7 @@ enum class UserState : char {
     GAME_RUN 
 };
 
+
 struct User {
     Connection userID;
     std::string_view username;
