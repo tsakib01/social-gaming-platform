@@ -3,7 +3,7 @@
 GameInstanceManager::GameInstanceManager() {}
 
 uint16_t 
-GameInstanceManager::generateInviteCode() {
+GameInstanceManager::generateRoomCode() {
     std::random_device rd;
     std::mt19937 generator(rd());
     std::uniform_int_distribution<uint16_t> distribution(1000, 9999);
@@ -13,7 +13,7 @@ GameInstanceManager::generateInviteCode() {
 
         auto codeExists = std::find_if(m_gameList.begin(), m_gameList.end(), 
             [inviteCode](const std::unique_ptr<GameInstance>& game) {
-                return game->getInviteCode() == inviteCode;
+                return game->getRoomCode() == inviteCode;
             });
 
         if (codeExists == m_gameList.end()) {
@@ -23,34 +23,18 @@ GameInstanceManager::generateInviteCode() {
 }
 
 void 
-GameInstanceManager::sendInviteCode() {
-    // Blocked until there's a MessageHandler
-
-    // The MessageHandler should be able to ask for the invite code
-    // GameInstanceManager should return the invite code for that specified / created game
-}
-
-void 
 GameInstanceManager::createGameInstance(std::string_view gameFilePath) {
     GameConfigLoader gameConfigLoader{gameFilePath};
     auto rules = gameConfigLoader.createGameRules();
     auto state = gameConfigLoader.createGameState();
-    int inviteCode = generateInviteCode();
+    uint16_t inviteCode = generateRoomCode();
 
     m_gameList.push_back(std::make_unique<GameInstance>(std::move(rules), std::move(state), inviteCode));
 }
 
 void 
-GameInstanceManager::startGame() {
-    // Blocked until there's a MessageHandler
-
-    // The MessageHandler should get a signal from the owner to start and then call this function
-    // Should add the game being started from m_gameList to m_activeGameList
-}
-
-void 
 GameInstanceManager::finishGame() {
-    // Should remove the game from both m_gameList and m_activeGameList
+    // Should remove the game from both gameList and m_activeGameList
 }
 
 void 
@@ -67,4 +51,14 @@ GameInstanceManager::runCycle() {
     //             return game->gameIsFinished();
     //         }), m_gameList.end());
     // }
+}
+
+std::vector<uint16_t> 
+GameInstanceManager::getRoomCodes() {
+    std::vector<uint16_t> roomCodes;
+    std::transform(m_gameList.begin(), m_gameList.end(), std::back_inserter(roomCodes),
+        [](const std::unique_ptr<GameInstance>& gameInstance) {
+            return gameInstance->getRoomCode();
+        });
+    return roomCodes;
 }

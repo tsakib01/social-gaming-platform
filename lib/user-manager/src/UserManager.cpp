@@ -26,7 +26,7 @@ UserManager::setUserRole(Connection userID, Role role) {
 }
 
 void
-UserManager::setUserRoomCode(Connection userID, uint8_t roomCode) {
+UserManager::setUserRoomCode(Connection userID, uint16_t roomCode) {
     auto it = findUserByID(userID);
     it->roomCode = roomCode;
 }
@@ -49,7 +49,7 @@ std::vector<User>
 UserManager::getUsersInGame(Connection userID) {
     std::vector<User> usersInGame;
     
-    uint8_t userRoomCode = getUserGameCode(userID);
+    uint16_t userRoomCode = getUserGameCode(userID);
     std::copy_if(users.begin(), users.end(), std::back_inserter(usersInGame), [userRoomCode] (const User& user) {
         return user.roomCode == userRoomCode;
     });
@@ -57,7 +57,7 @@ UserManager::getUsersInGame(Connection userID) {
     return usersInGame;
 }
 
-uint8_t
+uint16_t
 UserManager::getUserGameCode(Connection userID) {
     auto it = findUserByID(userID);
     return it->roomCode;

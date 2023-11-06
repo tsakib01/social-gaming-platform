@@ -89,7 +89,7 @@ ServerManager::ProcessIntro(const Message& message) {
 	}
 
 	else if (message.text == "C") {
-		userManager->setUserState(message.connection, UserState::GAME_CREATE);
+		userManager->setUserState(message.connection, UserState::GAME_SELECT);
 		return Message{message.connection, "Choose a game to play.\n"}; 
 	}
 
@@ -100,25 +100,38 @@ ServerManager::ProcessIntro(const Message& message) {
     
 Message
 ServerManager::ProcessJoinGame(const Message& message) {	
-    // std::vector<User> users = userManager->getAllUsers();
-    // find if user is inside a game
+	try {
+		uint16_t number = std::stoi(message.text);
+		std::vector<User> users = userManager->getAllUsers();
+		auto it = std::find_if(users.begin(), users.end(), [number](const User& user) {
+			return user.roomCode == number;
+        });
 
-    if (true) {
-      return Message{message.connection, "Joined game. Waiting on host...\n"};
-    }
+		if (it != users.end()) {
+			userManager->setUserRole(message.connection, Role::PLAYER);
+			userManager->setUserRoomCode(message.connection, std::stoi(message.text));
+			userManager->setUserState(message.connection, UserState::GAME_WAIT);
+			return Message{message.connection, "Joined game. Waiting on host...\n"};
+		}
+	} 
 
-    else {
-      return Message{message.connection, "Invalid, try again.\n"};
-    }
+	catch (const std::invalid_argument& e) {
+		return Message{message.connection, "Please enter a number.\n"};
+	}
+
+	return Message{message.connection, "Room not found, try again.\n"};
 }
 
 Message
-ServerManager::ProcessGameCreate(const Message& message) {
+ServerManager::ProcessGameSelect(const Message& message) {
+	// TODO: Instead of hard coding the path, make it a list of options grabbed from games directory
 	if (message.text == "games/rock-paper-scissors.game") {
-		gameInstanceManager->createGameInstance(message.text);
+		uint16_t roomCode = gameInstanceManager->generateRoomCode();
+		userManager->setUserRole(message.connection, Role::OWNER);
+		userManager->setUserRoomCode(message.connection, roomCode);
 		userManager->setUserState(message.connection, UserState::GAME_WAIT);
 		return Message{message.connection, 
-			"Here is your room code: UNFINISHED! Type \"start\" when ready.\n"};
+			"Room Code: " + std::to_string(roomCode) + "\tType S to start.\n"};
 	}
 
 	else {
@@ -133,13 +146,16 @@ ServerManager::ProcessGameConfig(const Message& message) {
 
 Message
 ServerManager::ProcessGameWait(const Message& message) {
-	if (message.text == "start") {
+	User user = *(userManager->findUserByID(message.connection));
+
+	if (message.text == "S" && user.role == Role::OWNER) {
 		userManager->setUserState(message.connection, UserState::GAME_RUN);
+		// gameInstanceManager->createGameInstance();
 		return Message{message.connection, "Moving to GAME_RUN state\n"};
 	}
 
 	else {
-		return Message{message.connection, "Invalid, try again.\n"};
+		return Message{message.connection, ""};
 	}
 }
 

@@ -38,7 +38,7 @@ private:
     Message ProcessNew(const Message& message);
     Message ProcessIntro(const Message& message);
     Message ProcessJoinGame(const Message& message);
-    Message ProcessGameCreate(const Message& message);
+    Message ProcessGameSelect(const Message& message);
     Message ProcessGameConfig(const Message& message);
     Message ProcessGameWait(const Message& message);
     Message ProcessGameRunning(const Message& message);
@@ -47,9 +47,9 @@ private:
         {UserState::NEW, std::bind(&ServerManager::ProcessNew, this, std::placeholders::_1)},
         {UserState::INTRO, std::bind(&ServerManager::ProcessIntro, this, std::placeholders::_1)},
         {UserState::JOIN_GAME, std::bind(&ServerManager::ProcessJoinGame, this, std::placeholders::_1)},
-        {UserState::GAME_CREATE, std::bind(&ServerManager::ProcessGameCreate, this, std::placeholders::_1)},
+        {UserState::GAME_SELECT, std::bind(&ServerManager::ProcessGameSelect, this, std::placeholders::_1)},
         {UserState::GAME_CONFIG, std::bind(&ServerManager::ProcessGameConfig, this, std::placeholders::_1)},
         {UserState::GAME_WAIT, std::bind(&ServerManager::ProcessGameWait, this, std::placeholders::_1)},
-        {UserState::GAME_RUN, std::bind(&ServerManager::ProcessGameRunning, this, std::placeholders::_1)},
+        {UserState::GAME_RUN, std::bind(&ServerManager::ProcessGameRunning, this, std::placeholders::_1)}
     };
 };
