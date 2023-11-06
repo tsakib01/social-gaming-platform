@@ -23,6 +23,9 @@ ServerManager::startServer() {
 		gameInstanceManager->runCycle();
 
 		const auto incoming = server->receive();
+
+		std::deque userMessages = buildUserMessages(incoming);
+		server->send(userMessages);
 		
 		// std::deque gameMessages = gameCommunicator->getMessages();
 		// server->send(gameMessages);
@@ -38,7 +41,7 @@ void
 ServerManager::onConnect(Connection client) {
   std::cout << "New connection: " << client.id << "\n";
   userManager->addUser(client);
-  server->send(std::deque<Message>(1, {client, "Enter your name.\n"}));
+  server->send(std::deque<Message>(1, {client, "Welcome! What is your name?\n"}));
 }
 
 void 
@@ -56,6 +59,18 @@ ServerManager::getHTTPMessage(const char* htmlLocation) {
 
   std::cerr << "Unable to open HTML index file:\n" << htmlLocation << "\n";
   std::exit(-1);
+}
+
+std::deque<Message>
+ServerManager::buildUserMessages(const std::deque<Message>& incoming) {
+	std::deque<Message> messages;
+
+	for (const Message& message : incoming) {
+		messages.push_back(Message{message.connection, 
+			"> " + message.text + "\n"});
+	}
+
+	return messages;
 }
 
 std::deque<Message> 
@@ -76,11 +91,12 @@ ServerManager::ProcessNew(const Message& message) {
 		userManager->setUserName(message.connection, message.text);
 		userManager->setUserState(message.connection, UserState::INTRO);
 		return Message{message.connection, 
-			"Welcome, " + message.text + "! Type J to join, C to create a game.\n"};
+			"Type (J) to join, (C) to create a game.\n"};
 	}
 
 	else {
-		return Message{message.connection, "Invalid, try again.\n"};
+		return Message{message.connection, 
+			"Invalid, try again.\n"};
 	}
 }
 
@@ -99,32 +115,38 @@ ServerManager::ProcessIntro(const Message& message) {
 	}
 
 	else {
-		return Message{message.connection, "Invalid, try again.\n"};
+		return Message{message.connection, 
+			"Invalid, try again.\n"};
 	}
 }
     
 Message
 ServerManager::ProcessJoinGame(const Message& message) {	
 	try {
-		uint16_t number = std::stoi(message.text);
+		uint16_t code = std::stoi(message.text);
 		std::vector<User> users = userManager->getAllUsers();
-		auto it = std::find_if(users.begin(), users.end(), [number](const User& user) {
-			return user.roomCode == number;
+		auto it = std::find_if(users.begin(), users.end(), [code](const User& user) {
+			return user.roomCode == code;
         });
 
 		if (it != users.end()) {
 			userManager->setUserRole(message.connection, Role::PLAYER);
-			userManager->setUserRoomCode(message.connection, std::stoi(message.text));
+			userManager->setUserRoomCode(message.connection, code);
 			userManager->setUserState(message.connection, UserState::GAME_WAIT);
-			return Message{message.connection, "Joined game. Waiting on host...\n"};
+			return Message{message.connection, 
+				"Joined game. Waiting on host...\n"};
+		} 
+		
+		else {
+			return Message{message.connection, 
+				"Room not found, try again.\n"};
 		}
 	} 
 
 	catch (const std::invalid_argument& e) {
-		return Message{message.connection, "Please enter a number.\n"};
+		return Message{message.connection, 
+			"Please enter a valid number.\n"};
 	}
-
-	return Message{message.connection, "Room not found, try again.\n"};
 }
 
 Message
@@ -136,11 +158,12 @@ ServerManager::ProcessGameSelect(const Message& message) {
 		userManager->setUserRoomCode(message.connection, roomCode);
 		userManager->setUserState(message.connection, UserState::GAME_WAIT);
 		return Message{message.connection, 
-			"Room Code: " + std::to_string(roomCode) + "\tType S to start.\n"};
+			"Room Code: " + std::to_string(roomCode) + ".     Type (S) to start.\n"};
 	}
 
 	else {
-		return Message{message.connection, "Invalid, try again.\n"};
+		return Message{message.connection, 
+			"Invalid, try again.\n"};
 	}
 }
 
@@ -156,7 +179,8 @@ ServerManager::ProcessGameWait(const Message& message) {
 	if (message.text == "S" && user.role == Role::OWNER) {
 		userManager->setUserState(message.connection, UserState::GAME_RUN);
 		// gameInstanceManager->createGameInstance();
-		return Message{message.connection, "Moving to GAME_RUN state\n"};
+		return Message{message.connection, 
+			"Moving to GAME_RUN state\n"};
 	}
 
 	else {
@@ -167,5 +191,7 @@ ServerManager::ProcessGameWait(const Message& message) {
 Message
 ServerManager::ProcessGameRunning(const Message& message) {
 	// Not implemented yet.
-	return Message{message.connection, "Inside GAME_RUN state.\n"};
+
+	return Message{message.connection, 
+		"Inside GAME_RUN state.\n"};
 }

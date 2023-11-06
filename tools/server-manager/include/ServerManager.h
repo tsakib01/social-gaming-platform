@@ -39,9 +39,13 @@ private:
     // Used to access webchat.html
     std::string getHTTPMessage(const char* htmlLocation);
 
+    // Takes in a list of Messages, and returns what the user said in a 
+    // cleanly formatted way to display on screen
+    std::deque<Message> buildUserMessages(const std::deque<Message>& incoming);
+
     // Takes in a list of Messages, and builds a list of Message responses
-    // Based on the state of the User, it will call a corresponding ProcessX() method
-    // defined in stateMap to handle it appropriately
+    // Based on the state of the User, it will call a corresponding ProcessX()
+    // method defined in stateMap to handle it appropriately
     std::deque<Message> buildResponses(const std::deque<Message>& incoming);
     
     // Handles validity checking and returns a Message accordingly
