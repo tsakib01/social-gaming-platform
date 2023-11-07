@@ -88,7 +88,7 @@ ServerManager::buildResponses(const std::deque<Message>& incoming) {
 }
 
 std::deque<Message>  
-ServerManager::ProcessNew(const Message& message) {
+ServerManager::processNew(const Message& message) {
 	if (!message.text.empty()) {
 		userManager->setUserName(message.connection, message.text);
 
@@ -106,7 +106,7 @@ ServerManager::ProcessNew(const Message& message) {
 }
 
 std::deque<Message> 
-ServerManager::ProcessIntro(const Message& message) {
+ServerManager::processIntro(const Message& message) {
 	if (message.text == "J") {
 		userManager->setUserState(message.connection, UserState::JOIN_GAME);
 		return std::deque<Message>{
@@ -116,7 +116,7 @@ ServerManager::ProcessIntro(const Message& message) {
 	else if (message.text == "C") {
 		userManager->setUserState(message.connection, UserState::GAME_SELECT);
 		return std::deque<Message>{
-			{BuildGameFiles(message)}}; 
+			{buildGameFiles(message)}}; 
 	}
 
 	else {
@@ -126,7 +126,7 @@ ServerManager::ProcessIntro(const Message& message) {
 }
     
 std::deque<Message>
-ServerManager::ProcessJoinGame(const Message& message) {	
+ServerManager::processJoinGame(const Message& message) {	
 	try {
 		uint16_t code = std::stoi(message.text);
 		std::vector<uint16_t> roomCodes = gameInstanceManager->getRoomCodes();
@@ -157,11 +157,11 @@ ServerManager::ProcessJoinGame(const Message& message) {
 }
 
 std::deque<Message>
-ServerManager::ProcessGameSelect(const Message& message) {
+ServerManager::processGameSelect(const Message& message) {
 	try {
 		uint8_t choice = std::stoi(message.text);
 
-		std::vector<std::string> games = GetGameFiles();
+		std::vector<std::string> games = getGameFiles();
 		if (choice > 0 && choice <= games.size()) {
 			uint16_t roomCode = gameInstanceManager->createGameInstance(games[choice-1]);
 			userManager->setUserRole(message.connection, Role::OWNER);
@@ -184,12 +184,12 @@ ServerManager::ProcessGameSelect(const Message& message) {
 }
 
 std::deque<Message>
-ServerManager::ProcessGameConfig(const Message& message) {
+ServerManager::processGameConfig(const Message& message) {
 	// Not implemented yet.
 }
 
 std::deque<Message>
-ServerManager::ProcessGameWait(const Message& message) {
+ServerManager::processGameWait(const Message& message) {
 	User user = *(userManager->findUserByID(message.connection));
 
 	if (message.text == "S" && user.role == Role::OWNER) {
@@ -206,7 +206,7 @@ ServerManager::ProcessGameWait(const Message& message) {
 }
 
 std::deque<Message>
-ServerManager::ProcessGameRunning(const Message& message) {
+ServerManager::processGameRunning(const Message& message) {
 	// Not implemented yet.
 
 	return std::deque<Message>{
@@ -214,8 +214,8 @@ ServerManager::ProcessGameRunning(const Message& message) {
 }
 
 Message 
-ServerManager::BuildGameFiles(const Message& message){
-	std::vector<std::string> gameFiles = GetGameFiles();
+ServerManager::buildGameFiles(const Message& message){
+	std::vector<std::string> gameFiles = getGameFiles();
 	std::string gameFilesToPrint = "Enter the number for which game you'd like to play:\n";
 	int fileCount = 1;
 	std::stringstream stringStream;
@@ -229,7 +229,7 @@ ServerManager::BuildGameFiles(const Message& message){
 }
 
 std::vector<std::string> 
-ServerManager::GetGameFiles(){
+ServerManager::getGameFiles(){
 	std::vector<std::string> gameFiles;
 	std::string gamePath = "games";
 	

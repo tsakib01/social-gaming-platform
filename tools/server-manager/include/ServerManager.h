@@ -51,24 +51,24 @@ private:
     std::deque<Message> buildResponses(const std::deque<Message>& incoming);
     
     // Handles validity checking and returns a Message accordingly
-    std::deque<Message> ProcessNew(const Message& message);
-    std::deque<Message> ProcessIntro(const Message& message);
-    std::deque<Message> ProcessJoinGame(const Message& message);
-    std::deque<Message> ProcessGameSelect(const Message& message);
-    std::deque<Message> ProcessGameConfig(const Message& message);
-    std::deque<Message> ProcessGameWait(const Message& message);
-    std::deque<Message> ProcessGameRunning(const Message& message);
+    std::deque<Message> processNew(const Message& message);
+    std::deque<Message> processIntro(const Message& message);
+    std::deque<Message> processJoinGame(const Message& message);
+    std::deque<Message> processGameSelect(const Message& message);
+    std::deque<Message> processGameConfig(const Message& message);
+    std::deque<Message> processGameWait(const Message& message);
+    std::deque<Message> processGameRunning(const Message& message);
     
-    Message BuildGameFiles(const Message& message);
-    std::vector<std::string> GetGameFiles();
+    Message buildGameFiles(const Message& message);
+    std::vector<std::string> getGameFiles();
 
     std::map<UserState, std::function<std::deque<Message>(const Message&)>> stateMap = {
-        {UserState::NEW, std::bind(&ServerManager::ProcessNew, this, std::placeholders::_1)},
-        {UserState::INTRO, std::bind(&ServerManager::ProcessIntro, this, std::placeholders::_1)},
-        {UserState::JOIN_GAME, std::bind(&ServerManager::ProcessJoinGame, this, std::placeholders::_1)},
-        {UserState::GAME_SELECT, std::bind(&ServerManager::ProcessGameSelect, this, std::placeholders::_1)},
-        {UserState::GAME_CONFIG, std::bind(&ServerManager::ProcessGameConfig, this, std::placeholders::_1)},
-        {UserState::GAME_WAIT, std::bind(&ServerManager::ProcessGameWait, this, std::placeholders::_1)},
-        {UserState::GAME_RUN, std::bind(&ServerManager::ProcessGameRunning, this, std::placeholders::_1)}
+        {UserState::NEW, std::bind(&ServerManager::processNew, this, std::placeholders::_1)},
+        {UserState::INTRO, std::bind(&ServerManager::processIntro, this, std::placeholders::_1)},
+        {UserState::JOIN_GAME, std::bind(&ServerManager::processJoinGame, this, std::placeholders::_1)},
+        {UserState::GAME_SELECT, std::bind(&ServerManager::processGameSelect, this, std::placeholders::_1)},
+        {UserState::GAME_CONFIG, std::bind(&ServerManager::processGameConfig, this, std::placeholders::_1)},
+        {UserState::GAME_WAIT, std::bind(&ServerManager::processGameWait, this, std::placeholders::_1)},
+        {UserState::GAME_RUN, std::bind(&ServerManager::processGameRunning, this, std::placeholders::_1)}
     };
 };
