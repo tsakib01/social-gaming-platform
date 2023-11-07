@@ -51,30 +51,15 @@ class RuleExecutor {
 public:
     using Executors = std::map<std::string_view, std::unique_ptr<Execute>>;
 
-    RuleExecutor(Executors& executors) : executors(std::move(executors)) {}
+    RuleExecutor(Executors& executors) : m_executors(std::move(executors)) {}
 
     /// Executes a rule using the appropriate executor.
     /// @tparam TRule The type of the rule - the key of the executor map.
-    template <typename TRule>
-    void executeRule(Rule& rule, ExecuteContext& context) {
-        auto executor = executors[typeid(TRule).name()].get();
-        executor->execute(rule, context);
-    }
+    void executeRule(Rule& rule, ExecuteContext& context);
 
     /// Create a default executor map.
-    static Executors createExecutorMap() {
-        auto executorMap = Executors{};
-        executorMap.emplace(typeid(BodyRule).name(), std::make_unique<BodyRuleExecute>());
-        executorMap.emplace(typeid(ForRule).name(), std::make_unique<ForRuleExecute>());
-        executorMap.emplace(typeid(MatchRule).name(), std::make_unique<MatchRuleExecute>());
-        executorMap.emplace(typeid(DiscardRule).name(), std::make_unique<DiscardRuleExecute>());
-        executorMap.emplace(typeid(MessageRule).name(), std::make_unique<MessageRuleExecute>());
-        executorMap.emplace(typeid(ParallelForRule).name(), std::make_unique<ParallelForRuleExecute>());
-        executorMap.emplace(typeid(InputChoiceRule).name(), std::make_unique<InputChoiceRuleExecute>());
-        executorMap.emplace(typeid(ExtendRule).name(), std::make_unique<ExtendRuleExecute>());
-        return executorMap;
-    }
+    static Executors createDefault();
 
 private:
-    Executors executors;
+    Executors m_executors;
 };
