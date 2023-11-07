@@ -20,5 +20,5 @@ target_link_libraries(runAllTests
     GTest::gtest_main
     expression
     userManager
-    inGamemUserManager
+    gameRuleEngine
 )
