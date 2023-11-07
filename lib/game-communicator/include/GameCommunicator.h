@@ -17,7 +17,7 @@ using networking::Message;
 using networking::Server;
 
 struct GameChoices {
-  uint8_t roomCode;
+  uint16_t roomCode;
   std::vector<std::string_view> choices; // {"choices", {"rock","paper","scissors"}}
 };
 
