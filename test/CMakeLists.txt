@@ -12,6 +12,7 @@ enable_testing()
 
 add_executable(runAllTests
     userManagerTests.cpp
+    EvaluatorTests.cpp
 )
 
 target_link_libraries(runAllTests
