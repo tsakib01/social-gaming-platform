@@ -3,7 +3,7 @@
 // game instance sends the game code (which is also the room Code) with the choices for input
 // the function stores the actions along with the roomCode in a vector
 void 
-GameCommunicator::setGameChoices(uint8_t roomCode, const std::vector<std::string_view>& choices) {
+GameCommunicator::setGameChoices(uint16_t roomCode, const std::vector<std::string_view>& choices) {
     GameChoices currentGameChoices;
     currentGameChoices.roomCode = roomCode;
     currentGameChoices.choices = choices;
@@ -43,7 +43,7 @@ GameCommunicator::setGameMessage(const std::vector<Connection> users, std::strin
 
 // returns the available choices for the game inputs 
 std::vector<std::string_view> 
-GameCommunicator::getChoicesForUser(uint8_t roomCode) const {
+GameCommunicator::getChoicesForUser(uint16_t roomCode) const {
 
     auto it = std::find_if(gameChoices.begin(), gameChoices.end(), [roomCode](const GameChoices& g_choices) {
         return g_choices.roomCode == roomCode;

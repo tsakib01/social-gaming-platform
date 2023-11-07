@@ -35,11 +35,11 @@ class GameCommunicator {
 public:
     GameCommunicator() {}
     
-    void setGameChoices(uint8_t roomCode, const std::vector<std::string_view>& choices); //called by game instance
+    void setGameChoices(uint16_t roomCode, const std::vector<std::string_view>& choices); //called by game instance
     void storeCurrentUserInput(const Message& message); // stores the current user input to use later for sending all at once to the game instance
     void setGameMessage(const std::vector<Connection> users, std::string_view message);
 
-    std::vector<std::string_view> getChoicesForUser(uint8_t roomCode) const;
+    std::vector<std::string_view> getChoicesForUser(uint16_t roomCode) const;
     std::string_view getCurrentUserInput(Connection userID) const;
     std::vector<Message> getGameMessages() const { return gameMessages; }
 
