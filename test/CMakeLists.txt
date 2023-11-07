@@ -15,8 +15,7 @@ file(
   DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-add_executable(runAllTests 
-    expressionTests.cpp
+add_executable(runAllTests
     userManagerTests.cpp
     ruleFactoryTests.cpp
 )

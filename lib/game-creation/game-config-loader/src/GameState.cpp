@@ -1,97 +1,85 @@
 #include "GameState.h"
 #include <iostream>
 
-GameState::GameState(std::shared_ptr<GameStateLoader> gameStateLoader)
-:environment(std::make_unique<Environment>()), gameStateLoader(gameStateLoader)
+GameState::GameState()
+:environment(std::make_unique<GameEnvironment::Environment>())
 {}
 
-void GameState::addEnvironment(ts::Node root){
-    std::unique_ptr<Environment> newEnvironment = gameStateLoader->getEnvironment(root);
-
-    // Check there are no same identifiers
-    for (const auto& [identifier, value] : *newEnvironment){
-        if (environment->count(identifier)){
+void GameState::addEnvironment(GameEnvironment::Environment& newEnvironment){
+    // Insert variables to environment
+    for (auto& [identifier, value] : newEnvironment){
+        auto [it, succeeded] = environment->try_emplace(identifier, std::move(value));
+        if (!succeeded){
             std::runtime_error("Top-level identifier should be same.");
         }
     }
-    
-    // Insert variables to environment
-    for (const auto& [identifier, value] : *newEnvironment){
-        environment->insert(std::make_pair(identifier, value));
-    }
 }
 
-void GameState::addState(Identifier identifier, Value value){
-    if (environment->count(identifier)){
+void GameState::addState(GameEnvironment::Identifier identifier, std::unique_ptr<GameEnvironment::Value> value){
+    auto [it, succeeded]  = environment->try_emplace(identifier, std::move(value));
+    if (!succeeded){
         std::runtime_error ("The identifier already exists in the environment");
     }
-    environment->insert(std::make_pair(identifier, value));
 }
 
-void GameState::updateState(Identifier identifier, Value value){
-    if (environment->count(identifier)){
+const GameEnvironment::Value* GameState::getValue(GameEnvironment::Identifier identifier){
+    auto variable = environment->find(identifier);
+    if (variable == environment->end()){
         std::runtime_error ("The identifier does not exists in the environment");
     }
-    environment->insert(std::make_pair(identifier, value));
+    return variable->second.get();
 }
 
-Value GameState::getData(Identifier identifier){
-    auto found = environment->find(identifier);
-    
-    if (found == environment->end()){
+void GameState::updateState(GameEnvironment::Identifier identifier, std::unique_ptr<GameEnvironment::Value>  value){
+    auto variable = environment->find(identifier);
+    if (variable == environment->end()){
         std::runtime_error ("The identifier does not exists in the environment");
     }
-    return found->second;
+    variable->second = std::move(value);
 }
 
 struct PrintVisitor {
-    void operator()(const Primitive& value) const {
-        if (std::holds_alternative<int>(value)) {
-            std::cout << std::get<int>(value);
-        } else if (std::holds_alternative<bool>(value)) {
-            std::cout << (std::get<bool>(value) ? "true" : "false");
-        } else if (std::holds_alternative<std::string_view>(value)) {
-            std::cout << std::get<std::string_view>(value);
-        }
+    void operator()(int value) const {
+        std::cout << "Integer: " << value << std::endl;
     }
 
-    void operator()(const Map& value) const {
-        std::cout << "{ ";
-        for (const auto& [key, val] : value) {
+    void operator()(bool value) const {
+        std::cout << "Boolean: " << (value ? "true" : "false") << std::endl;
+    }
+
+    void operator()(const std::string_view& value) const {
+        std::cout << "String: " << value << std::endl;
+    }
+
+    void operator()(const std::unique_ptr<GameEnvironment::Map>& value) const {
+        std::cout << "Map found..." << std::endl;
+        for (const auto& [key, val] : *value) {
             std::cout << key << ": ";
-            std::visit(*this, val); // Recursively visit the map values.
-            std::cout << ", ";
+            std::visit(PrintVisitor{}, val->value);
+            std::cout << std::endl;
         }
-        std::cout << "} ";
     }
 
-    void operator()(const List& value) const {
-        std::cout << "[ ";
-        for (const auto& item : value) {
-            std::visit(*this, item); // Recursively visit the list items.
-            std::cout << ", ";
+    void operator()(const std::unique_ptr<GameEnvironment::List>& value) const {
+        std::cout << "List found..." << std::endl;
+        for (const auto& item : *value) {
+            std::visit(PrintVisitor{}, item->value);
         }
-        std::cout << "] ";
     }
 
-    template <typename T>
-    void operator()(const T& value) const {
-        std::cout << value;
-    }
-
-    void operator()(const Value& value) const {
-        // Use std::visit to visit the variant type and delegate to appropriate functions.
-        std::visit(*this, value);
+    void operator()(const GameEnvironment::Value& value) const {
+        std::visit(*this, value.value);
     }
 };
-
+    
 void GameState::print(){
     for (const auto& [key, value] : *environment){
         std::cout << key << ": ";
-        std::visit(PrintVisitor{}, value);
+        std::visit(PrintVisitor{}, value->value);
         std::cout << std::endl;
     }
 }
+
 
 
 
