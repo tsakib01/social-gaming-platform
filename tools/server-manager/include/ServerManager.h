@@ -51,17 +51,18 @@ private:
     std::deque<Message> buildResponses(const std::deque<Message>& incoming);
     
     // Handles validity checking and returns a Message accordingly
-    Message ProcessNew(const Message& message);
-    Message ProcessIntro(const Message& message);
-    Message ProcessJoinGame(const Message& message);
-    Message ProcessGameSelect(const Message& message);
-    Message ProcessGameConfig(const Message& message);
-    Message ProcessGameWait(const Message& message);
-    Message ProcessGameRunning(const Message& message);
-    Message ProcessGameFiles(const Message& message);
+    std::deque<Message> ProcessNew(const Message& message);
+    std::deque<Message> ProcessIntro(const Message& message);
+    std::deque<Message> ProcessJoinGame(const Message& message);
+    std::deque<Message> ProcessGameSelect(const Message& message);
+    std::deque<Message> ProcessGameConfig(const Message& message);
+    std::deque<Message> ProcessGameWait(const Message& message);
+    std::deque<Message> ProcessGameRunning(const Message& message);
+    
+    Message BuildGameFiles(const Message& message);
     std::vector<std::string> GetGameFiles();
 
-    std::map<UserState, std::function<Message(const Message&)>> stateMap = {
+    std::map<UserState, std::function<std::deque<Message>(const Message&)>> stateMap = {
         {UserState::NEW, std::bind(&ServerManager::ProcessNew, this, std::placeholders::_1)},
         {UserState::INTRO, std::bind(&ServerManager::ProcessIntro, this, std::placeholders::_1)},
         {UserState::JOIN_GAME, std::bind(&ServerManager::ProcessJoinGame, this, std::placeholders::_1)},

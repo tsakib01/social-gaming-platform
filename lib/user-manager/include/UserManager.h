@@ -30,7 +30,7 @@ enum class UserState : char {
 
 struct User {
     Connection userID;
-    std::string_view username;
+    std::string username;
     Role role;
     UserState state;
     uint16_t roomCode;
@@ -42,15 +42,18 @@ class UserManager {
 public:
     UserManager() {};
     void addUser(Connection userID);
-    void setUserName(Connection userID, std::string_view username);
+    void removeUser(Connection userID);
+
+    void setUserName(Connection userID, std::string username);
     void setUserRole(Connection userID, Role role);
     void setUserRoomCode(Connection userID, uint16_t roomCode);
     void setUserState(Connection userID, UserState state);
-    void removeUser(Connection userID);
+
     std::vector<User> getUsersInGame(Connection userID);
     uint16_t getUserGameCode(Connection userID);
     std::vector<User> getAllUsers() const { return users; }
     std::vector<User>::iterator findUserByID(Connection userID);
+    std::vector<User>::iterator getRoomOwner(uint16_t roomCode);
 
 private:
     std::vector<User> users;
