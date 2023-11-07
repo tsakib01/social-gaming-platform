@@ -4,6 +4,7 @@
 #include <map>
 #include <memory>
 #include <GameEnvironment.h>
+#include <stdexcept>
 
 // Allowed operations by evaluator
 enum class OPERATOR {
@@ -15,6 +16,10 @@ class Operation {
 public:
     // Evaluates given arguments to GameEnvironment::Value
     GameEnvironment::Value evaluate(std::vector<const GameEnvironment::Value*> values) const {
+        // Operation specification not meet
+        if (!getSpecification(values)){
+            throw std::runtime_error("The operation specification is not met");
+        }
         return evaluateImpl(values);
     }
     // Check given arguments meets specification of Operation

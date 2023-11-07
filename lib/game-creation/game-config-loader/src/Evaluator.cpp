@@ -1,7 +1,5 @@
 #include "Evaluator.h"
 #include <stdexcept>
-#include <iostream>
-#include <stdexcept>
 
 // Add operation supports
 // 1. Addition of two integers
@@ -143,12 +141,6 @@ GameEnvironment::Value Evaluator::evaluate(OPERATOR operationEnum, std::vector<c
     if (operationItr == operatorToOperation.end()){
         std::runtime_error("The operator is not registered");
     }
-    
-    // Operation specification not meed
-    if (!operationItr->second->getSpecification(values)){
-        std::runtime_error("The operation specification is not met");
-    }
-
     return operationItr->second->evaluate(values);
 }
 
