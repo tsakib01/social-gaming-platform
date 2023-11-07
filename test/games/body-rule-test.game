@@ -1,0 +1,29 @@
+configuration {
+    name: ""
+    player range: (0, 0)
+    audience: false
+    setup: {}
+}
+
+constants {}
+
+variables {}
+
+per-player {}
+
+per-audience {}
+
+rules {
+    discard winners.size() from winners;
+
+    message all "Round {round}. Choose your weapon!";
+
+    for player in players {
+        input choice to player {
+            prompt: "{player.name}, choose your weapon!"
+            choices: weapons.name
+            target: player.name
+            timeout: 10
+        }
+    }
+}
