@@ -32,5 +32,5 @@ include(cmake/CPM.cmake)
 add_subdirectory(lib)
 add_subdirectory(tools)
 
-set(BUILD_TESTS OFF)
+set(BUILD_TESTS ON)
 add_subdirectory(test)

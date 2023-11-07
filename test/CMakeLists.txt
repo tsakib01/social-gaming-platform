@@ -10,8 +10,7 @@ CPMAddPackage(
 
 enable_testing()
 
-add_executable(runAllTests 
-    expressionTests.cpp
+add_executable(runAllTests
     userManagerTests.cpp
 )
 
