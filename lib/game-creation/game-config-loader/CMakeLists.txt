@@ -16,6 +16,7 @@ add_library(gameConfigLoader
   src/GameSetup.cpp
   src/GameSetupLoader.cpp
   src/Translator.cpp
+  src/Evaluator.cpp
 )
 target_include_directories(gameConfigLoader
   PUBLIC

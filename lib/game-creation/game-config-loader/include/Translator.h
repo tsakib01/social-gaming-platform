@@ -68,14 +68,22 @@ private:
 class BodyFactory final : public RuleFactory {
 public:
     BodyFactory(const Translator* translator) : RuleFactory(translator) {}
+    static BodyRule createBodyRule(const ts::Node& node, const Translator* translator);
 private:
     std::unique_ptr<Rule> createImpl(const ts::Node& node, std::string_view source);
 };
 
-
 class ForFactory final : public RuleFactory {
 public:
     ForFactory(const Translator* translator) : RuleFactory(translator) {}
+
+private:
+    std::unique_ptr<Rule> createImpl(const ts::Node& node, std::string_view source);
+};
+
+class ParallelForFactory final : public RuleFactory {
+public:
+    ParallelForFactory(const Translator* translator) : RuleFactory(translator) {}
 
 private:
     std::unique_ptr<Rule> createImpl(const ts::Node& node, std::string_view source);
@@ -108,6 +116,21 @@ private:
     std::unique_ptr<Rule> createImpl(const ts::Node& node, std::string_view source);
 };
 
+class InputChoiceFactory final : public RuleFactory {
+public:
+    InputChoiceFactory(const Translator* translator) : RuleFactory(translator) {}
+
+private:
+    std::unique_ptr<Rule> createImpl(const ts::Node& node, std::string_view source);
+};
+
+class ScoresFactory final : public RuleFactory {
+public:
+    ScoresFactory(const Translator* translator) : RuleFactory(translator) {}
+
+private:
+    std::unique_ptr<Rule> createImpl(const ts::Node& node, std::string_view source);
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 // Expressions
@@ -165,7 +188,7 @@ private:
 ////////////////////////////////////////////////////////////////////////////////
 
 
-class Translator final {
+class Translator {
 public:
     using RuleFactoryPointer = std::unique_ptr<RuleFactory>;
     using ExpressionFactoryPointer = std::unique_ptr<ExpressionFactory>;

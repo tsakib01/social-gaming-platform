@@ -1,0 +1,34 @@
+configuration {
+    name: ""
+    player range: (0, 0)
+    audience: false
+    setup: {}
+}
+
+constants {}
+
+variables {}
+
+per-player {}
+
+per-audience {}
+
+rules {
+    for player in players {
+        input choice to player {
+            prompt: "{player.name}, choose your weapon!"
+            choices: weapons.name
+            target: player.name
+            timeout: 10
+        }
+        message all "Round {round}. Choose your weapon!";
+        match true {
+            x = 10 => {
+                message all "is 10";
+            }
+            true => {
+                message all "not 10";
+            }
+        }
+    }
+}

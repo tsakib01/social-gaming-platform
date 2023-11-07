@@ -10,6 +10,6 @@ add_grammar_from_repo(tree-sitter-socialgaming
 
 add_subdirectory(game-creation)
 add_subdirectory(rule-creation)
-# add_subdirectory(message-handler)
+add_subdirectory(game-communicator)
 add_subdirectory(networking)
 add_subdirectory(user-manager)

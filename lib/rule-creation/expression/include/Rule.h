@@ -10,7 +10,10 @@
 #include "GameStateLoader.h"
 
 /// A rule interface that represents a control flow statement in the game config
-class Rule {};
+class Rule {
+public:
+    virtual ~Rule() = default;
+};
 
 /// A rule that represents a series of rules in sequential order - e.x. the body of a for loop
 class BodyRule : public Rule {
@@ -87,6 +90,13 @@ public:
     std::unique_ptr<Expression> target;
     /// The item to add
     std::unique_ptr<Expression> source;
+};
+
+// A rule that prints a scoreboard on the global display using the given attribute(s) of each player defined by the key list.
+class ScoresRule : public Rule {
+public:
+    /// The list of keys
+    std::unique_ptr<Expression> listOfKeys;
 };
 
 #endif

@@ -5,28 +5,42 @@
 #include<string_view>
 #include<variant>
 #include<vector>
+#include "GameEnvironment.h"
 #include <cpp-tree-sitter.h>
 
-using Identifier = std::string_view;
-using Primitive = std::variant<int, bool, std::string_view>;
-using Map = std::map<std::string_view, Primitive>;
-using List = std::vector<std::variant<Primitive, Map>>;
-using Value = std::variant<Primitive, Map, List>;
-using Environment = std::map<Identifier, Value>;
+class GameStateLoader;
+class ConvertInterface {
+public:
+    ConvertInterface(const GameStateLoader* gameStateLoader)
+    : gameStateLoader(gameStateLoader)
+    {}
 
+    std::unique_ptr<GameEnvironment::Value> convertNode(const ts::Node& node){
+        return convertNodeImpl(node);
+    }
+protected:
+    const GameStateLoader* gameStateLoader;
+private:
+    virtual std::unique_ptr<GameEnvironment::Value> convertNodeImpl(const ts::Node& node) const = 0;
+};
+
+/**
+ * This class takes a root of filed's ts::Node and converts it to GameEnvironment::Environment
+ * Currently, it can support variables, constants, per-player and per-audience fields.
+*/
 class GameStateLoader{
 private:
     std::string_view source;
-    bool isPrimitive(const ts::Node& node);
-    bool isList(const ts::Node& node);
-    bool isMap(const ts::Node& node);
-    Primitive convertNodeToPrimitive(const ts::Node& node);
-    List convertNodeToList(const ts::Node& node);
-    Map convertNodeToMap(const ts::Node& node);
+    std::map<int, std::unique_ptr<ConvertInterface>> nodeSymbolToConvert;
 public:
     GameStateLoader(std::string_view source);
     void printByLevelOrder(const ts::Node& node);
-    // Need to pass the root of value_map
-    std::unique_ptr<Environment> getEnvironment(const ts::Node& root);
+    void registerConversion(int symbol, std::unique_ptr<ConvertInterface> convert);
+    std::string_view getSource() const;
+    const std::map<int, std::unique_ptr<ConvertInterface>>* getNodeSymbolToConvert() const;
+    // // Need to pass the root of value_map
+    std::unique_ptr<GameEnvironment::Environment> getEnvironment(const ts::Node& root);
+    static GameStateLoader createDefaultGameStateLoader(std::string_view source);
 };
+
 #endif

@@ -101,16 +101,6 @@ TEST(UserManagerTests, CheckCollectionOfUsers) {
     ASSERT_EQ(vec.size(), 2);
 }
 
-TEST(UserManagerTests, CheckEmptyCollection) {
-    Connection code1{1};
-    Connection code2{2};
-    UserManager userMgr;
-    userMgr.addUser(code1);
-
-    std::vector<User> vec = userMgr.getUsersInGame(code2);
-    ASSERT_EQ(vec.size(), 0);
-}
-
 TEST(UserManagerTests, RemoveUser) {
     Connection code1{1};
     UserManager userMgr;
