@@ -32,6 +32,12 @@ UserManager::setUserRoomCode(Connection userID, uint8_t roomCode) {
 }
 
 void 
+UserManager::setUserState(Connection userID, UserState state) {
+    auto it = findUserByID(userID);
+    it->state = state;
+}
+
+void 
 UserManager::removeUser(Connection userID) {
     auto it = std::remove_if(users.begin(), users.end(), [userID] (const User& user) { 
         return user.userID == userID; 
