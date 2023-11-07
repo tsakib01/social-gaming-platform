@@ -10,16 +10,31 @@
 using networking::Connection;
 
 enum class Role : char {
-    OWNER, PLAYER, AUDIENCE, NONE
+    OWNER, 
+    PLAYER, 
+    AUDIENCE, 
+    NONE
 };
+
+enum class UserState : char {
+    NEW, 
+    INTRO, 
+    JOIN_GAME, 
+    GAME_CREATE, 
+    GAME_CONFIG,
+    GAME_WAIT,
+    GAME_RUN 
+};
+
 
 struct User {
     Connection userID;
     std::string_view username;
     Role role;
+    UserState state;
     uint8_t roomCode;
 
-    User(Connection userID) : userID{userID} {};
+    User(Connection userID) : userID{userID}, state{UserState::NEW} {};
 };
 
 class UserManager {
@@ -29,6 +44,7 @@ public:
     void setUserName(Connection userID, std::string_view username);
     void setUserRole(Connection userID, Role role);
     void setUserRoomCode(Connection userID, uint8_t roomCode);
+    void setUserState(Connection userID, UserState state);
     void removeUser(Connection userID);
     std::vector<User> getUsersInGame(Connection userID);
     uint8_t getUserGameCode(Connection userID);
