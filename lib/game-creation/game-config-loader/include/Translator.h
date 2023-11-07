@@ -188,7 +188,7 @@ private:
 ////////////////////////////////////////////////////////////////////////////////
 
 
-class Translator final {
+class Translator {
 public:
     using RuleFactoryPointer = std::unique_ptr<RuleFactory>;
     using ExpressionFactoryPointer = std::unique_ptr<ExpressionFactory>;
