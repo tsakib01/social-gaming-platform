@@ -10,6 +10,11 @@ CPMAddPackage(
 
 enable_testing()
 
+file(
+  COPY "${CMAKE_CURRENT_SOURCE_DIR}/games"
+  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
+)
+
 add_executable(runAllTests 
     expressionTests.cpp
     userManagerTests.cpp

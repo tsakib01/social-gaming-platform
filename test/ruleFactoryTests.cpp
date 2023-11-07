@@ -2,29 +2,11 @@
 #include <gmock/gmock.h>
 
 #include "GameConfigLoader.h"
+#include <fstream>
 
 extern "C" {
     TSLanguage* tree_sitter_socialgaming();
 }
-
-const std::string DEFAULT_CONFIG = R"(
-    configuration {
-    name: ""
-    player range: (0, 0)
-    audience: false
-    setup: {}
-    }
-
-    constants {}
-
-    variables {}
-
-    per-player {}
-
-    per-audience {}
-
-)";
-
 
 class MockTranslator : public Translator {
 public:
@@ -43,38 +25,31 @@ public:
         registerRuleFactory("message", std::make_unique<MessageFactory>(this));
         registerRuleFactory("input_choice", std::make_unique<InputChoiceFactory>(this));
         registerRuleFactory("scores", std::make_unique<ScoresFactory>(this));
-
         registerExpressionFactory("expression", std::make_unique<DummyExpressionFactory>(this));
         registerExpressionFactory("identifier", std::make_unique<IdentifierFactory>(this));
     }
 
-    static ts::Tree getTree(std::string_view configData) {
+    static ts::Tree getTree(std::string_view sourceCode) {
         ts::Language language = tree_sitter_socialgaming();
         ts::Parser parser{language};
-        return parser.parseString(configData);
+        return parser.parseString(sourceCode);
+    }
+    
+    static std::string getSource(std::string_view path) {
+        std::ifstream ifs(path.data());
+        std::stringstream buffer;
+        buffer << ifs.rdbuf();
+        std::string sourceCode = buffer.str();
+        ifs.close();
+        return sourceCode;
     }
 };
 
 TEST(TranslatorTest, BodyRuleTest) {
-    std::string configString = DEFAULT_CONFIG + R"(
-    rules {
-        discard winners.size() from winners;
-
-        message all "Round {round}. Choose your weapon!";
-
-        for player in players {
-            input choice to player {
-                prompt: "{player.name}, choose your weapon!"
-                choices: weapons.name
-                target: player.name
-                timeout: 10
-            }
-        }
-    }
-})";
-    ts::Tree tree = MockTranslator::getTree(configString);
+    std::string source = MockTranslator::getSource("./test/games/body-rule-test.game");
+    ts::Tree tree = MockTranslator::getTree(source);
     ts::Node rules = tree.getRootNode().getChildByFieldName("rules");
-    MockTranslator mockTranslator(configString);
+    MockTranslator mockTranslator(source);
     mockTranslator.initialize();
     std::unique_ptr<Rule> rule = mockTranslator.createRule(rules.getNamedChild(0));
     BodyRule* bodyRule = (dynamic_cast<BodyRule*>(rule.release()));
@@ -90,30 +65,10 @@ TEST(TranslatorTest, BodyRuleTest) {
 }
 
 TEST(TranslatorTest, ForRuleTest) {
-    std::string configString = DEFAULT_CONFIG + R"(
-    rules {
-        for player in players {
-            input choice to player {
-                prompt: "{player.name}, choose your weapon!"
-                choices: weapons.name
-                target: player.name
-                timeout: 10
-            }
-            message all "Round {round}. Choose your weapon!";
-            match true {
-                x = 10 => {
-                    message all "is 10";
-                }
-                true => {
-                    message all "not 10";
-                }
-            }
-        }
-    }
-})";
-    ts::Tree tree = MockTranslator::getTree(configString);
+    std::string source = MockTranslator::getSource("./test/games/for-rule-test.game");
+    ts::Tree tree = MockTranslator::getTree(source);
     ts::Node rules = tree.getRootNode().getChildByFieldName("rules");
-    MockTranslator mockTranslator(configString);
+    MockTranslator mockTranslator(source);
     mockTranslator.initialize();
     std::unique_ptr<Rule> rule = mockTranslator.createRule(rules.getNamedChild(0));
     // Creates a body rule first as body is the first rule in a configuration
@@ -132,24 +87,10 @@ TEST(TranslatorTest, ForRuleTest) {
 }
 
 TEST(TranslatorTest, ParallelForRuleTest) {
-    std::string configString = DEFAULT_CONFIG + R"(
-    rules {
-        parallel for weapon in weapons {
-            input choice to player {
-                prompt: "{player.name}, choose your weapon!"
-                choices: weapons.name
-                target: player.name
-                timeout: 10
-            }
-            message all "Round {round}. Choose your weapon!";
-            discard winners.size() from winners;
-            message all "Parallel for executing!";
-        }
-    }
-})";
-    ts::Tree tree = MockTranslator::getTree(configString);
+    std::string source = MockTranslator::getSource("./test/games/parallel-for-rule-test.game");
+    ts::Tree tree = MockTranslator::getTree(source);
     ts::Node rules = tree.getRootNode().getChildByFieldName("rules");
-    MockTranslator mockTranslator(configString);
+    MockTranslator mockTranslator(source);
     mockTranslator.initialize();
     std::unique_ptr<Rule> rule = mockTranslator.createRule(rules.getNamedChild(0));
     // Creates a body rule first as body is the first rule in a configuration
