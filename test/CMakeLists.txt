@@ -17,6 +17,7 @@ file(
 
 add_executable(runAllTests
     userManagerTests.cpp
+    gameCommunicatorTests.cpp
     ruleFactoryTests.cpp
 )
 
@@ -25,5 +26,6 @@ target_link_libraries(runAllTests
     gmock
     expression
     userManager
+    gameCommunicator
     gameConfigLoader
 )

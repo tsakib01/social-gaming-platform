@@ -42,12 +42,12 @@ class UserManager {
 public:
     UserManager() {};
     void addUser(Connection userID);
-    void removeUser(Connection userID);
-
-    void setUserName(Connection userID, std::string username);
+    
+    void setUserName(Connection userID, std::string_view username);
     void setUserRole(Connection userID, Role role);
     void setUserRoomCode(Connection userID, uint16_t roomCode);
     void setUserState(Connection userID, UserState state);
+    void removeUser(Connection userID);
 
     std::vector<User> getUsersInGame(Connection userID);
     uint16_t getUserGameCode(Connection userID);

@@ -7,6 +7,7 @@ ServerManager::ServerManager(const unsigned short port, const char* htmlFile) {
                   std::bind(&ServerManager::onDisconnect, this, std::placeholders::_1));
     gameInstanceManager = std::make_unique<GameInstanceManager>();
     userManager = std::make_shared<UserManager>();
+	gameCommunicator = std::make_unique<GameCommunicator>();
 }
 
 void 

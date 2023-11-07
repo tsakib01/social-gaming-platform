@@ -1,5 +1,5 @@
-#ifndef MESSAGE_HANDLER_H
-#define MESSAGE_HANDLER_H
+#ifndef GAME_COMMUNICATOR_H
+#define GAME_COMMUNICATOR_H
 
 #include "Server.h"
 #include "UserManager.h"
@@ -11,15 +11,20 @@
 #include <iostream>
 #include <sstream>
 #include <map>
+#include <unordered_map>
 
 using networking::Message;
 using networking::Server;
 
-// struct Actions {
-  // uint8_t roomCode;
-  // std::map<std::string_view, std::vector<std::string_view>> actions;
-  // < "choices" /// "rock","paper","scissors" >
-// }
+struct GameChoices {
+  uint16_t roomCode;
+  std::vector<std::string_view> choices; // {"choices", {"rock","paper","scissors"}}
+};
+
+struct UserInput{
+  Connection userID;
+  std::string_view input;
+};
 
 /**
  * GameCommunicator is in charge of receiving Messages and Inputs from GameInstances.
@@ -30,12 +35,18 @@ class GameCommunicator {
 public:
     GameCommunicator() {}
     
-    // void assignAction(uint8_t roomCode, std::vector<std::string_view>> actions); //called by game instance
+    void setGameChoices(uint16_t roomCode, const std::vector<std::string_view>& choices); //called by game instance
+    void storeCurrentUserInput(const Message& message); // stores the current user input to use later for sending all at once to the game instance
+    void setGameMessage(const std::vector<Connection> users, std::string_view message);
+
+    std::vector<std::string_view> getChoicesForUser(uint16_t roomCode) const;
+    std::string_view getCurrentUserInput(Connection userID) const;
+    std::vector<Message> getGameMessages() const { return gameMessages; }
 
 private:
-    // std::shared_ptr<UserManager> m_userManager;
-    // std::vector<Actions> actions;
-    // std::map<Connection, std::string_view> userToInputMap; 
+    std::vector<GameChoices> gameChoices;
+    std::vector<UserInput> userInputs; 
+    std::vector<Message> gameMessages;
 };
 
 #endif

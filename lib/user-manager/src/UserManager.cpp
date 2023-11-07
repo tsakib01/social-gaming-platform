@@ -14,7 +14,7 @@ UserManager::addUser(Connection userID) {
 }
 
 void 
-UserManager::setUserName(Connection userID, std::string username) {
+UserManager::setUserName(Connection userID, std::string_view username) {
     auto it = findUserByID(userID);
     it->username = username;
 }
