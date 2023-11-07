@@ -22,6 +22,12 @@ GameCommunicator::storeCurrentUserInput(const Message& message) {
     if (it != userInputs.end()) {
         it->input = message.text;
     }
+    else {
+        UserInput usrInput;
+        usrInput.userID = message.connection;
+        usrInput.input = message.text;
+        userInputs.push_back(usrInput);
+    }
 }
 
 void 
