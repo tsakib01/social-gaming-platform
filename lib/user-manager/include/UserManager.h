@@ -20,15 +20,17 @@ enum class UserState : char {
     NEW, 
     INTRO, 
     JOIN_GAME, 
-    GAME_CREATE, 
+    GAME_SELECT, 
     GAME_CONFIG,
     GAME_WAIT,
-    GAME_RUN 
+    GAME_RUN,
+    NONE
 };
+
 
 struct User {
     Connection userID;
-    std::string_view username;
+    std::string username;
     Role role;
     UserState state;
     uint16_t roomCode;
@@ -45,10 +47,12 @@ public:
     void setUserRoomCode(Connection userID, uint16_t roomCode);
     void setUserState(Connection userID, UserState state);
     void removeUser(Connection userID);
+
     std::vector<User> getUsersInGame(Connection userID);
     uint16_t getUserGameCode(Connection userID);
     std::vector<User> getAllUsers() const { return users; }
     std::vector<User>::iterator findUserByID(Connection userID);
+    std::vector<User>::iterator getRoomOwner(uint16_t roomCode);
 
 private:
     std::vector<User> users;

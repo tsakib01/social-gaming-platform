@@ -69,3 +69,10 @@ UserManager::findUserByID(Connection userID) {
         return user.userID == userID;
     });
 }
+
+std::vector<User>::iterator 
+UserManager::getRoomOwner(uint16_t roomCode) {
+    return std::find_if(users.begin(), users.end(), [roomCode](const User& user) {
+        return user.roomCode == roomCode && user.role == Role::OWNER;
+    });
+}

@@ -10,15 +10,22 @@ CPMAddPackage(
 
 enable_testing()
 
-add_executable(runAllTests 
-    expressionTests.cpp
+file(
+  COPY "${CMAKE_CURRENT_SOURCE_DIR}/games"
+  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
+)
+
+add_executable(runAllTests
     userManagerTests.cpp
     gameCommunicatorTests.cpp
+    ruleFactoryTests.cpp
 )
 
 target_link_libraries(runAllTests
     GTest::gtest_main
+    gmock
     expression
     userManager
     gameCommunicator
+    gameConfigLoader
 )

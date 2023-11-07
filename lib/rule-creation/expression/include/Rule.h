@@ -11,7 +11,10 @@
 #include "GameStateLoader.h"
 
 /// A rule interface that represents a control flow statement in the game config
-class Rule {};
+class Rule {
+public:
+    virtual ~Rule() = default;
+};
 
 /// A rule that represents a series of rules in sequential order - e.x. the body of a for loop
 class BodyRule : public Rule {
