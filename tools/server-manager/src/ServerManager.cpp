@@ -129,21 +129,15 @@ std::deque<Message>
 ServerManager::ProcessJoinGame(const Message& message) {	
 	try {
 		uint16_t code = std::stoi(message.text);
-		std::vector<User> users = userManager->getAllUsers();
-		auto it = std::find_if(users.begin(), users.end(), [code](const User& user) {
-			return user.roomCode == code;
-        });
+		std::vector<uint16_t> roomCodes = gameInstanceManager->getRoomCodes();
 
-		if (it != users.end()) {
+		if (std::find(roomCodes.begin(), roomCodes.end(), code) != roomCodes.end()) {
 			userManager->setUserRole(message.connection, Role::PLAYER);
 			userManager->setUserRoomCode(message.connection, code);
 			userManager->setUserState(message.connection, UserState::GAME_WAIT);
 	
 			User player = *(userManager->findUserByID(message.connection));
 			User host = *(userManager->getRoomOwner(code));
-
-			std::cout << "host name: " << host.username << std::endl;
-			std::cout << "player code: " << player.roomCode << std::endl;
 
 			return std::deque<Message>{ 
 				{message.connection, "Joined game. Waiting on host...\n"},
@@ -169,7 +163,7 @@ ServerManager::ProcessGameSelect(const Message& message) {
 
 		std::vector<std::string> games = GetGameFiles();
 		if (choice > 0 && choice <= games.size()) {
-			uint16_t roomCode = gameInstanceManager->generateRoomCode();
+			uint16_t roomCode = gameInstanceManager->createGameInstance(games[choice-1]);
 			userManager->setUserRole(message.connection, Role::OWNER);
 			userManager->setUserRoomCode(message.connection, roomCode);
 			userManager->setUserState(message.connection, UserState::GAME_WAIT);
@@ -200,7 +194,7 @@ ServerManager::ProcessGameWait(const Message& message) {
 
 	if (message.text == "S" && user.role == Role::OWNER) {
 		userManager->setUserState(message.connection, UserState::GAME_RUN);
-		// gameInstanceManager->createGameInstance();
+		// gameInstanceManager->startGame(roomCode);
 		return std::deque<Message>{
 			{message.connection, "Moving to GAME_RUN state\n"}};
 	}

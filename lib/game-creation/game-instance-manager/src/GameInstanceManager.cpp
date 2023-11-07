@@ -22,7 +22,7 @@ GameInstanceManager::generateRoomCode() {
     }
 }
 
-void 
+uint16_t 
 GameInstanceManager::createGameInstance(std::string_view gameFilePath) {
     GameConfigLoader gameConfigLoader{gameFilePath};
     auto rules = gameConfigLoader.createGameRules();
@@ -30,6 +30,13 @@ GameInstanceManager::createGameInstance(std::string_view gameFilePath) {
     uint16_t inviteCode = generateRoomCode();
 
     m_gameList.push_back(std::make_unique<GameInstance>(std::move(rules), std::move(state), inviteCode));
+
+    return inviteCode;
+}
+
+void
+GameInstanceManager::startGame(uint16_t roomCode) {
+    // Move from gameList to activeGameList
 }
 
 void 
