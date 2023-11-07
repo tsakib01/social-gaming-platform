@@ -6,7 +6,7 @@
 #include <memory>
 #include <variant>
 #include <map>
-#include "GameStateLoader.h"
+#include "GameEnvironment.h"
 
 /// Checks if a type is the same or assignable to another type
 /// @tparam T The type to check
@@ -47,25 +47,20 @@ struct is_contained_assignable_in<T, TContainer<TContainerTs...>> {
 /// @tparam TKey The type of the map's keys
 /// @tparam TValue The type of the map's values
 template<typename TKey, typename TValue>
-struct is_contained_assignable_in<std::map<TKey, TValue>, Map> {
+struct is_contained_assignable_in<std::map<TKey, TValue>, GameEnvironment::Map> {
     static constexpr bool value = (
         // check if the key type is the same or assignable to std::string_view
-        is_same_or_assignable<TKey, std::string_view>::value
-    ) && (
-        // check if the value type is contained or assignable in Primitive
-        is_contained_assignable_in<TValue, Primitive>::value
+        is_same_or_assignable<TKey, GameEnvironment::Value>::value
     );
 };
 
 /// Checks if a type is a vector type with valid element types
 /// @tparam TElm The type of the vector's elements
 template<typename TElm>
-struct is_contained_assignable_in<std::vector<TElm>, List> {
+struct is_contained_assignable_in<std::vector<TElm>, GameEnvironment::List> {
     static constexpr bool value = (
         // check if the element type is contained or assignable in Primitive
-        is_contained_assignable_in<TElm, Primitive>::value ||
-        // check if the element type is contained or assignable in Map
-        is_contained_assignable_in<TElm, Map>::value
+        is_contained_assignable_in<TElm, GameEnvironment::Value>::value
     );
 };
 
@@ -83,13 +78,13 @@ class Expression {};
 template<typename T>
 class LiteralExpression : public Expression {
 public:
-    LiteralExpression(T value) : value(Value(value)) {
+    LiteralExpression(T value) : value(GameEnvironment::Value(value)) {
         static_assert(
-            is_contained_assignable_in<T, Value>::value,
+            is_contained_assignable_in<T, GameEnvironment::Value>::value,
             "Invalid type for LiteralExpression"
         );
     }
-    Value value;
+    GameEnvironment::Value value;
 };
 
 /// An expression that identifies the value of a variable
@@ -98,8 +93,8 @@ public:
 class IdentifierExpression : public Expression {
 public:
     IdentifierExpression() = default;
-    IdentifierExpression(Identifier identifier) : identifier(identifier){}
-    Identifier identifier;
+    IdentifierExpression(GameEnvironment::Identifier identifier) : identifier(identifier){}
+    GameEnvironment::Identifier identifier;
 };
 
 /// A binary expression that operates on a left and right Expression with the given operator
