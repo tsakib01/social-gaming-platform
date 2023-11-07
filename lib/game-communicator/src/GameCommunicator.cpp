@@ -11,6 +11,30 @@ GameCommunicator::setGameChoices(uint8_t roomCode, const std::vector<std::string
     gameChoices.push_back(currentGameChoices);
 }
 
+// stores the current valid user input for a particular user
+void 
+GameCommunicator::storeCurrentUserInput(const Message& message) {
+
+    auto it = std::find_if(userInputs.begin(), userInputs.end(), [message](const UserInput& userInput) {
+        return userInput.userID == message.connection;
+    });
+
+    if (it != userInputs.end()) {
+        it->input = message.text;
+    }
+}
+
+void 
+GameCommunicator::setGameMessage(const std::vector<Connection> users, std::string_view message) {
+
+    for (const auto& user : users) {
+        Message g_message;
+        g_message.connection = user;
+        g_message.text = message;
+        gameMessages.push_back(g_message);
+    }
+}
+
 // returns the available choices for the game inputs 
 std::vector<std::string_view> 
 GameCommunicator::getChoicesForUser(uint8_t roomCode) const {
@@ -41,16 +65,4 @@ GameCommunicator::getCurrentUserInput(Connection userID) const {
     return "";
 }
 
-// stores the current valid user input for a particular user
-void 
-GameCommunicator::storeCurrentUserInput(const Message& message) {
-
-    auto it = std::find_if(userInputs.begin(), userInputs.end(), [message](const UserInput& userInput) {
-        return userInput.userID == message.connection;
-    });
-
-    if (it != userInputs.end()) {
-        it->input = message.text;
-    }
-}
 
