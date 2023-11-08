@@ -1,7 +1,8 @@
-add_library(messageHandler
-    src/MessageHandler.cpp)
+add_library(ruleExecute
+    src/RuleExecute.cpp
+)
 
-target_include_directories(messageHandler
+target_include_directories(ruleExecute
     PUBLIC
         $<INSTALL_INTERFACE:include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -9,6 +10,11 @@ target_include_directories(messageHandler
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-install(TARGETS messageHandler
+target_link_libraries(ruleExecute
+    expression
+    gameConfigLoader
+)
+
+install(TARGETS ruleExecute
     ARCHIVE DESTINATION lib
 )
