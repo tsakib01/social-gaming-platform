@@ -1,9 +1,9 @@
 #include "GameSetupLoader.h"
 #include <iostream>
 #include <charconv>
-Setup::Setup(std::string_view identifier,KIND kind,std::string_view prompt):identifier(identifier),kind(kind),prompt(prompt),restInfo(std::string_view{}){}
+SetupInstance::SetupInstance(std::string_view identifier,KIND kind,std::string_view prompt):identifier(identifier),kind(kind),prompt(prompt),restInfo(std::string_view{}){}
 
-Setup::Setup(std::string_view identifier,KIND kind,std::string_view prompt,std::string_view restInfo, Domain domain):identifier(identifier),kind(kind),prompt(prompt),restInfo(restInfo), domain(domain){}
+SetupInstance::SetupInstance(std::string_view identifier,KIND kind,std::string_view prompt,std::string_view restInfo, Domain domain):identifier(identifier),kind(kind),prompt(prompt),restInfo(restInfo), domain(domain){}
 KIND convertToKIND(std::string_view kind){
     if(kind!="integer"&&kind!="string"&&kind!="boolean"&&kind!="enum"){
         throw std::runtime_error("kind not support");
@@ -38,19 +38,19 @@ constexpr std::string_view KINDToString(KIND kind)
 }
 
 
-void Setup::intProcess(){
+void SetupInstance::intProcess(){
     this->print();
 }
-void Setup::boolProcess(){
+void SetupInstance::boolProcess(){
     this->print();
 }
-void Setup::strProcess(){
+void SetupInstance::strProcess(){
     this->print();
 }
-void Setup::enumProcess(){
+void SetupInstance::enumProcess(){
     this->print();
 }
-void Setup::processSetup(){
+void SetupInstance::processSetup(){
     if(kind == KIND::INTEGER){
         this->intProcess();
     }
@@ -64,7 +64,7 @@ void Setup::processSetup(){
         this-> enumProcess();
     }
 }
-void Setup::print(){
+void SetupInstance::print(){
     std::cout<<identifier<<std::endl;
     std::cout<<KINDToString(kind)<<std::endl;
     std::cout<<prompt<<std::endl;
@@ -75,7 +75,7 @@ void Setup::print(){
 
     std::cout<<std::endl;
 }
-bool Setup::checkResponse(std::string_view response){
+bool SetupInstance::checkResponse(std::string_view response){
     switch (kind)
     {
         case KIND::INTEGER:
@@ -230,7 +230,7 @@ Domain convertStringToDomain(const KIND kind, const std::string_view restInfo){
 }
 
 
-std::unique_ptr<Setup> GameSetupLoader::convertNodetoSetup(const ts::Node& node){
+std::unique_ptr<SetupInstance> GameSetupLoader::convertNodetoSetup(const ts::Node& node){
     if(node.getNumChildren()<7){
         throw std::runtime_error("no enough information in setup");
     }
@@ -245,15 +245,15 @@ std::unique_ptr<Setup> GameSetupLoader::convertNodetoSetup(const ts::Node& node)
 
         ts::Extent last=node.getChild(childCount-2).getByteRange();
         std::string_view restInfo=source.substr(first.start,last.end-first.start);
-        return std::make_unique<Setup>(Setup{identifier,kind,prompt,restInfo,convertStringToDomain(kind,restInfo)});
+        return std::make_unique<SetupInstance>(SetupInstance{identifier,kind,prompt,restInfo,convertStringToDomain(kind,restInfo)});
     }
-    return std::make_unique<Setup>(Setup{identifier,kind,prompt});
+    return std::make_unique<SetupInstance>(SetupInstance{identifier,kind,prompt});
 
 }
-std::vector<std::unique_ptr<Setup>> GameSetupLoader::getGameSetup (const ts::Node& node){
+std::vector<std::unique_ptr<SetupInstance>> GameSetupLoader::getGameSetup (const ts::Node& node){
     int numChildCount=node.getNumNamedChildren();
 
-    std::vector< std::unique_ptr<Setup>> setups;
+    std::vector< std::unique_ptr<SetupInstance>> setups;
 
     for(int index=3;index<numChildCount;index++){
         setups.push_back(convertNodetoSetup(node.getNamedChild(index)));

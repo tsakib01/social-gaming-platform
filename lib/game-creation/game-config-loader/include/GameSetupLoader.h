@@ -14,10 +14,10 @@ using Range = std::pair<int,int>;
 using ChoiceList = std::map<std::string_view,std::string_view>;
 using Domain = std::variant<Range, ChoiceList> ;
 
-class Setup{
+class SetupInstance{
 public:
-    Setup(std::string_view identifier,KIND kind,std::string_view prompt);
-    Setup(std::string_view identifier,KIND kind,std::string_view prompt,std::string_view restInfo, Domain domain);
+    SetupInstance(std::string_view identifier,KIND kind,std::string_view prompt);
+    SetupInstance(std::string_view identifier,KIND kind,std::string_view prompt,std::string_view restInfo, Domain domain);
 
     bool checkResponse(std::string_view response);
     void intProcess();
@@ -35,6 +35,7 @@ private:
     Domain domain;
 
 };
+
 struct DomainPrinter {
     void operator()(const Range& range) const ;
 
@@ -51,12 +52,17 @@ struct DomainChecker{
 class GameSetupLoader{
 public:
     GameSetupLoader(std::string_view source);
-    std::unique_ptr<Setup> convertNodetoSetup(const ts::Node& node);
-    std::vector<std::unique_ptr<Setup>>getGameSetup (const ts::Node& node);
+    std::unique_ptr<SetupInstance> convertNodetoSetup(const ts::Node& node);
+    std::vector<std::unique_ptr<SetupInstance>>getGameSetup (const ts::Node& node);
 private:
     std::string_view source;
 
 };
 
+KIND convertToKIND(std::string_view kind);
+constexpr std::string_view KINDToString(KIND kind);
+Range convertToRange(std::string_view restInfo);
+ChoiceList convertToChoiceList( std::string_view restInfo);
+Domain convertStringToDomain(const KIND kind, const std::string_view restInfo);
 
 #endif
