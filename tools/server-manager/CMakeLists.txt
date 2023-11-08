@@ -1,5 +1,6 @@
 add_library(serverManager
-    src/ServerManager.cpp)
+    src/ServerManager.cpp
+    src/ProcessMessages.cpp)
 
 target_include_directories(serverManager
     PUBLIC
