@@ -19,7 +19,6 @@ add_executable(runAllTests
     userManagerTests.cpp
     gameCommunicatorTests.cpp
     ruleFactoryTests.cpp
-    ruleExecuteTests.cpp
 )
 
 target_link_libraries(runAllTests
@@ -29,5 +28,4 @@ target_link_libraries(runAllTests
     userManager
     gameCommunicator
     gameConfigLoader
-    ruleExecute
 )

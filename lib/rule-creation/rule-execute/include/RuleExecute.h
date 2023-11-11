@@ -9,57 +9,58 @@ struct ExecuteContext {
 };
 
 /// Represents a rule executor. Requires the rule and the context to execute.
+/// @tparam TRule The type of the rule to execute.
+template <typename TRule>
 class Execute {
 public:
-    void execute(Rule& rule, ExecuteContext& context) {
-        executeImpl(rule, context);
+    virtual void execute(TRule& rule, ExecuteContext& context) = 0;
+};
+
+#define RULE_EXECUTE(TRule) void execute(TRule& rule, ExecuteContext& context) override;
+
+class BodyRuleExecute final : public Execute<BodyRule> {
+public: RULE_EXECUTE(BodyRule)
+};
+class ForRuleExecute final : public Execute<ForRule> {
+public: RULE_EXECUTE(ForRule)
+};
+class MatchRuleExecute final : public Execute<MatchRule> {
+public: RULE_EXECUTE(MatchRule)
+};
+class DiscardRuleExecute final : public Execute<DiscardRule> {
+public: RULE_EXECUTE(DiscardRule)
+};
+class MessageRuleExecute final : public Execute<MessageRule> {
+public: RULE_EXECUTE(MessageRule)
+};
+class ParallelForRuleExecute final : public Execute<ParallelForRule> {
+public: RULE_EXECUTE(ParallelForRule)
+};
+class InputChoiceRuleExecute final : public Execute<InputChoiceRule> {
+public: RULE_EXECUTE(InputChoiceRule)
+};
+class ExtendRuleExecute final : public Execute<ExtendRule> {
+public: RULE_EXECUTE(ExtendRule)
+};
+
+class RuleExecuteVisitor : public RuleVisitor {
+public:
+    RuleExecuteVisitor(ExecuteContext& context)
+        : context(context) {}
+
+    void visit(BodyRule& rule) override { BodyRuleExecute{}.execute(rule, context); }
+    void visit(ForRule& rule) override { ForRuleExecute{}.execute(rule, context); }
+    void visit(MatchRule& rule) override { MatchRuleExecute{}.execute(rule, context); }
+    void visit(DiscardRule& rule) override { DiscardRuleExecute{}.execute(rule, context); }
+    void visit(MessageRule& rule) override { MessageRuleExecute{}.execute(rule, context); }
+    void visit(ParallelForRule& rule) override { ParallelForRuleExecute{}.execute(rule, context); }
+    void visit(InputChoiceRule& rule) override { InputChoiceRuleExecute{}.execute(rule, context); }
+    void visit(ExtendRule& rule) override { ExtendRuleExecute{}.execute(rule, context); }
+
+    void visit([[maybe_unused]] Rule& rule) override {
+        throw std::runtime_error("Case Unreachable");
     }
 
 private:
-    virtual void executeImpl(Rule& rule, ExecuteContext& context) = 0;
-};
-
-#define RULE_EXECUTE void executeImpl(Rule& rule, ExecuteContext& context) override;
-
-class BodyRuleExecute final : public Execute {
-private: RULE_EXECUTE
-};
-class ForRuleExecute final : public Execute {
-private: RULE_EXECUTE
-};
-class MatchRuleExecute final : public Execute {
-private: RULE_EXECUTE
-};
-class DiscardRuleExecute final : public Execute {
-private: RULE_EXECUTE
-};
-class MessageRuleExecute final : public Execute {
-private: RULE_EXECUTE
-};
-class ParallelForRuleExecute final : public Execute {
-private: RULE_EXECUTE
-};
-class InputChoiceRuleExecute final : public Execute {
-private: RULE_EXECUTE
-};
-class ExtendRuleExecute final : public Execute {
-private: RULE_EXECUTE
-};
-
-/// A wrapper over a map of {string -> Execute} where the string is the typeid of a Rule.
-class RuleExecutor {
-public:
-    using Executors = std::map<std::string_view, std::unique_ptr<Execute>>;
-
-    RuleExecutor(Executors& executors) : m_executors(std::move(executors)) {}
-
-    /// Executes a rule using the appropriate executor.
-    /// @tparam TRule The type of the rule - the key of the executor map.
-    void executeRule(Rule& rule, ExecuteContext& context);
-
-    /// Create a default executor map.
-    static Executors createDefault();
-
-private:
-    Executors m_executors;
+    ExecuteContext& context;
 };
