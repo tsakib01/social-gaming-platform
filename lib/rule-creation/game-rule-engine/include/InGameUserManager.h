@@ -1,15 +1,12 @@
 #ifndef IN_GAME_USER_MANAGER_H
 #define IN_GAME_USER_MANAGER_H
 
-//#include "GameStateLoader.h"
 #include "GameEnvironment.h"
+#include "UserManager.h"
 #include <map> 
 #include <string>
 #include <vector>
 #include <variant>
-#include <GameEnvironment.h>
-
-enum class Role {PLAYER, AUDIENCE, OWNER};
 
 class InGameUserManager { 
 

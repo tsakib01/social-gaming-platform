@@ -14,6 +14,7 @@ target_include_directories(gameRuleEngine
 
 target_link_libraries(gameRuleEngine
     gameConfigLoader
+    userManager
 )
 
 install(TARGETS gameRuleEngine
