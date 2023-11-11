@@ -2,21 +2,21 @@
 #include <gmock/gmock.h>
 
 #include "InGameUserManager.h"
-// TEST(InGameUserManagerTests, BasicUserCount){
-//     InGameUserManager inGameUManager;
-//     uint32_t dummyUserID = 1;
-//     Role dummyRole = Role::Player;
-//     GameEnvironment::Environment dummyEnvironment;
+TEST(InGameUserManagerTests, BasicUserCount){
+    InGameUserManager inGameUManager;
+    uint32_t dummyUserID = 1;
+    Role dummyRole = Role::Player;
+    GameEnvironment::Environment dummyEnvironment;
     
-//     uint32_t dummyUserID2 = 2;
-//     Role dummyRole2 = Role::Player;
-//     GameEnvironment::Environment dummyEnvironment2;
+    uint32_t dummyUserID2 = 2;
+    Role dummyRole2 = Role::Player;
+    GameEnvironment::Environment dummyEnvironment2;
 
-//     inGameUManager.addNewUser(dummyUserID, dummyRole, dummyEnvironment);
-//     inGameUManager.addNewUser(dummyUserID2, dummyRole2, dummyEnvironment2);
+    inGameUManager.addNewUser(dummyUserID, dummyRole, std::move(dummyEnvironment));
+    inGameUManager.addNewUser(dummyUserID2, dummyRole2, std::move(dummyEnvironment2));
 
-//     ASSERT_EQ(inGameUManager.getAllUserStates().size(), 2);
-// }
+    //ASSERT_EQ(inGameUManager.getAllUserStates().size(), 2);
+}
 
 // TEST(InGameUserManagerTests, CanDeleteAllUsers){
 //     InGameUserManager inGameUManager;

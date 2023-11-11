@@ -30,5 +30,5 @@ target_link_libraries(runAllTests
     userManager
     gameCommunicator
     gameConfigLoader
-    inGameUserManager
+    gameRuleEngine
 )
