@@ -1,42 +1,38 @@
 #include "RuleExecute.h"
 #include <iostream>
 
-void BodyRuleExecute::execute(BodyRule& rule, ExecuteContext& context) {
+void RuleExecuteVisitor::visit(BodyRule& rule) {
     (void)rule;
-    (void)context;
 }
 
-void ForRuleExecute::execute(ForRule& rule, ExecuteContext& context) {
+void RuleExecuteVisitor::visit(ForRule& rule) {
     (void)rule;
-    (void)context;
 }
 
-void MatchRuleExecute::execute(MatchRule& rule, ExecuteContext& context) {
+void RuleExecuteVisitor::visit(MatchRule& rule) {
     (void)rule;
-    (void)context;
 }
 
-void DiscardRuleExecute::execute(DiscardRule& rule, ExecuteContext& context) {
+void RuleExecuteVisitor::visit(DiscardRule& rule) {
     (void)rule;
-    (void)context;
 }
 
-void MessageRuleExecute::execute(MessageRule& rule, ExecuteContext& context) {
+void RuleExecuteVisitor::visit(MessageRule& rule) {
     (void)rule;
-    (void)context;
 }
 
-void ParallelForRuleExecute::execute(ParallelForRule& rule, ExecuteContext& context) {
+void RuleExecuteVisitor::visit(ParallelForRule& rule) {
     (void)rule;
-    (void)context;
 }
 
-void InputChoiceRuleExecute::execute(InputChoiceRule& rule, ExecuteContext& context) {
+void RuleExecuteVisitor::visit(InputChoiceRule& rule) {
     (void)rule;
-    (void)context;
 }
 
-void ExtendRuleExecute::execute(ExtendRule& rule, ExecuteContext& context) {
+void RuleExecuteVisitor::visit(ExtendRule& rule) {
     (void)rule;
-    (void)context;
+}
+
+void visit([[maybe_unused]] Rule& rule) {
+    throw std::runtime_error("Case Unreachable");
 }
