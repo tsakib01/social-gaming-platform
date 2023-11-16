@@ -9,6 +9,29 @@
 #include "Expression.h"
 #include "GameStateLoader.h"
 
+class BodyRule;
+class ForRule;
+class MatchRule;
+class DiscardRule;
+class MessageRule;
+class ParallelForRule;
+class InputChoiceRule;
+class ExtendRule;
+class Rule;
+
+class RuleVisitor {
+public:
+    virtual void visit(BodyRule& rule) = 0;
+    virtual void visit(ForRule& rule) = 0;
+    virtual void visit(MatchRule& rule) = 0;
+    virtual void visit(DiscardRule& rule) = 0;
+    virtual void visit(MessageRule& rule) = 0;
+    virtual void visit(ParallelForRule& rule) = 0;
+    virtual void visit(InputChoiceRule& rule) = 0;
+    virtual void visit(ExtendRule& rule) = 0;
+    virtual void visit(Rule& rule) = 0;
+};
+
 /// A rule interface that represents a control flow statement in the game config
 class Rule {
 public:

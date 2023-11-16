@@ -8,58 +8,21 @@ struct ExecuteContext {
     GameState& gameState;
 };
 
-/// Represents a rule executor. Requires the rule and the context to execute.
-class Execute {
+class RuleExecuteVisitor : public RuleVisitor {
 public:
-    void execute(Rule& rule, ExecuteContext& context) {
-        executeImpl(rule, context);
-    }
+    RuleExecuteVisitor(ExecuteContext& context)
+        : context(context) {}
+
+    void visit(BodyRule& rule) override;
+    void visit(ForRule& rule) override;
+    void visit(MatchRule& rule) override;
+    void visit(DiscardRule& rule) override;
+    void visit(MessageRule& rule) override;
+    void visit(ParallelForRule& rule) override;
+    void visit(InputChoiceRule& rule) override;
+    void visit(ExtendRule& rule) override;
+    void visit(Rule& rule) override;
 
 private:
-    virtual void executeImpl(Rule& rule, ExecuteContext& context) = 0;
-};
-
-#define RULE_EXECUTE void executeImpl(Rule& rule, ExecuteContext& context) override;
-
-class BodyRuleExecute final : public Execute {
-private: RULE_EXECUTE
-};
-class ForRuleExecute final : public Execute {
-private: RULE_EXECUTE
-};
-class MatchRuleExecute final : public Execute {
-private: RULE_EXECUTE
-};
-class DiscardRuleExecute final : public Execute {
-private: RULE_EXECUTE
-};
-class MessageRuleExecute final : public Execute {
-private: RULE_EXECUTE
-};
-class ParallelForRuleExecute final : public Execute {
-private: RULE_EXECUTE
-};
-class InputChoiceRuleExecute final : public Execute {
-private: RULE_EXECUTE
-};
-class ExtendRuleExecute final : public Execute {
-private: RULE_EXECUTE
-};
-
-/// A wrapper over a map of {string -> Execute} where the string is the typeid of a Rule.
-class RuleExecutor {
-public:
-    using Executors = std::map<std::string_view, std::unique_ptr<Execute>>;
-
-    RuleExecutor(Executors& executors) : m_executors(std::move(executors)) {}
-
-    /// Executes a rule using the appropriate executor.
-    /// @tparam TRule The type of the rule - the key of the executor map.
-    void executeRule(Rule& rule, ExecuteContext& context);
-
-    /// Create a default executor map.
-    static Executors createDefault();
-
-private:
-    Executors m_executors;
+    ExecuteContext& context;
 };
