@@ -19,7 +19,7 @@ class InGameUserManager {
     void deleteUser(networking::Connection userID);
     GameEnvironment::Environment getStatesOfUser(networking::Connection userID);
     std::map<intptr_t, std::pair<Role, GameEnvironment::Environment>> getAllUserStates();
-    void setStatesOfUser(networking::Connection  userID, Role role, GameEnvironment::Environment states);
+    void setStatesOfUser(networking::Connection userID, Role role, GameEnvironment::Environment states);
 
     private:
     std::map<intptr_t, std::pair<Role, GameEnvironment::Environment>> m_userStates;
