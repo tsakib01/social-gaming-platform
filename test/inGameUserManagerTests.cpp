@@ -41,7 +41,7 @@ TEST(InGameUserManagerTests, CanGetStatesOfUser){
     uint32_t dummyUserID = 1;
     Role dummyRole = Role::PLAYER;
     
-    // We care about using the Identifier into order to find the user's Value.
+    // We care about using the Identifier so that we can find the user's Value.
     GameEnvironment::Identifier testIdentifier = "testidentifier";
     std::unique_ptr<GameEnvironment::Value> testValue;
     std::map<GameEnvironment::Identifier, std::unique_ptr<GameEnvironment::Value>> testMap;
@@ -58,7 +58,7 @@ TEST(InGameUserManagerTests, CanSetStatesOfExistingUser){
     uint32_t dummyUserID = 1;
     Role dummyRole = Role::PLAYER;
     
-    // We care about using the Identifier into order to find the user's Value.
+    // We care about using the Identifier so that we can find the user's Value.
     GameEnvironment::Identifier testIdentifier = "testidentifier";
     
     // Test overwriting an Environment with nothing in it.
@@ -70,8 +70,11 @@ TEST(InGameUserManagerTests, CanSetStatesOfExistingUser){
     GameEnvironment::Environment nonNullDummyEnvironment = std::move(testMap);
     inGameUManager.addNewUser(dummyUserID, dummyRole, std::move(nullEnvironment));
     
-    //Without using the nonNullDummyEnvironment, the assert would fail.
+    // Without using the nonNullDummyEnvironment, the assert would fail.
     inGameUManager.setStatesOfUser(dummyUserID, dummyRole, std::move(nonNullDummyEnvironment));
     GameEnvironment::Environment testReturnedStates = std::move(inGameUManager.getStatesOfUser(dummyUserID));
     ASSERT_TRUE(testReturnedStates.find(testIdentifier) != testReturnedStates.end());
+    
+    // Check that the identifier exists in both and is mapped to the same value.
+    ASSERT_EQ(testReturnedStates[testIdentifier], nonNullDummyEnvironment[testIdentifier]);
 }
