@@ -6,42 +6,48 @@
 
 TEST(InGameUserManagerTests, BasicUserCount){
     InGameUserManager inGameUManager;
-    uintptr_t dummyUserID = 1;
+    networking::Connection dummyConnection1;
+    dummyConnection1.id = 1;
     Role dummyRole = Role::PLAYER;
     GameEnvironment::Environment dummyEnvironment;
     
-    uintptr_t dummyUserID2 = 2;
+    networking::Connection dummyConnection2;
+    dummyConnection2.id = 2;
     Role dummyRole2 = Role::PLAYER;
     GameEnvironment::Environment dummyEnvironment2;
 
-    inGameUManager.addNewUser(dummyUserID, dummyRole, std::move(dummyEnvironment));
-    inGameUManager.addNewUser(dummyUserID2, dummyRole2, std::move(dummyEnvironment2));
+    inGameUManager.addNewUser(dummyConnection1, dummyRole, std::move(dummyEnvironment));
+    inGameUManager.addNewUser(dummyConnection2, dummyRole2, std::move(dummyEnvironment2));
 
     ASSERT_EQ(std::move(inGameUManager.getAllUserStates()).size(), 2);
 }
 
 TEST(InGameUserManagerTests, CanDeleteAllUsers){
     InGameUserManager inGameUManager;
-    uintptr_t dummyUserID = 1;
+    networking::Connection dummyConnection1;
+    dummyConnection1.id = 1;
     Role dummyRole = Role::PLAYER;
     GameEnvironment::Environment dummyEnvironment;
     
-    uintptr_t dummyUserID2 = 2;
+    networking::Connection dummyConnection2;
+    dummyConnection2.id = 2;
     Role dummyRole2 = Role::PLAYER;
     GameEnvironment::Environment dummyEnvironment2;
     
-    inGameUManager.addNewUser(dummyUserID, dummyRole, std::move(dummyEnvironment));
-    inGameUManager.addNewUser(dummyUserID2, dummyRole2, std::move(dummyEnvironment2));
+    inGameUManager.addNewUser(dummyConnection1, dummyRole, std::move(dummyEnvironment));
+    inGameUManager.addNewUser(dummyConnection2, dummyRole2, std::move(dummyEnvironment2));
 
-    inGameUManager.deleteUser(dummyUserID);
-    inGameUManager.deleteUser(dummyUserID2);
+    inGameUManager.deleteUser(dummyConnection1);
+    inGameUManager.deleteUser(dummyConnection2);
     ASSERT_EQ(std::move(inGameUManager.getAllUserStates()).size(), 0);
 }
 
 TEST(InGameUserManagerTests, CanGetStatesOfUser){
     InGameUserManager inGameUManager;
-    uintptr_t dummyUserID = 1;
+    networking::Connection dummyConnection;
+    dummyConnection.id = 1;
     Role dummyRole = Role::PLAYER;
+    GameEnvironment::Environment dummyEnvironment;
     
     // We care about using the Identifier so that we can find the user's Value.
     GameEnvironment::Identifier testIdentifier = "testidentifier";
@@ -50,15 +56,16 @@ TEST(InGameUserManagerTests, CanGetStatesOfUser){
     testMap.insert({testIdentifier, std::move(testValue)});
 
     GameEnvironment::Environment nonNullDummyEnvironment = std::move(testMap);
-    inGameUManager.addNewUser(dummyUserID, dummyRole, std::move(nonNullDummyEnvironment));
-    GameEnvironment::Environment testReturnedStates = inGameUManager.getStatesOfUser(dummyUserID);
+    inGameUManager.addNewUser(dummyConnection, dummyRole, std::move(nonNullDummyEnvironment));
+    GameEnvironment::Environment testReturnedStates = inGameUManager.getStatesOfUser(dummyConnection);
     ASSERT_TRUE(std::move(testReturnedStates).find(testIdentifier) != testReturnedStates.end());
 }
 
 // Test overwriting an Environment with nothing in it, with an Environment that does have something in it.
 TEST(InGameUserManagerTests, CanSetStatesOfExistingUser){
     InGameUserManager inGameUManager;
-    uintptr_t dummyUserID = 1;
+    networking::Connection dummyConnection;
+    dummyConnection.id = 1;
     Role dummyRole = Role::PLAYER;
     
     // We care about using the Identifier so that we can find the user's Value.
@@ -77,10 +84,10 @@ TEST(InGameUserManagerTests, CanSetStatesOfExistingUser){
 
     // Begins with nullEnvironment which doesn't have any elements in its map.
     GameEnvironment::Environment nonNullDummyEnvironment = std::move(testMap);
-    inGameUManager.addNewUser(dummyUserID, dummyRole, std::move(nullEnvironment));
+    inGameUManager.addNewUser(dummyConnection, dummyRole, std::move(nullEnvironment));
 
-    inGameUManager.setStatesOfUser(dummyUserID, dummyRole, std::move(nonNullDummyEnvironment));
-    GameEnvironment::Environment testReturnedStates = inGameUManager.getStatesOfUser(dummyUserID);
+    inGameUManager.setStatesOfUser(dummyConnection, dummyRole, std::move(nonNullDummyEnvironment));
+    GameEnvironment::Environment testReturnedStates = inGameUManager.getStatesOfUser(dummyConnection);
 
     // These prove that the testIdentifier can be found in testReturnedStates but not nullEnvironmentStates
     // Without using the setStatesOfUser function and therefore nonNullDummyEnvironment, the next assert would fail.
