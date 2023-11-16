@@ -1,14 +1,16 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
+#include "Server.h"
 #include "InGameUserManager.h"
+
 TEST(InGameUserManagerTests, BasicUserCount){
     InGameUserManager inGameUManager;
-    uint32_t dummyUserID = 1;
+    uintptr_t dummyUserID = 1;
     Role dummyRole = Role::PLAYER;
     GameEnvironment::Environment dummyEnvironment;
     
-    uint32_t dummyUserID2 = 2;
+    uintptr_t dummyUserID2 = 2;
     Role dummyRole2 = Role::PLAYER;
     GameEnvironment::Environment dummyEnvironment2;
 
@@ -20,11 +22,11 @@ TEST(InGameUserManagerTests, BasicUserCount){
 
 TEST(InGameUserManagerTests, CanDeleteAllUsers){
     InGameUserManager inGameUManager;
-    uint32_t dummyUserID = 1;
+    uintptr_t dummyUserID = 1;
     Role dummyRole = Role::PLAYER;
     GameEnvironment::Environment dummyEnvironment;
     
-    uint32_t dummyUserID2 = 2;
+    uintptr_t dummyUserID2 = 2;
     Role dummyRole2 = Role::PLAYER;
     GameEnvironment::Environment dummyEnvironment2;
     
@@ -38,7 +40,7 @@ TEST(InGameUserManagerTests, CanDeleteAllUsers){
 
 TEST(InGameUserManagerTests, CanGetStatesOfUser){
     InGameUserManager inGameUManager;
-    uint32_t dummyUserID = 1;
+    uintptr_t dummyUserID = 1;
     Role dummyRole = Role::PLAYER;
     
     // We care about using the Identifier so that we can find the user's Value.
@@ -56,7 +58,7 @@ TEST(InGameUserManagerTests, CanGetStatesOfUser){
 // Test overwriting an Environment with nothing in it, with an Environment that does have something in it.
 TEST(InGameUserManagerTests, CanSetStatesOfExistingUser){
     InGameUserManager inGameUManager;
-    uint32_t dummyUserID = 1;
+    uintptr_t dummyUserID = 1;
     Role dummyRole = Role::PLAYER;
     
     // We care about using the Identifier so that we can find the user's Value.
