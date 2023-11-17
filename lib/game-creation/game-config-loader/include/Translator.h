@@ -183,6 +183,15 @@ private:
 };
 
 
+class BooleanFactory final : public ExpressionFactory {
+public:
+    BooleanFactory(const Translator* translator) : ExpressionFactory(translator) {}
+
+private:
+    std::unique_ptr<Expression> createImpl(const ts::Node& node, std::string_view source); 
+};
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // Translator
 ////////////////////////////////////////////////////////////////////////////////

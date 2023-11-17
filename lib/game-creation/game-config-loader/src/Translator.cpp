@@ -1,5 +1,6 @@
 #include <stdexcept>
 #include "Translator.h"
+#include <iostream>
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -17,12 +18,15 @@ std::unique_ptr<Rule>
 BodyFactory::createImpl(const ts::Node& node, std::string_view source) {
     std::cout << "Body Rule Created\n";
     auto bodyRule = std::make_unique<BodyRule>();
+    ts::Cursor cursor = node.getCursor();
+    cursor.gotoFirstChild();
 
-    for (size_t i = 0; i < node.getNumNamedChildren(); ++i) {
-        if (node.getNamedChild(i).getType() == "rule") {
-            bodyRule->rules.push_back(translator->createRule(node.getNamedChild(i)));
+    do {
+        ts::Node current = cursor.getCurrentNode();
+        if (current.getType() == "rule") {
+            bodyRule->rules.push_back(translator->createRule(current));
         }
-    }
+    } while (cursor.gotoNextSibling());
 
     return bodyRule;
 }
@@ -31,12 +35,15 @@ BodyRule
 BodyFactory::createBodyRule(const ts::Node& node, const Translator* translator) {
     std::cout << "Body Rule Created\n";
     BodyRule bodyRule;
+    ts::Cursor cursor = node.getCursor();
+    cursor.gotoFirstChild();
 
-    for (size_t i = 0; i < node.getNumNamedChildren(); ++i) {
-        if (node.getNamedChild(i).getType() == "rule") {
-            bodyRule.rules.push_back(translator->createRule(node.getNamedChild(i)));
+    do {
+        ts::Node current = cursor.getCurrentNode();
+        if (current.getType() == "rule") {
+            bodyRule.rules.push_back(translator->createRule(current));
         }
-    }
+    } while (cursor.gotoNextSibling());
 
     return bodyRule;
 }
@@ -46,7 +53,7 @@ std::unique_ptr<Rule>
 ForFactory::createImpl(const ts::Node& node, std::string_view source) {
     // Create the for rule here
     std::cout << "For Rule Created\n";
-    std::unique_ptr<ForRule> rule = std::make_unique<ForRule>();
+    auto rule = std::make_unique<ForRule>();
     rule->currentItem = IdentifierExpression(node.getNamedChild(0).getSourceRange(source));
     rule->list = translator->createExpression(node.getNamedChild(1));
     rule->body = BodyFactory::createBodyRule(node.getNamedChild(2), translator);
@@ -57,7 +64,7 @@ std::unique_ptr<Rule>
 ParallelForFactory::createImpl(const ts::Node& node, std::string_view source) {
     // Create the for rule here
     std::cout << "Parallel For Rule Created\n";
-    std::unique_ptr<ParallelForRule> rule = std::make_unique<ParallelForRule>();
+    auto rule = std::make_unique<ParallelForRule>();
     rule->currentItem = IdentifierExpression(node.getNamedChild(0).getSourceRange(source));
     rule->list = translator->createExpression(node.getNamedChild(1));
     rule->body = BodyFactory::createBodyRule(node.getNamedChild(2), translator);
@@ -67,7 +74,23 @@ ParallelForFactory::createImpl(const ts::Node& node, std::string_view source) {
 std::unique_ptr<Rule>
 MatchFactory::createImpl(const ts::Node& node, std::string_view source) {
     // Create the match rule here
-    return std::make_unique<MatchRule>();
+    std::cout << "Match Rule Created\n";
+    auto rule = std::make_unique<MatchRule>();
+    rule->target = translator->createExpression(node.getChildByFieldName("target"));
+
+    ts::Cursor cursor = node.getCursor();
+    cursor.gotoFirstChild();
+
+    do {
+        ts::Node current = cursor.getCurrentNode();
+        if (current.getType() == "match_entry") {
+            auto guard = translator->createExpression(current.getChildByFieldName("guard"));
+            auto body = BodyFactory::createBodyRule(current.getChildByFieldName("body"), translator);
+            rule->cases[std::move(guard)] = std::move(body);
+        }
+    } while (cursor.gotoNextSibling());
+
+    return rule;
 }
 
 
@@ -117,6 +140,12 @@ IdentifierFactory::createImpl(const ts::Node& node, std::string_view source) {
 }
 
 
+std::unique_ptr<Expression>
+BooleanFactory::createImpl(const ts::Node& node, std::string_view source) {
+    bool value = node.getSourceRange(source) == "true" ? true : false;
+    return std::make_unique<LiteralExpression<bool>>(value);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Translator
 ////////////////////////////////////////////////////////////////////////////////
@@ -140,6 +169,7 @@ createTranslator(std::string_view source) {
     // Expressions
     translator.registerExpressionFactory("expression",  std::make_unique<DummyExpressionFactory>(&translator));
     translator.registerExpressionFactory("identifier",  std::make_unique<IdentifierFactory>(&translator));
+    translator.registerExpressionFactory("boolean",     std::make_unique<BooleanFactory>(&translator));
 
     return translator;
 };

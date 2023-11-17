@@ -78,11 +78,13 @@ class Expression {};
 template<typename T>
 class LiteralExpression : public Expression {
 public:
-    LiteralExpression(T value) : value(GameEnvironment::Value(value)) {
-        static_assert(
-            is_contained_assignable_in<T, GameEnvironment::Value>::value,
-            "Invalid type for LiteralExpression"
-        );
+    LiteralExpression(T value) {
+        // static_assert(
+        //     is_contained_assignable_in<T, GameEnvironment::Value>::value,
+        //     "Invalid type for LiteralExpression"
+        // );
+        this->value.value = value;
+        std::cout << std::get<bool>(this->value.value) << '\n';
     }
     GameEnvironment::Value value;
 };
