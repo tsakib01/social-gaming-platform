@@ -9,13 +9,13 @@
 
 
 std::unique_ptr<Rule>
-DummyRuleFactory::createImpl(const ts::Node& node, [[maybe_unused]] std::string_view source) {
+DummyRuleFactory::createImpl(const ts::Node& node) {
     return translator->createRule(node.getNamedChild(0)); 
 } 
 
 
 std::unique_ptr<Rule> 
-BodyFactory::createImpl(const ts::Node& node, [[maybe_unused]] std::string_view source) {
+BodyFactory::createImpl(const ts::Node& node) {
     std::cout << "Body Rule Created\n";
     auto bodyRule = std::make_unique<BodyRule>();
     ts::Cursor cursor = node.getCursor();
@@ -56,10 +56,10 @@ BodyFactory::createBodyRule(const ts::Node& node, const Translator* translator) 
 
 
 std::unique_ptr<Rule>
-ForFactory::createImpl(const ts::Node& node, std::string_view source) {
+ForFactory::createImpl(const ts::Node& node) {
     std::cout << "For Rule Created\n";
     auto rule = std::make_unique<ForRule>();
-    rule->currentItem = IdentifierExpression(node.getNamedChild(0).getSourceRange(source));
+    rule->currentItem = IdentifierExpression(node.getNamedChild(0).getSourceRange(translator->source));
     rule->list = translator->createExpression(node.getNamedChild(1));
     rule->body = BodyFactory::createBodyRule(node.getNamedChild(2), translator);
     return rule;
@@ -67,10 +67,10 @@ ForFactory::createImpl(const ts::Node& node, std::string_view source) {
 
 
 std::unique_ptr<Rule>
-ParallelForFactory::createImpl(const ts::Node& node, std::string_view source) {
+ParallelForFactory::createImpl(const ts::Node& node) {
     std::cout << "Parallel For Rule Created\n";
     auto rule = std::make_unique<ParallelForRule>();
-    rule->currentItem = IdentifierExpression(node.getNamedChild(0).getSourceRange(source));
+    rule->currentItem = IdentifierExpression(node.getNamedChild(0).getSourceRange(translator->source));
     rule->list = translator->createExpression(node.getNamedChild(1));
     rule->body = BodyFactory::createBodyRule(node.getNamedChild(2), translator);
     return rule;
@@ -78,7 +78,7 @@ ParallelForFactory::createImpl(const ts::Node& node, std::string_view source) {
 
 
 std::unique_ptr<Rule>
-MatchFactory::createImpl(const ts::Node& node, std::string_view source) {
+MatchFactory::createImpl(const ts::Node& node) {
     std::cout << "Match Rule Created\n";
     auto rule = std::make_unique<MatchRule>();
     rule->target = translator->createExpression(node.getChildByFieldName("target"));
@@ -103,24 +103,24 @@ MatchFactory::createImpl(const ts::Node& node, std::string_view source) {
 
 
 std::unique_ptr<Rule>
-DiscardFactory::createImpl(const ts::Node& node, std::string_view source) {
+DiscardFactory::createImpl(const ts::Node& node) {
     std::cout << "Discard Rule Created\n";
     auto rule = std::make_unique<DiscardRule>();
 
     rule->count = translator->createExpression(node.getChildByFieldName("count"));
-    rule->source = QualifiedIdentifier{node.getChildByFieldName("source").getSourceRange(source)};
+    rule->source = QualifiedIdentifier{node.getChildByFieldName("source").getSourceRange(translator->source)};
 
     return rule;
 }
 
 
 std::unique_ptr<Rule>
-MessageFactory::createImpl(const ts::Node& node, std::string_view source) {
+MessageFactory::createImpl(const ts::Node& node) {
     std::cout << "Message Rule Created\n";
     auto rule = std::make_unique<MessageRule>();
 
     ts::Node players = node.getChildByFieldName("players");
-    if (players.getSourceRange(source) == "all") {
+    if (players.getSourceRange(translator->source) == "all") {
         rule->players = std::make_unique<LiteralExpression<std::string_view>>("all");
     } else {
         rule->players = translator->createExpression(players);
@@ -129,7 +129,7 @@ MessageFactory::createImpl(const ts::Node& node, std::string_view source) {
     rule->content = LiteralExpression<std::string_view> {
         node.getChildByFieldName("content")
             .getNamedChild(0)
-            .getSourceRange(source)
+            .getSourceRange(translator->source)
     };
 
     return rule;
@@ -138,34 +138,34 @@ MessageFactory::createImpl(const ts::Node& node, std::string_view source) {
 
 
 std::unique_ptr<Rule>
-InputChoiceFactory::createImpl(const ts::Node& node, std::string_view source) {
+InputChoiceFactory::createImpl(const ts::Node& node) {
     std::cout << "Input Rule Created\n";
     return std::make_unique<InputChoiceRule>();
 }
 
 
 std::unique_ptr<Rule>
-ScoresFactory::createImpl(const ts::Node& node, std::string_view source) {
+ScoresFactory::createImpl(const ts::Node& node) {
     std::cout << "Scores Rule Created\n";
     return std::make_unique<ScoresRule>();
 }
 
 
 std::unique_ptr<Rule>
-ExtendFactory::createImpl(const ts::Node& node, std::string_view source) {
+ExtendFactory::createImpl(const ts::Node& node) {
     std::cout << "Extend Rule Created\n";
     auto rule = std::make_unique<ExtendRule>(); 
-    rule->target = QualifiedIdentifier{node.getChildByFieldName("target").getSourceRange(source)};
+    rule->target = QualifiedIdentifier{node.getChildByFieldName("target").getSourceRange(translator->source)};
     rule->value = translator->createExpression(node.getChildByFieldName("value"));
     return rule;
 }
 
 
 std::unique_ptr<Rule>
-AssignmentFactory::createImpl(const ts::Node& node, std::string_view source) {
+AssignmentFactory::createImpl(const ts::Node& node) {
     std::cout << "Assignment Rule Created\n";
     auto rule = std::make_unique<AssignmentRule>(); 
-    rule->target = QualifiedIdentifier{node.getChildByFieldName("target").getSourceRange(source)};
+    rule->target = QualifiedIdentifier{node.getChildByFieldName("target").getSourceRange(translator->source)};
     rule->value = translator->createExpression(node.getChildByFieldName("value"));
     return rule;
 }
@@ -177,20 +177,20 @@ AssignmentFactory::createImpl(const ts::Node& node, std::string_view source) {
 
 
 std::unique_ptr<Expression>
-DummyExpressionFactory::createImpl(const ts::Node& node, [[maybe_unused]] std::string_view source) {
+DummyExpressionFactory::createImpl(const ts::Node& node) {
     return translator->createExpression(node.getNamedChild(0)); 
 } 
 
 
 std::unique_ptr<Expression>
-IdentifierFactory::createImpl(const ts::Node& node, std::string_view source) {
-    return std::make_unique<IdentifierExpression>(node.getSourceRange(source));
+IdentifierFactory::createImpl(const ts::Node& node) {
+    return std::make_unique<IdentifierExpression>(node.getSourceRange(translator->source));
 }
 
 
 std::unique_ptr<Expression>
-BooleanFactory::createImpl(const ts::Node& node, std::string_view source) {
-    bool value = node.getSourceRange(source) == "true" ? true : false;
+BooleanFactory::createImpl(const ts::Node& node) {
+    bool value = node.getSourceRange(translator->source) == "true" ? true : false;
     return std::make_unique<LiteralExpression<bool>>(value);
 }
 
@@ -241,7 +241,7 @@ Translator::createRule(const ts::Node& node) const {
         throw std::runtime_error(errorMessage);
     }
 
-    return factory->second->create(node, source);
+    return factory->second->create(node);
 }
 
 
@@ -254,5 +254,5 @@ Translator::createExpression(const ts::Node& node) const {
         throw std::runtime_error("Unable to create expression of type: "+ std::string{type});
     }
 
-    return factory->second->create(node, source);
+    return factory->second->create(node);
 }
