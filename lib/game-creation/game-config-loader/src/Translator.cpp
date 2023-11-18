@@ -9,17 +9,20 @@
 
 
 std::unique_ptr<Rule>
-DummyRuleFactory::createImpl(const ts::Node& node, std::string_view source) {
+DummyRuleFactory::createImpl(const ts::Node& node, [[maybe_unused]] std::string_view source) {
     return translator->createRule(node.getNamedChild(0)); 
 } 
 
 
 std::unique_ptr<Rule> 
-BodyFactory::createImpl(const ts::Node& node, std::string_view source) {
+BodyFactory::createImpl(const ts::Node& node, [[maybe_unused]] std::string_view source) {
     std::cout << "Body Rule Created\n";
     auto bodyRule = std::make_unique<BodyRule>();
     ts::Cursor cursor = node.getCursor();
-    cursor.gotoFirstChild();
+
+    if (!cursor.gotoFirstChild()) {
+        throw std::runtime_error("Error traversing tree in BodyFactory");
+    }
 
     do {
         ts::Node current = cursor.getCurrentNode();
@@ -36,7 +39,10 @@ BodyFactory::createBodyRule(const ts::Node& node, const Translator* translator) 
     std::cout << "Body Rule Created\n";
     BodyRule bodyRule;
     ts::Cursor cursor = node.getCursor();
-    cursor.gotoFirstChild();
+
+    if (!cursor.gotoFirstChild()) {
+        throw std::runtime_error("Error traversing tree in BodyFactory");
+    }
 
     do {
         ts::Node current = cursor.getCurrentNode();
@@ -51,7 +57,6 @@ BodyFactory::createBodyRule(const ts::Node& node, const Translator* translator) 
 
 std::unique_ptr<Rule>
 ForFactory::createImpl(const ts::Node& node, std::string_view source) {
-    // Create the for rule here
     std::cout << "For Rule Created\n";
     auto rule = std::make_unique<ForRule>();
     rule->currentItem = IdentifierExpression(node.getNamedChild(0).getSourceRange(source));
@@ -60,9 +65,9 @@ ForFactory::createImpl(const ts::Node& node, std::string_view source) {
     return rule;
 }
 
+
 std::unique_ptr<Rule>
 ParallelForFactory::createImpl(const ts::Node& node, std::string_view source) {
-    // Create the for rule here
     std::cout << "Parallel For Rule Created\n";
     auto rule = std::make_unique<ParallelForRule>();
     rule->currentItem = IdentifierExpression(node.getNamedChild(0).getSourceRange(source));
@@ -71,15 +76,18 @@ ParallelForFactory::createImpl(const ts::Node& node, std::string_view source) {
     return rule;
 }
 
+
 std::unique_ptr<Rule>
 MatchFactory::createImpl(const ts::Node& node, std::string_view source) {
-    // Create the match rule here
     std::cout << "Match Rule Created\n";
     auto rule = std::make_unique<MatchRule>();
     rule->target = translator->createExpression(node.getChildByFieldName("target"));
 
     ts::Cursor cursor = node.getCursor();
-    cursor.gotoFirstChild();
+
+    if (!cursor.gotoFirstChild()) {
+        throw std::runtime_error("Error traversing tree in MatchFactory");
+    }
 
     do {
         ts::Node current = cursor.getCurrentNode();
@@ -96,19 +104,38 @@ MatchFactory::createImpl(const ts::Node& node, std::string_view source) {
 
 std::unique_ptr<Rule>
 DiscardFactory::createImpl(const ts::Node& node, std::string_view source) {
-    // Create the discard rule here
-    return std::make_unique<DiscardRule>();
+    std::cout << "Discard Rule Created\n";
+    auto rule = std::make_unique<DiscardRule>();
+
+    rule->count = translator->createExpression(node.getChildByFieldName("count"));
+    rule->source = QualifiedIdentifier{node.getChildByFieldName("source").getSourceRange(source)};
+
+    return rule;
 }
 
 
 std::unique_ptr<Rule>
 MessageFactory::createImpl(const ts::Node& node, std::string_view source) {
     std::cout << "Message Rule Created\n";
-    return std::make_unique<MessageRule>();
-    // auto messageRule = std::make_unique<MessageRule>();
-    // messageRule->message = translator->createExpression(node.getNamedChild(0));
-    // messageRule->toList = translator->createExpression(node.getNamedChild(1));
+    auto rule = std::make_unique<MessageRule>();
+
+    ts::Node players = node.getChildByFieldName("players");
+    if (players.getSourceRange(source) == "all") {
+        rule->players = std::make_unique<LiteralExpression<std::string_view>>("all");
+    } else {
+        rule->players = translator->createExpression(players);
+    }
+    
+    rule->content = LiteralExpression<std::string_view> {
+        node.getChildByFieldName("content")
+            .getNamedChild(0)
+            .getSourceRange(source)
+    };
+
+    return rule;
+
 }
+
 
 std::unique_ptr<Rule>
 InputChoiceFactory::createImpl(const ts::Node& node, std::string_view source) {
@@ -116,10 +143,31 @@ InputChoiceFactory::createImpl(const ts::Node& node, std::string_view source) {
     return std::make_unique<InputChoiceRule>();
 }
 
+
 std::unique_ptr<Rule>
 ScoresFactory::createImpl(const ts::Node& node, std::string_view source) {
     std::cout << "Scores Rule Created\n";
     return std::make_unique<ScoresRule>();
+}
+
+
+std::unique_ptr<Rule>
+ExtendFactory::createImpl(const ts::Node& node, std::string_view source) {
+    std::cout << "Extend Rule Created\n";
+    auto rule = std::make_unique<ExtendRule>(); 
+    rule->target = QualifiedIdentifier{node.getChildByFieldName("target").getSourceRange(source)};
+    rule->value = translator->createExpression(node.getChildByFieldName("value"));
+    return rule;
+}
+
+
+std::unique_ptr<Rule>
+AssignmentFactory::createImpl(const ts::Node& node, std::string_view source) {
+    std::cout << "Assignment Rule Created\n";
+    auto rule = std::make_unique<AssignmentRule>(); 
+    rule->target = QualifiedIdentifier{node.getChildByFieldName("target").getSourceRange(source)};
+    rule->value = translator->createExpression(node.getChildByFieldName("value"));
+    return rule;
 }
 
 
@@ -129,7 +177,7 @@ ScoresFactory::createImpl(const ts::Node& node, std::string_view source) {
 
 
 std::unique_ptr<Expression>
-DummyExpressionFactory::createImpl(const ts::Node& node, std::string_view source) {
+DummyExpressionFactory::createImpl(const ts::Node& node, [[maybe_unused]] std::string_view source) {
     return translator->createExpression(node.getNamedChild(0)); 
 } 
 
@@ -156,15 +204,17 @@ createTranslator(std::string_view source) {
     Translator translator{source};
 
     // Rules
-    translator.registerRuleFactory("rule",          std::make_unique<DummyRuleFactory>(&translator));
-    translator.registerRuleFactory("body",          std::make_unique<BodyFactory>(&translator));
-    translator.registerRuleFactory("for",           std::make_unique<ForFactory>(&translator));
-    translator.registerRuleFactory("parallel_for",  std::make_unique<ParallelForFactory>(&translator));
-    translator.registerRuleFactory("match",         std::make_unique<MatchFactory>(&translator));
-    translator.registerRuleFactory("discard",       std::make_unique<DiscardFactory>(&translator));
-    translator.registerRuleFactory("message",       std::make_unique<MessageFactory>(&translator));
-    translator.registerRuleFactory("input_choice",  std::make_unique<InputChoiceFactory>(&translator));
-    translator.registerRuleFactory("scores",        std::make_unique<ScoresFactory>(&translator));
+    translator.registerRuleFactory("rule",              std::make_unique<DummyRuleFactory>(&translator));
+    translator.registerRuleFactory("body",              std::make_unique<BodyFactory>(&translator));
+    translator.registerRuleFactory("for",               std::make_unique<ForFactory>(&translator));
+    translator.registerRuleFactory("parallel_for",      std::make_unique<ParallelForFactory>(&translator));
+    translator.registerRuleFactory("match",             std::make_unique<MatchFactory>(&translator));
+    translator.registerRuleFactory("discard",           std::make_unique<DiscardFactory>(&translator));
+    translator.registerRuleFactory("message",           std::make_unique<MessageFactory>(&translator));
+    translator.registerRuleFactory("input_choice",      std::make_unique<InputChoiceFactory>(&translator));
+    translator.registerRuleFactory("scores",            std::make_unique<ScoresFactory>(&translator));
+    translator.registerRuleFactory("extend",            std::make_unique<ExtendFactory>(&translator));
+    translator.registerRuleFactory("assignment",        std::make_unique<AssignmentFactory>(&translator));
 
     // Expressions
     translator.registerExpressionFactory("expression",  std::make_unique<DummyExpressionFactory>(&translator));
