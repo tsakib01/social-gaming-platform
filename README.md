@@ -50,9 +50,9 @@ Run all tests.
 ## Run the Server
 From within the build directory, after running make, run the `server` executable
 ```
-./bin/server 8000 ../social-gaming/webchat.html
+./bin/server 8000
 ```
 To add clients to join, run the `client` executable
 ```
-./bin/client-ncurses localhost 8000
+./bin/client localhost 8000
 ```
