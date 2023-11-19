@@ -65,19 +65,18 @@ public:
     std::map<std::unique_ptr<Expression>, BodyRule> cases; 
 };
 
-/// A rule that removes an item from a list at a given index
+/// A rule that removes << count >> items from a list << source >> 
 class DiscardRule : public Rule {
 public:
-    std::unique_ptr<Expression> index;
-    std::unique_ptr<Expression> list;
+    std::unique_ptr<Expression> count;
+    QualifiedIdentifier source;
 };
 
 /// A rule that represents a message to be sent to a list of players
 class MessageRule : public Rule {
 public:
-    std::unique_ptr<Expression> message;
-    /// An expression that evaluates to the list of players to message
-    std::unique_ptr<Expression> toList;
+    LiteralExpression<std::string_view> content;
+    std::unique_ptr<Expression> players;
 };
 
 /// A rule that represents a for loop executing a body rule for each item in a list.
@@ -110,9 +109,9 @@ public:
 class ExtendRule : public Rule {
 public:
     /// The list to add to
-    std::unique_ptr<Expression> target;
+    QualifiedIdentifier target;
     /// The item to add
-    std::unique_ptr<Expression> source;
+    std::unique_ptr<Expression> value;
 };
 
 // A rule that prints a scoreboard on the global display using the given attribute(s) of each player defined by the key list.
@@ -120,6 +119,13 @@ class ScoresRule : public Rule {
 public:
     /// The list of keys
     std::unique_ptr<Expression> listOfKeys;
+};
+
+// Assigns value to target
+class AssignmentRule : public Rule {
+public:
+    QualifiedIdentifier target;
+    std::unique_ptr<Expression> value;
 };
 
 #endif
