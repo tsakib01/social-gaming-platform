@@ -52,7 +52,7 @@ GameInstance::insertUsers(std::vector<User>& incomingUsers) {
 
 void
 GameInstance::insertMessages() { 
-    flipState();
+    flipWaitingRunningState();
     
     // TODO: Pass messages to rules
 }
@@ -68,7 +68,7 @@ GameInstance::getGameInstanceState() {
 }
 
 void
-GameInstance::flipState() {
+GameInstance::flipWaitingRunningState() {
     if (m_state == GameInstanceState::QUEUED) {
         throw std::runtime_error("GameInstanceState should not be QUEUED!");
     }
