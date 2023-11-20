@@ -38,6 +38,10 @@ public:
 
     // Returns the current state of the room
     GameInstanceState getGameInstanceState();
+    
+    // Flips between WAITING and RUNNING states (becomes whichever it isn't currently)
+    void flipState();
+
 
 private:
     std::unique_ptr<RuleTree> m_gameRules;

@@ -109,7 +109,7 @@ ServerManager::processGameWait(const Message& message) {
 		userManager->setUserState(message.connection, UserState::GAME_RUN);
 		// gameInstanceManager->startGame(roomCode);
 		return std::deque<Message>{
-			{message.connection, "Moving to GAME_RUN state\n"}};
+			{message.connection, "Game starting...\n"}};
 	}
 
 	else {

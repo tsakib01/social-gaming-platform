@@ -32,9 +32,6 @@ GameInstance::executeNextInstruction() {
     // } else {
     //     instructionStack.pop();
     // }
-
-    // TODO: find some way to detect if there was an input rule happening
-    // if true, m_state = GameInstanceState::WAITING;
 }
 
 bool
@@ -50,14 +47,14 @@ GameInstance::gameIsFinished() {
 
 void
 GameInstance::insertUsers(std::vector<User>& incomingUsers) {
-    // add to InGameUserManager
+    // TODO: Pass into InGameUserManager
 }
 
 void
 GameInstance::insertMessages() { 
-    m_state = GameInstanceState::RUNNING;
+    flipState();
     
-    // Pass messages to rule
+    // TODO: Pass messages to rules
 }
 
 uint16_t 
@@ -68,4 +65,13 @@ GameInstance::getRoomCode() {
 GameInstanceState
 GameInstance::getGameInstanceState() {
     return m_state;
+}
+
+void
+GameInstance::flipState() {
+    if (m_state == GameInstanceState::QUEUED) {
+        throw std::runtime_error("GameInstanceState should not be QUEUED!");
+    }
+
+    m_state = (m_state == GameInstanceState::RUNNING) ? GameInstanceState::WAITING : GameInstanceState::RUNNING;
 }
