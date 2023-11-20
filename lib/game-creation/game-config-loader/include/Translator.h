@@ -9,6 +9,7 @@
 #include <cpp-tree-sitter.h>
 #include <iostream>
 #include "Rule.h"
+#include "Expression.h"
 
 
 class Translator;
@@ -40,8 +41,8 @@ public:
     virtual ~RuleFactory() = default;
     
     std::unique_ptr<Rule> 
-    create(const ts::Node& node, std::string_view source) {
-        return createImpl(node, source);
+    create(const ts::Node& node) {
+        return createImpl(node);
     }
 
 protected:
@@ -50,7 +51,7 @@ protected:
     const Translator* translator;
 
 private:
-    virtual std::unique_ptr<Rule> createImpl(const ts::Node&, std::string_view) = 0;
+    virtual std::unique_ptr<Rule> createImpl(const ts::Node&) = 0;
 };
 
 // Creates the child rule of this node for nodes that look like
@@ -61,7 +62,7 @@ class DummyRuleFactory final : public RuleFactory {
 public:
     DummyRuleFactory(const Translator* translator) : RuleFactory(translator) {}
 private:
-    std::unique_ptr<Rule> createImpl(const ts::Node& node, std::string_view source);
+    std::unique_ptr<Rule> createImpl(const ts::Node& node);
 };
 
 
@@ -70,7 +71,7 @@ public:
     BodyFactory(const Translator* translator) : RuleFactory(translator) {}
     static BodyRule createBodyRule(const ts::Node& node, const Translator* translator);
 private:
-    std::unique_ptr<Rule> createImpl(const ts::Node& node, std::string_view source);
+    std::unique_ptr<Rule> createImpl(const ts::Node& node);
 };
 
 class ForFactory final : public RuleFactory {
@@ -78,58 +79,70 @@ public:
     ForFactory(const Translator* translator) : RuleFactory(translator) {}
 
 private:
-    std::unique_ptr<Rule> createImpl(const ts::Node& node, std::string_view source);
+    std::unique_ptr<Rule> createImpl(const ts::Node& node);
 };
 
 class ParallelForFactory final : public RuleFactory {
 public:
     ParallelForFactory(const Translator* translator) : RuleFactory(translator) {}
-
 private:
-    std::unique_ptr<Rule> createImpl(const ts::Node& node, std::string_view source);
+    std::unique_ptr<Rule> createImpl(const ts::Node& node);
 };
 
 
 class MatchFactory final : public RuleFactory {
 public:
     MatchFactory(const Translator* translator) : RuleFactory(translator) {}
-
 private:
-    std::unique_ptr<Rule> createImpl(const ts::Node& node, std::string_view source); 
+    std::unique_ptr<Rule> createImpl(const ts::Node& node); 
 };
 
 
 class DiscardFactory final : public RuleFactory {
 public:
     DiscardFactory(const Translator* translator) : RuleFactory(translator) {}
-
 private:
-    std::unique_ptr<Rule> createImpl(const ts::Node& node, std::string_view source);
+    std::unique_ptr<Rule> createImpl(const ts::Node& node);
 };
 
 
 class MessageFactory final : public RuleFactory {
 public:
     MessageFactory(const Translator* translator) : RuleFactory(translator) {}
-
 private:
-    std::unique_ptr<Rule> createImpl(const ts::Node& node, std::string_view source);
+    std::unique_ptr<Rule> createImpl(const ts::Node& node);
 };
+
 
 class InputChoiceFactory final : public RuleFactory {
 public:
     InputChoiceFactory(const Translator* translator) : RuleFactory(translator) {}
-
 private:
-    std::unique_ptr<Rule> createImpl(const ts::Node& node, std::string_view source);
+    std::unique_ptr<Rule> createImpl(const ts::Node& node);
 };
+
 
 class ScoresFactory final : public RuleFactory {
 public:
     ScoresFactory(const Translator* translator) : RuleFactory(translator) {}
-
 private:
-    std::unique_ptr<Rule> createImpl(const ts::Node& node, std::string_view source);
+    std::unique_ptr<Rule> createImpl(const ts::Node& node);
+};
+
+
+class ExtendFactory final : public RuleFactory {
+public:
+    ExtendFactory(const Translator* translator) : RuleFactory(translator) {}
+private:
+    std::unique_ptr<Rule> createImpl(const ts::Node& node);
+};
+
+
+class AssignmentFactory final : public RuleFactory {
+public:
+    AssignmentFactory(const Translator* translator) : RuleFactory(translator) {}
+private:
+    std::unique_ptr<Rule> createImpl(const ts::Node& node);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -147,8 +160,8 @@ public:
     virtual ~ExpressionFactory() = default;
 
     std::unique_ptr<Expression> 
-    create(const ts::Node& node, std::string_view source) {
-        return createImpl(node, source);
+    create(const ts::Node& node) {
+        return createImpl(node);
     }
 
 protected:
@@ -157,7 +170,7 @@ protected:
     const Translator* translator;
 
 private:
-    virtual std::unique_ptr<Expression> createImpl(const ts::Node&, std::string_view) = 0;
+    virtual std::unique_ptr<Expression> createImpl(const ts::Node&) = 0;
 };
 
 
@@ -168,18 +181,24 @@ private:
 class DummyExpressionFactory final : public ExpressionFactory {
 public:
     DummyExpressionFactory(const Translator* translator) : ExpressionFactory(translator) {}
-    
 private:
-    std::unique_ptr<Expression> createImpl(const ts::Node& node, std::string_view source); 
+    std::unique_ptr<Expression> createImpl(const ts::Node& node); 
 };
 
 
 class IdentifierFactory final : public ExpressionFactory {
 public:
     IdentifierFactory(const Translator* translator) : ExpressionFactory(translator) {}
-
 private:
-    std::unique_ptr<Expression> createImpl(const ts::Node& node, std::string_view source); 
+    std::unique_ptr<Expression> createImpl(const ts::Node& node); 
+};
+
+
+class BooleanFactory final : public ExpressionFactory {
+public:
+    BooleanFactory(const Translator* translator) : ExpressionFactory(translator) {}
+private:
+    std::unique_ptr<Expression> createImpl(const ts::Node& node); 
 };
 
 
@@ -209,10 +228,11 @@ public:
         expressionFactories[key] = std::move(factory);
     }
 
+    std::string_view source = {};
+
 private:
     std::unordered_map<std::string, RuleFactoryPointer> ruleFactories;
     std::unordered_map<std::string, ExpressionFactoryPointer> expressionFactories;
-    std::string_view source;
 };
 
 
