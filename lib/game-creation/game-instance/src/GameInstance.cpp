@@ -8,18 +8,14 @@ std::unique_ptr<GameState> gameState, uint16_t roomCode)
     // const std::shared_ptr<RuleNode> rulesRoot = gameRules->getRules();
     // instructionStack.push(rulesRoot);
 
-    // UNIMPLEMENTED While Rule Execution is restructured
+    // UNIMPLEMENTED While Rule Execution is restructure
+
+    m_state = GameInstanceState::QUEUED;
 }
 
 void 
 GameInstance::startGame() {
-    // UNIMPLEMENTED While Rule Execution is restructured
-
-    // std::cout << "\nGame started." << std::endl;
-    // while (!instructionStack.empty()) {
-    //     executeNextInstruction();
-    // }
-    // std::cout << "Game ended." << std::endl;
+    m_state = GameInstanceState::RUNNING;
 }
 
 void 
@@ -36,6 +32,9 @@ GameInstance::executeNextInstruction() {
     // } else {
     //     instructionStack.pop();
     // }
+
+    // TODO: find some way to detect if there was an input rule happening
+    // if true, m_state = GameInstanceState::WAITING;
 }
 
 bool
@@ -49,7 +48,24 @@ GameInstance::gameIsFinished() {
     return false;
 }
 
+void
+GameInstance::insertUsers(std::vector<User>& incomingUsers) {
+    // add to InGameUserManager
+}
+
+void
+GameInstance::insertMessages() { 
+    m_state = GameInstanceState::RUNNING;
+    
+    // Pass messages to rule
+}
+
 uint16_t 
 GameInstance::getRoomCode() {
     return m_roomCode;
+}
+
+GameInstanceState
+GameInstance::getGameInstanceState() {
+    return m_state;
 }

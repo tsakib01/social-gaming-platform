@@ -6,7 +6,12 @@
 #include <random>
 #include "GameInstance.h"
 #include "GameConfigLoader.h"
+#include "UserManager.h"
 
+/**
+ * This class is in charge of running all GameInstances.
+ * It is able to create, start, execute, and end any games.
+*/
 class GameInstanceManager {
 public:
     GameInstanceManager();
@@ -24,12 +29,14 @@ public:
     // Executes the next instruction for each GameInstance in m_activeGameList
     void runCycle();
 
+    
+    void insertUsersIntoGame(std::vector<User>& incomingUsers, uint16_t roomCode);
+
     // Returns a list of all Room Codes 
     std::vector<uint16_t> getRoomCodes();
 
 private:
     std::vector<std::unique_ptr<GameInstance>> m_gameList;
-    std::vector<std::unique_ptr<GameInstance>> m_activeGameList;
 
     // Generates a random unique number between 1000-9999 to be used as a Room Code
     uint16_t generateRoomCode();

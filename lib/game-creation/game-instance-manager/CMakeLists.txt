@@ -15,4 +15,5 @@ install(TARGETS gameInstanceManager
 
 target_link_libraries(gameInstanceManager
     gameInstance
+    userManager
 )
