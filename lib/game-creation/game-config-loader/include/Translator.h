@@ -21,6 +21,10 @@ public:
         : root{std::move(root)}
     {}
 
+    Rule* getRoot() {
+        return root.get();
+    }
+
 private:
     std::unique_ptr<Rule> root;
 };

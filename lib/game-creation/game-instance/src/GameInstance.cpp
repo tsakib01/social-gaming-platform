@@ -1,5 +1,6 @@
 #include "GameInstance.h"
 #include "GameConfigLoader.h"
+#include "RuleExecute.h"
 
 GameInstance::GameInstance(std::unique_ptr<RuleTree> gameRules, 
 std::unique_ptr<GameState> gameState, uint16_t roomCode)
@@ -13,13 +14,14 @@ std::unique_ptr<GameState> gameState, uint16_t roomCode)
 
 void 
 GameInstance::startGame() {
-    // UNIMPLEMENTED While Rule Execution is restructured
+    ExecuteContext context{*m_gameState, m_gameRules->getRoot(), false};
+    RuleExecuteVisitor ruleExecutor(context);
 
-    // std::cout << "\nGame started." << std::endl;
-    // while (!instructionStack.empty()) {
-    //     executeNextInstruction();
-    // }
-    // std::cout << "Game ended." << std::endl;
+    std::cout << "\nGame started." << std::endl;
+    while (!context.blocked && (context.instructionStack.size() > 0)) {
+        context.instructionStack.top()->accept(ruleExecutor);
+    }
+
 }
 
 void 

@@ -36,7 +36,15 @@ GameInstanceManager::createGameInstance(std::string_view gameFilePath) {
 
 void
 GameInstanceManager::startGame(uint16_t roomCode) {
-    // Move from gameList to activeGameList
+    auto it = std::find_if(m_gameList.begin(), m_gameList.end(), [roomCode](const std::unique_ptr<GameInstance>& game) {
+        return game->getRoomCode() == roomCode;
+    });
+
+    if (it != m_gameList.end()) {
+        (*it)->startGame();
+        m_activeGameList.push_back(std::move(*it));
+        m_gameList.erase(it);
+    }
 }
 
 void 

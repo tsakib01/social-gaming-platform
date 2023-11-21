@@ -71,7 +71,28 @@ struct PrintVisitor {
         std::visit(*this, value.value);
     }
 };
-    
+
+size_t GameState::getValue(Rule* rule) {
+    auto variable = ruleEnvironment.find(rule);
+    if (variable == ruleEnvironment.end()) {
+        ruleEnvironment[rule] = 0;
+        return 0;
+    }
+    return variable->second;
+}
+
+void GameState::updateState(Rule* rule, size_t value) {
+    auto it = ruleEnvironment.find(rule);
+    if (it == ruleEnvironment.end()) {
+        throw std::runtime_error ("The rule does not exists in the environment");
+    }
+    if (value == static_cast<size_t>(-1)) {
+        ruleEnvironment.erase(it);
+    } else {
+        ruleEnvironment[rule] = value;
+    }
+}
+
 void GameState::print(){
     for (const auto& [key, value] : *environment){
         std::cout << key << ": ";

@@ -2,10 +2,18 @@
 
 #include "Rule.h"
 #include "GameState.h"
+#include <stack>
 
 /// Context for executing a rule
 struct ExecuteContext {
     GameState& gameState;
+    std::stack<Rule*> instructionStack;
+    bool blocked;
+
+    ExecuteContext(GameState& state, Rule* initialRule, bool isBlocked)
+        : gameState(state), blocked(isBlocked) {
+        instructionStack.push(initialRule);
+    }
 };
 
 class RuleExecuteVisitor : public RuleVisitor {
@@ -21,6 +29,7 @@ public:
     void visit(ParallelForRule& rule) override;
     void visit(InputChoiceRule& rule) override;
     void visit(ExtendRule& rule) override;
+    void visit(ScoresRule& rule) override;
     void visit(Rule& rule) override;
 
 private:
