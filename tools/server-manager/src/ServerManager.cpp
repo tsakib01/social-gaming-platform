@@ -24,17 +24,19 @@ ServerManager::startServer() {
 		gameInstanceManager->runCycle();
 
 		const auto incoming = server->receive();
-
-		std::deque userMessages = buildUserMessages(incoming);
-		server->send(userMessages);
 		
 		// std::deque gameMessages = gameCommunicator->getMessages();
 		// server->send(gameMessages);
+		
+		std::deque<Message> userMsg = buildUserMessages(incoming);
+		std::deque<Message> responseMsg = buildResponses(incoming);
 
-        std::deque responses = buildResponses(incoming);
-        server->send(responses);
+		std::deque<Message> outgoing;
+		outgoing.insert(outgoing.end(), userMsg.begin(), userMsg.end());
+		outgoing.insert(outgoing.end(), responseMsg.begin(), responseMsg.end());
+        server->send(outgoing);
 
-        sleep(1);
+        sleep(0.5f);
     }
 }
 
