@@ -24,6 +24,7 @@ public:
     // Returns a list of all Room Codes 
     std::vector<uint16_t> getRoomCodes();
 
+    void addUsersToGame(uint16_t roomCode, const std::vector<User>& users);
     void deleteUsersFromGame(uint16_t roomCode, const std::vector<User>& users);
 
 private:

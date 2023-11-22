@@ -38,12 +38,7 @@ void
 GameInstanceManager::startGame(uint16_t roomCode, const std::vector<User>& users) {
     // Move from gameList to activeGameList
     
-    auto game = getGameItr(roomCode);
-    if (game == m_gameList.end()) {
-        throw std::runtime_error("Game was not found.");
-    }
-    
-    (*game)->addUsers(users);
+    addUsersToGame(roomCode, users);
 }
 
 void 
@@ -70,6 +65,16 @@ GameInstanceManager::getRoomCodes() {
             return gameInstance->getRoomCode();
         });
     return roomCodes;
+}
+
+void
+GameInstanceManager::addUsersToGame(uint16_t roomCode, const std::vector<User>& users) {
+    auto game = getGameItr(roomCode);
+    if (game == m_gameList.end()) {
+        throw std::runtime_error("Game was not found.");
+    }
+
+    (*game)->addUsers(users);
 }
 
 void 
