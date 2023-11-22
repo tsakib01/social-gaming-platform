@@ -49,7 +49,7 @@ ServerManager::processJoinGame(const Message& message) {
 			userManager->setUserRoomCode(message.connection, code);
 			userManager->setUserState(message.connection, UserState::GAME_WAIT);
 	
-			User player = *(userManager->findUserByID(message.connection));
+			User player = *(userManager->getUserByID(message.connection));
 			User host = *(userManager->getRoomOwner(code));
 
 			return std::deque<Message>{ 
@@ -103,13 +103,12 @@ ServerManager::processGameConfig(const Message& message) {
 
 std::deque<Message>
 ServerManager::processGameWait(const Message& message) {
-	User user = *(userManager->findUserByID(message.connection));
+	User user = *(userManager->getUserByID(message.connection));
 
 	if (message.text == "S" && user.role == Role::OWNER) {
 		userManager->setUserState(message.connection, UserState::GAME_RUN);
-		// gameInstanceManager->startGame(roomCode);
-		return std::deque<Message>{
-			{message.connection, "Moving to GAME_RUN state\n"}};
+		// gameInstanceManager->startGame(roomCode);		
+		return buildGroupMessage(userManager->getUsersInGame(user.roomCode), "Starting game...\n");
 	}
 
 	else {
@@ -125,6 +124,17 @@ ServerManager::processGameRunning(const Message& message) {
 	return std::deque<Message>{
 		{message.connection, "Inside GAME_RUN state.\n"}};
 }
+
+std::deque<Message>
+ServerManager::buildGroupMessage(const std::vector<User>& gameUsers, const std::string& message) {
+	std::deque<Message> messages;
+	for (const User& user : gameUsers) {
+		messages.push_back(
+			Message{user.userID, message});
+	}
+	return messages;
+}
+
 
 Message 
 ServerManager::buildGameFiles(const Message& message){

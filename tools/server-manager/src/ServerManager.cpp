@@ -80,7 +80,7 @@ ServerManager::buildResponses(const std::deque<Message>& incoming) {
     std::deque<Message> responses;
 
 	for (const Message& message : incoming) {
-		User user = *(userManager->findUserByID(message.connection));
+		User user = *(userManager->getUserByID(message.connection));
 		std::deque<Message> append = stateMap[user.state](message);
 		responses.insert(responses.end(), append.begin(), append.end());
     }
