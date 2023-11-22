@@ -59,6 +59,7 @@ private:
     std::deque<Message> processGameWait(const Message& message);
     std::deque<Message> processGameRunning(const Message& message);
     
+    std::deque<Message> buildGroupMessage(const std::vector<User>& gameUsers, const std::string& message);
     Message buildGameFiles(const Message& message);
     std::vector<std::string> getGameFiles();
 
