@@ -25,6 +25,8 @@ public:
     size_t getValue(Rule* rule);
     // Update state of a rule
     void updateState(Rule* identifier, size_t value);
+    // Removes rule from ruleEnvironment
+    void removeValue(Rule* identifier);
     // Print all of identifier and its associative values of the map.
     void print();
 private:

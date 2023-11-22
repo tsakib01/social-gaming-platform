@@ -19,8 +19,8 @@ int main(int argc, char** argv) {
     auto setup = gameConfigLoader.createGameSetup();
     setup->processGameSetups();
     GameInstanceManager gameInstanceManager = GameInstanceManager();
-    gameInstanceManager.createGameInstance(gameFilePath);
-    gameInstanceManager.runCycle();
+    auto invCode = gameInstanceManager.createGameInstance(gameFilePath);
+    gameInstanceManager.startGame(invCode);
 
     return EXIT_SUCCESS;  
 

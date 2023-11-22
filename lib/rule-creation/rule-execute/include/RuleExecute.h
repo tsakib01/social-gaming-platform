@@ -8,10 +8,10 @@
 struct ExecuteContext {
     GameState& gameState;
     std::stack<Rule*> instructionStack;
-    bool blocked;
+    bool blocked = false;
 
-    ExecuteContext(GameState& state, Rule* initialRule, bool isBlocked)
-        : gameState(state), blocked(isBlocked) {
+    ExecuteContext(GameState& state, Rule* initialRule)
+        : gameState(state) {
         instructionStack.push(initialRule);
     }
 };

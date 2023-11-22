@@ -9,7 +9,7 @@ void RuleExecuteVisitor::visit(BodyRule& rule) {
         context.gameState.updateState(&rule, index + 1);
         return;
     }
-    context.gameState.updateState(&rule, static_cast<size_t>(-1));
+    context.gameState.removeValue(&rule);
     context.instructionStack.pop();
 }
 
@@ -22,26 +22,32 @@ void RuleExecuteVisitor::visit(ForRule& rule) {
 
 void RuleExecuteVisitor::visit(MatchRule& rule) {
     (void)rule;
+    context.instructionStack.pop();
 }
 
 void RuleExecuteVisitor::visit(DiscardRule& rule) {
     (void)rule;
+    context.instructionStack.pop();
 }
 
 void RuleExecuteVisitor::visit(MessageRule& rule) {
     (void)rule;
+    context.instructionStack.pop();
 }
 
 void RuleExecuteVisitor::visit(ParallelForRule& rule) {
     (void)rule;
+    context.instructionStack.pop();
 }
 
 void RuleExecuteVisitor::visit(InputChoiceRule& rule) {
     (void)rule;
+    context.instructionStack.pop();
 }
 
 void RuleExecuteVisitor::visit(ExtendRule& rule) {
     (void)rule;
+    context.instructionStack.pop();
 }
 
 void RuleExecuteVisitor::visit(ScoresRule& rule) {

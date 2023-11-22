@@ -86,11 +86,15 @@ void GameState::updateState(Rule* rule, size_t value) {
     if (it == ruleEnvironment.end()) {
         throw std::runtime_error ("The rule does not exists in the environment");
     }
-    if (value == static_cast<size_t>(-1)) {
-        ruleEnvironment.erase(it);
-    } else {
-        ruleEnvironment[rule] = value;
+    ruleEnvironment[rule] = value;
+}
+
+void GameState::removeValue(Rule* rule) {
+    auto it = ruleEnvironment.find(rule);
+    if (it == ruleEnvironment.end()) {
+        throw std::runtime_error ("The rule does not exists in the environment");
     }
+    ruleEnvironment.erase(it);
 }
 
 void GameState::print(){

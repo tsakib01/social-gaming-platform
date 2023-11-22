@@ -14,7 +14,7 @@ std::unique_ptr<GameState> gameState, uint16_t roomCode)
 
 void 
 GameInstance::startGame() {
-    ExecuteContext context{*m_gameState, m_gameRules->getRoot(), false};
+    ExecuteContext context{*m_gameState, m_gameRules->getRoot()};
     RuleExecuteVisitor ruleExecutor(context);
 
     std::cout << "\nGame started." << std::endl;
