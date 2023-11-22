@@ -10,7 +10,7 @@ std::unique_ptr<GameState> gameState, uint16_t roomCode)
 
     // UNIMPLEMENTED While Rule Execution is restructured
 
-    gameInstanceState = GameInstanceState::QUEUED;
+    m_state = GameInstanceState::QUEUED;
 }
 
 void 
@@ -23,7 +23,7 @@ GameInstance::startGame() {
     // }
     // std::cout << "Game ended." << std::endl;
 
-    gameInstanceState = gameInstanceState::RUNNING;
+    m_state = GameInstanceState::RUNNING;
 }
 
 void 
@@ -60,5 +60,5 @@ GameInstance::getRoomCode() {
 
 GameInstanceState
 GameInstance::getGameInstanceState() {
-    return m_gameInstanceState;
+    return m_state;
 }
