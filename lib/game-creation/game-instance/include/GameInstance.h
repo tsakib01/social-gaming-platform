@@ -19,7 +19,6 @@ public:
     void startGame();
     void executeNextInstruction();
     bool gameIsFinished();
-    void flipRunWaitState();
     uint16_t getRoomCode();
     GameInstanceState getGameInstanceState();
 

@@ -53,15 +53,6 @@ GameInstance::gameIsFinished() {
     return false;
 }
 
-void
-GameInstance::flipRunWaitState() {
-    if (m_gameInstanceState == GameInstanceState::QUEUED) {
-        throw std::runtime_error("Shouldn't use this in QUEUED state.");
-    }
-
-    m_state = (m_state == GameInstanceState::RUNNING) ? GameInstanceState::WAITING : GameInstanceState::RUNNING;
-}
-
 uint16_t 
 GameInstance::getRoomCode() {
     return m_roomCode;
