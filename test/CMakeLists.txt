@@ -17,6 +17,7 @@ file(
 
 add_executable(runAllTests
     userManagerTests.cpp
+    setupTests.cpp
     EvaluatorTests.cpp
     gameCommunicatorTests.cpp
     ruleFactoryTests.cpp
@@ -32,3 +33,4 @@ target_link_libraries(runAllTests
     gameConfigLoader
     gameRuleEngine
 )
+

@@ -18,6 +18,8 @@ public:
     std::unique_ptr<GameEnvironment::Value> convertNode(const ts::Node& node){
         return convertNodeImpl(node);
     }
+
+    virtual ~ConvertInterface() = default;
 protected:
     const GameStateLoader* gameStateLoader;
 private:

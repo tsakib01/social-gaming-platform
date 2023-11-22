@@ -6,6 +6,8 @@
 #include <memory>
 #include <variant>
 #include <map>
+#include <type_traits>
+#include <iostream>
 #include "GameEnvironment.h"
 
 /// Checks if a type is the same or assignable to another type
@@ -19,7 +21,7 @@ struct is_same_or_assignable {
 /// Checks if a type is contained in a container or assignable to a type in the container.
 /// Container refers to std::variant, std::vector, std::map, or any other type containing elements that
 /// implements a specialization of this template.
-template<typename T, class TContainer>
+template<typename T, class TContainer = void>
 struct is_contained_assignable_in : std::false_type {};
 
 /// Checks if a type is contained or assignable in a container (e.x. an std::variant container)
@@ -40,6 +42,15 @@ struct is_contained_assignable_in<T, TContainer<TContainerTs...>> {
         // - https://www.modernescpp.com/index.php/from-variadic-templates-to-fold-expressions
         is_same_or_assignable<T, TContainerTs>::value
     ) || ...);
+};
+
+// Checks if literal types are assignable to the variant
+/// @tparam T The type to check
+template<typename T>
+struct is_contained_assignable_in<T, GameEnvironment::Value> {
+    static constexpr bool value = (
+        is_same_or_assignable<T, decltype(GameEnvironment::Value::value)>::value
+    );
 };
 
 /// Checks if a type is a map type with valid string key and Primitive value types
@@ -70,7 +81,10 @@ enum class Operator{
 };
 
 /// An expression interface that represents a statement in the game config that can be evaluated to a value
-class Expression {};
+class Expression {
+public:
+    virtual ~Expression() = default;
+};
 
 /// A constant expression that is just a literal value
 /// @tparam T The type of the value
@@ -78,11 +92,13 @@ class Expression {};
 template<typename T>
 class LiteralExpression : public Expression {
 public:
-    LiteralExpression(T value) : value(GameEnvironment::Value(value)) {
+    LiteralExpression() = default;
+    LiteralExpression(T value) {
         static_assert(
             is_contained_assignable_in<T, GameEnvironment::Value>::value,
             "Invalid type for LiteralExpression"
         );
+        this->value.value = value;
     }
     GameEnvironment::Value value;
 };
@@ -120,6 +136,25 @@ public:
 
     std::unique_ptr<Expression> operand;
     Operator op;
+};
+
+// A sequence of 1 or more period-delimited identifiers (e.g. "players.elements.weapon")
+class QualifiedIdentifier {
+public:
+    QualifiedIdentifier() = default;
+    QualifiedIdentifier(std::string_view qualifiedIdentifier) {
+        // Note: can't use std::isstream to easily split tokens since we we are using string_view
+        size_t pos = qualifiedIdentifier.find('.');
+
+        while (pos != std::string_view::npos) {
+            identifiers.push_back(qualifiedIdentifier.substr(0, pos));
+            qualifiedIdentifier.remove_prefix(pos + 1);
+            pos = qualifiedIdentifier.find('.');
+        }
+
+        identifiers.push_back(qualifiedIdentifier);
+    }
+    std::vector<GameEnvironment::Identifier> identifiers;
 };
 
 #endif
