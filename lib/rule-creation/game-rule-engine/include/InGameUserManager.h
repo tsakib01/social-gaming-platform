@@ -15,14 +15,14 @@ class InGameUserManager {
     ~InGameUserManager(){};
 
     // TODO: (GameInstance) Figure out when/how to call this class's functions.
-    void addNewUser(networking::Connection userID, Role role, GameEnvironment::Environment userStates);
-    void deleteUser(networking::Connection userID);
+    void addNewUser(networking::Connection connection, GameEnvironment::Environment userStates);
+    void deleteUser(networking::Connection connection);
     GameEnvironment::Environment getStatesOfUser(networking::Connection userID);
-    std::map<intptr_t, std::pair<Role, GameEnvironment::Environment>> getAllUserStates();
-    void setStatesOfUser(networking::Connection userID, Role role, GameEnvironment::Environment states);
+    std::map<uintptr_t, GameEnvironment::Environment> getAllUserStates();
+    void setStatesOfUser(networking::Connection userID, GameEnvironment::Environment states);
 
     private:
-    std::map<intptr_t, std::pair<Role, GameEnvironment::Environment>> m_userStates;
+    std::map<uintptr_t, GameEnvironment::Environment> m_userStates;
 
 };
 
