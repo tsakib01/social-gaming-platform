@@ -4,7 +4,7 @@
 
 void 
 UserManager::addUser(Connection userID) {
-    auto it = getUserItrByID(userID);
+    auto it = getUserIteratorByID(userID);
 
     if (it == users.end()) {
         users.emplace_back(User{userID});
@@ -23,25 +23,25 @@ UserManager::removeUser(Connection userID) {
 
 void 
 UserManager::setUserName(Connection userID, std::string_view username) {
-    auto it = getUserItrByID(userID);
+    auto it = getUserIteratorByID(userID);
     it->username = username;
 }
 
 void 
 UserManager::setUserRole(Connection userID, Role role) {
-    auto it = getUserItrByID(userID);    
+    auto it = getUserIteratorByID(userID);    
     it->role = role;
 }
 
 void
 UserManager::setUserRoomCode(Connection userID, uint16_t roomCode) {
-    auto it = getUserItrByID(userID);
+    auto it = getUserIteratorByID(userID);
     it->roomCode = roomCode;
 }
 
 void 
 UserManager::setUserState(Connection userID, UserState state) {
-    auto it = getUserItrByID(userID);
+    auto it = getUserIteratorByID(userID);
     it->state = state;
 }
 
@@ -76,7 +76,7 @@ UserManager::getUserByID(Connection userID) const {
 }
 
 std::vector<User>::iterator 
-UserManager::getUserItrByID(Connection userID) {
+UserManager::getUserIteratorByID(Connection userID) {
     return std::find_if(users.begin(), users.end(), [userID](const User& user) {
         return user.userID == userID;
     });
