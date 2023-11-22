@@ -49,8 +49,8 @@ ServerManager::processJoinGame(const Message& message) {
 			userManager->setUserRoomCode(message.connection, code);
 			userManager->setUserState(message.connection, UserState::GAME_WAIT);
 	
-			User player = *(userManager->getUserByID(message.connection));
-			User host = *(userManager->getRoomOwner(code));
+			User player = userManager->getUserByID(message.connection);
+			User host = userManager->getRoomOwner(code);
 
 			return std::deque<Message>{ 
 				{message.connection, "Joined game. Waiting on host...\n"},
@@ -103,7 +103,7 @@ ServerManager::processGameConfig(const Message& message) {
 
 std::deque<Message>
 ServerManager::processGameWait(const Message& message) {
-	User user = *(userManager->getUserByID(message.connection));
+	User user = userManager->getUserByID(message.connection);
 
 	if (message.text == "S" && user.role == Role::OWNER) {
 		userManager->setUserState(message.connection, UserState::GAME_RUN);

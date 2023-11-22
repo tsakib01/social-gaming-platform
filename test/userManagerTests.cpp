@@ -7,7 +7,7 @@ TEST(UserManagerTests, AddUser) {
     UserManager userMgr;
     userMgr.addUser(code1);
 
-    User user = *(userMgr.getUserByID(code1));
+    User user = userMgr.getUserByID(code1);
     ASSERT_EQ(user.userID, code1);
 }
 
@@ -19,7 +19,7 @@ TEST(UserManagerTests, AddTwoUsers) {
     userMgr.addUser(code1);
     userMgr.addUser(code2);
 
-    User user = *(userMgr.getUserByID(code2));
+    User user = userMgr.getUserByID(code2);
     ASSERT_EQ(user.userID, code2);
 }
 
@@ -29,12 +29,12 @@ TEST(UserManagerTests, AddUserName) {
     userMgr.addUser(code1);
     userMgr.setUserName(code1, "Nick");
 
-    User user = *(userMgr.getUserByID(code1));
+    User user = userMgr.getUserByID(code1);
     ASSERT_EQ(user.username, "Nick");
 
     // Check re-assignment
     userMgr.setUserName(code1, "Sumner");
-    user = *(userMgr.getUserByID(code1));
+    user = userMgr.getUserByID(code1);
     ASSERT_EQ(user.username, "Sumner");
 }
 
@@ -55,10 +55,10 @@ TEST(UserManagerTests, AddUserRole) {
     userMgr.setUserRole(code3, Role::AUDIENCE);
     userMgr.setUserRole(code4, Role::NONE);
 
-    User user1 = *(userMgr.getUserByID(code1));
-    User user2 = *(userMgr.getUserByID(code2));
-    User user3 = *(userMgr.getUserByID(code3));
-    User user4 = *(userMgr.getUserByID(code4));
+    User user1 = userMgr.getUserByID(code1);
+    User user2 = userMgr.getUserByID(code2);
+    User user3 = userMgr.getUserByID(code3);
+    User user4 = userMgr.getUserByID(code4);
 
     ASSERT_EQ(user1.role, Role::OWNER);
     ASSERT_EQ(user2.role, Role::PLAYER);
@@ -67,7 +67,7 @@ TEST(UserManagerTests, AddUserRole) {
 
     // Check re-assignment
     userMgr.setUserRole(code1, Role::PLAYER);
-    user1 = *(userMgr.getUserByID(code1));
+    user1 = userMgr.getUserByID(code1);
     ASSERT_EQ(user1.role, Role::PLAYER);
 }
 
@@ -77,12 +77,12 @@ TEST(UserManagerTests, AddUserRoomCode) {
     userMgr.addUser(code1);
     userMgr.setUserRoomCode(code1, (uint8_t)123);
 
-    User user = *(userMgr.getUserByID(code1));
+    User user = userMgr.getUserByID(code1);
     ASSERT_EQ(user.roomCode, (uint8_t)123);
 
     // Check re-assignment
     userMgr.setUserRoomCode(code1, (uint8_t)312);
-    user = *(userMgr.getUserByID(code1));
+    user = userMgr.getUserByID(code1);
     ASSERT_EQ(user.roomCode, (uint8_t)312);
 }
 

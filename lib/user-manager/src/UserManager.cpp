@@ -4,7 +4,7 @@
 
 void 
 UserManager::addUser(Connection userID) {
-    auto it = getUserByID(userID);
+    auto it = getUserItrByID(userID);
 
     if (it == users.end()) {
         users.emplace_back(User{userID});
@@ -23,25 +23,25 @@ UserManager::removeUser(Connection userID) {
 
 void 
 UserManager::setUserName(Connection userID, std::string_view username) {
-    auto it = getUserByID(userID);
+    auto it = getUserItrByID(userID);
     it->username = username;
 }
 
 void 
 UserManager::setUserRole(Connection userID, Role role) {
-    auto it = getUserByID(userID);    
+    auto it = getUserItrByID(userID);    
     it->role = role;
 }
 
 void
 UserManager::setUserRoomCode(Connection userID, uint16_t roomCode) {
-    auto it = getUserByID(userID);
+    auto it = getUserItrByID(userID);
     it->roomCode = roomCode;
 }
 
 void 
 UserManager::setUserState(Connection userID, UserState state) {
-    auto it = getUserByID(userID);
+    auto it = getUserItrByID(userID);
     it->state = state;
 }
 
@@ -51,25 +51,33 @@ UserManager::getAllUsers() const {
 }
 
 std::vector<User>
-UserManager::getUsersInGame(uint16_t userRoomCode) {
+UserManager::getUsersInGame(uint16_t userRoomCode) const {
     std::vector<User> usersInGame;
     std::copy_if(users.begin(), users.end(), std::back_inserter(usersInGame), [userRoomCode] (const User& user) {
         return user.roomCode == userRoomCode;
     });
-    
     return usersInGame;
 }
 
-std::vector<User>::iterator 
-UserManager::getUserByID(Connection userID) {
-    return std::find_if(users.begin(), users.end(), [userID](const User& user) {
+User 
+UserManager::getRoomOwner(uint16_t roomCode) const {
+    auto it = std::find_if(users.begin(), users.end(), [roomCode](const User& user) {
+        return user.roomCode == roomCode && user.role == Role::OWNER;
+    });
+    return *it;
+}
+
+User
+UserManager::getUserByID(Connection userID) const {
+    auto it = std::find_if(users.begin(), users.end(), [userID](const User& user) {
         return user.userID == userID;
     });
+    return *it;
 }
 
 std::vector<User>::iterator 
-UserManager::getRoomOwner(uint16_t roomCode) {
-    return std::find_if(users.begin(), users.end(), [roomCode](const User& user) {
-        return user.roomCode == roomCode && user.role == Role::OWNER;
+UserManager::getUserItrByID(Connection userID) {
+    return std::find_if(users.begin(), users.end(), [userID](const User& user) {
+        return user.userID == userID;
     });
 }
