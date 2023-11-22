@@ -34,10 +34,12 @@ GameInstance::getRoomCode() {
 
 void
 GameInstance::addUsers(const std::vector<User>& users) { 
-    for (const User& user : users) {
-        GameEnvironment::Environment dummyEnvironment;
-        m_inGameUserManager->addNewUser(user.userID, std::move(dummyEnvironment));
-    }
+    // TODO: Commented out because this results in a seg-fault - need to fix
+
+    // for (const User& user : users) {
+    //     GameEnvironment::Environment dummyEnvironment;
+    //     m_inGameUserManager->addNewUser(user.userID, std::move(dummyEnvironment));
+    // }
 }
 
 void
