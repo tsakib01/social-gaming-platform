@@ -41,22 +41,23 @@ struct User {
 class UserManager {
 public:
     UserManager() {};
+
     void addUser(Connection userID);
-    
+    void removeUser(Connection userID);
+
     void setUserName(Connection userID, std::string_view username);
     void setUserRole(Connection userID, Role role);
     void setUserRoomCode(Connection userID, uint16_t roomCode);
     void setUserState(Connection userID, UserState state);
-    void removeUser(Connection userID);
 
-    std::vector<User> getUsersInGame(Connection userID);
-    uint16_t getUserGameCode(Connection userID);
-    std::vector<User> getAllUsers() const { return users; }
-    std::vector<User>::iterator findUserByID(Connection userID);
-    std::vector<User>::iterator getRoomOwner(uint16_t roomCode);
+    std::vector<User> getAllUsers() const;
+    std::vector<User> getUsersInGame(uint16_t roomCode) const;
+    User getUserByID(Connection userID) const;
+    User getRoomOwner(uint16_t roomCode) const;
 
 private:
     std::vector<User> users;
+    std::vector<User>::iterator getUserItrByID(Connection userID);
 };
 
 #endif
