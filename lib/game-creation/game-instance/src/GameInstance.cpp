@@ -33,9 +33,9 @@ GameInstance::getRoomCode() {
 }
 
 void
-GameInstance::addUsers(const std::vector<User>& users) {
-    GameEnvironment::Environment dummyEnvironment;
+GameInstance::addUsers(const std::vector<User>& users) { 
     for (const User& user : users) {
+        GameEnvironment::Environment dummyEnvironment;
         m_inGameUserManager->addNewUser(user.userID, std::move(dummyEnvironment));
     }
 }

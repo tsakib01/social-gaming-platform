@@ -4,9 +4,6 @@ std::deque<Message>
 ServerManager::processNew(const Message& message) {
 	if (!message.text.empty()) {
 		userManager->setUserName(message.connection, message.text);
-
-		std::cout << "ProcessNew: " << message.text << std::endl;
-		
 		userManager->setUserState(message.connection, UserState::INTRO);
 		return std::deque<Message>{
 			{message.connection, "Type (J) to join, (C) to create a game.\n"}};
@@ -107,7 +104,7 @@ ServerManager::processGameWait(const Message& message) {
 
 	if (message.text == "S" && user.role == Role::OWNER) {
 		userManager->setUserState(message.connection, UserState::GAME_RUN);
-		// gameInstanceManager->startGame(roomCode);		
+		gameInstanceManager->startGame(user.roomCode, userManager->getUsersInGame(user.roomCode));
 		return buildGroupMessage(userManager->getUsersInGame(user.roomCode), "Starting game...\n");
 	}
 

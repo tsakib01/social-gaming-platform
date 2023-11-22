@@ -2,11 +2,17 @@
 #include "Server.h"
 #include <cassert>
 
+#include <iostream> // ALSO DELETE THIS
+    
     void InGameUserManager::addNewUser(networking::Connection connection, GameEnvironment::Environment userStates){
         auto iterator = m_userStates.find(connection.id);
 
+        // DELETE THIS RIGHT AFTER 
+        std::cout << "connection : " << connection.id << std::endl;
+
         // User should not already exist in the game.
         assert(iterator == m_userStates.end());
+
         m_userStates.insert({connection.id, std::move(userStates)});
     }
 

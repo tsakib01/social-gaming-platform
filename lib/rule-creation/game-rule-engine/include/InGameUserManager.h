@@ -11,7 +11,11 @@
 class InGameUserManager { 
 
     public:
-    InGameUserManager(){};
+    InGameUserManager(){
+        // uintptr_t testID = 1;
+        // GameEnvironment::Environment testState
+        // m_userStates[testID] = testState; 
+    };
     ~InGameUserManager(){};
 
     // TODO: (GameInstance) Figure out when/how to call this class's functions.
