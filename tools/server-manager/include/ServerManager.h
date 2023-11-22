@@ -64,12 +64,12 @@ private:
     std::vector<std::string> getGameFiles();
 
     std::map<UserState, std::function<std::deque<Message>(const Message&)>> stateMap = {
-        {UserState::NEW, std::bind(&ServerManager::processNew, this, std::placeholders::_1)},
-        {UserState::INTRO, std::bind(&ServerManager::processIntro, this, std::placeholders::_1)},
-        {UserState::JOIN_GAME, std::bind(&ServerManager::processJoinGame, this, std::placeholders::_1)},
-        {UserState::GAME_SELECT, std::bind(&ServerManager::processGameSelect, this, std::placeholders::_1)},
-        {UserState::GAME_CONFIG, std::bind(&ServerManager::processGameConfig, this, std::placeholders::_1)},
-        {UserState::GAME_WAIT, std::bind(&ServerManager::processGameWait, this, std::placeholders::_1)},
-        {UserState::GAME_RUN, std::bind(&ServerManager::processGameRunning, this, std::placeholders::_1)}
+        {UserState::NEW,         [this](const Message& msg) { return processNew(msg);         }},
+        {UserState::INTRO,       [this](const Message& msg) { return processIntro(msg);       }},
+        {UserState::JOIN_GAME,   [this](const Message& msg) { return processJoinGame(msg);    }},
+        {UserState::GAME_SELECT, [this](const Message& msg) { return processGameSelect(msg);  }},
+        {UserState::GAME_CONFIG, [this](const Message& msg) { return processGameConfig(msg);  }},
+        {UserState::GAME_WAIT,   [this](const Message& msg) { return processGameWait(msg);    }},
+        {UserState::GAME_RUN,    [this](const Message& msg) { return processGameRunning(msg); }}
     };
 };
