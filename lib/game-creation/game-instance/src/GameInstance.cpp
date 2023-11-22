@@ -12,17 +12,6 @@ std::unique_ptr<GameState> gameState, uint16_t roomCode)
 }
 
 void 
-GameInstance::startGame() {
-    // UNIMPLEMENTED While Rule Execution is restructured
-
-    // std::cout << "\nGame started." << std::endl;
-    // while (!instructionStack.empty()) {
-    //     executeNextInstruction();
-    // }
-    // std::cout << "Game ended." << std::endl;
-}
-
-void 
 GameInstance::executeNextInstruction() {
     // UNIMPLEMENTED While Rule Execution is restructured
 
@@ -38,18 +27,22 @@ GameInstance::executeNextInstruction() {
     // }
 }
 
-bool
-GameInstance::gameIsFinished() {
-    // UNIMPLEMENTED While Rule Execution is restructured
-
-    // if (instructionStack.empty()) {
-    //     m_gameRules->getRules()->deleteReferences();
-    //     return true;
-    // }
-    return false;
-}
-
 uint16_t 
 GameInstance::getRoomCode() {
     return m_roomCode;
+}
+
+void
+GameInstance::addUsers(const std::vector<User>& users) {
+    GameEnvironment::Environment dummyEnvironment;
+    for (const User& user : users) {
+        m_inGameUserManager->addNewUser(user.userID, std::move(dummyEnvironment));
+    }
+}
+
+void
+GameInstance::deleteUsers(const std::vector<User>& users) {
+    for (const User& user : users) {
+        m_inGameUserManager->deleteUser(user.userID);
+    }
 }

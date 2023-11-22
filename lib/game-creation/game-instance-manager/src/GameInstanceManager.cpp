@@ -35,13 +35,15 @@ GameInstanceManager::createGameInstance(std::string_view gameFilePath) {
 }
 
 void
-GameInstanceManager::startGame(uint16_t roomCode) {
+GameInstanceManager::startGame(uint16_t roomCode, const std::vector<User>& users) {
     // Move from gameList to activeGameList
-}
-
-void 
-GameInstanceManager::finishGame() {
-    // Should remove the game from both gameList and m_activeGameList
+    
+    auto game = getGameItr(roomCode);
+    if (game == m_gameList.end()) {
+        throw std::runtime_error("Game was not found.");
+    }
+    
+    (*game)->addUsers(users);
 }
 
 void 
@@ -69,3 +71,20 @@ GameInstanceManager::getRoomCodes() {
         });
     return roomCodes;
 }
+
+void 
+GameInstanceManager::deleteUsersFromGame(uint16_t roomCode, const std::vector<User>& users){
+    auto game = getGameItr(roomCode);
+    if (game == m_gameList.end()) {
+        throw std::runtime_error("Game was not found.");
+    }
+
+    (*game)->deleteUsers(users);
+}
+
+std::vector<std::unique_ptr<GameInstance>>::iterator 
+GameInstanceManager::getGameItr(uint16_t roomCode) {
+    return std::find_if(m_gameList.begin(), m_gameList.end(), [roomCode](const std::unique_ptr<GameInstance>& gameInstance) {
+        return gameInstance->getRoomCode() == roomCode;
+    });
+} 
