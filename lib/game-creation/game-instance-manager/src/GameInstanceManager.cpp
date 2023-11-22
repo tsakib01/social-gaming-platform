@@ -69,18 +69,18 @@ GameInstanceManager::getRoomCodes() {
 
 void
 GameInstanceManager::addUsersToGame(uint16_t roomCode, const std::vector<User>& users) {
-    auto game = getGameItr(roomCode);
+    auto game = getGameIterator(roomCode);
     (*game)->addUsers(users);
 }
 
 void 
 GameInstanceManager::deleteUsersFromGame(uint16_t roomCode, const std::vector<User>& users){
-    auto game = getGameItr(roomCode);
+    auto game = getGameIterator(roomCode);
     (*game)->deleteUsers(users);
 }
 
 std::vector<std::unique_ptr<GameInstance>>::iterator 
-GameInstanceManager::getGameItr(uint16_t roomCode) {
+GameInstanceManager::getGameIterator(uint16_t roomCode) {
     auto game = std::find_if(m_gameList.begin(), m_gameList.end(), [roomCode](const std::unique_ptr<GameInstance>& gameInstance) {
         return gameInstance->getRoomCode() == roomCode;
     });
