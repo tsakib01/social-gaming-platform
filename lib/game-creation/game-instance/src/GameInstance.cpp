@@ -9,6 +9,8 @@ std::unique_ptr<GameState> gameState, uint16_t roomCode)
     // instructionStack.push(rulesRoot);
 
     // UNIMPLEMENTED While Rule Execution is restructured
+
+    gameInstanceState = GameInstanceState::QUEUED;
 }
 
 void 
@@ -20,6 +22,8 @@ GameInstance::startGame() {
     //     executeNextInstruction();
     // }
     // std::cout << "Game ended." << std::endl;
+
+    gameInstanceState = gameInstanceState::RUNNING;
 }
 
 void 
@@ -49,7 +53,21 @@ GameInstance::gameIsFinished() {
     return false;
 }
 
+void
+GameInstance::flipRunWaitState() {
+    if (m_gameInstanceState == GameInstanceState::QUEUED) {
+        throw std::runtime_error("Shouldn't use this in QUEUED state.");
+    }
+
+    m_state = (m_state == GameInstanceState::RUNNING) ? GameInstanceState::WAITING : GameInstanceState::RUNNING;
+}
+
 uint16_t 
 GameInstance::getRoomCode() {
     return m_roomCode;
+}
+
+GameInstanceState
+GameInstance::getGameInstanceState() {
+    return m_gameInstanceState;
 }

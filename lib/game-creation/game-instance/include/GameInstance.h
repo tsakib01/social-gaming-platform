@@ -6,6 +6,12 @@
 #include <stack>
 #include <iostream>
 
+enum class GameInstanceState {
+    QUEUED,
+    RUNNING,
+    WAITING
+};
+
 class GameInstance {
 public:
     GameInstance(std::unique_ptr<RuleTree> rules, std::unique_ptr<GameState> state, uint16_t m_roomCode);
@@ -13,13 +19,16 @@ public:
     void startGame();
     void executeNextInstruction();
     bool gameIsFinished();
+    void flipRunWaitState();
     uint16_t getRoomCode();
+    GameInstanceState getGameInstanceState();
 
 private:
     std::unique_ptr<RuleTree> m_gameRules;
     std::unique_ptr<GameState> m_gameState;
     // std::stack<std::shared_ptr<RuleNode>> instructionStack;
     uint16_t m_roomCode;
+    GameInstanceState m_state;
 };
 
 #endif
