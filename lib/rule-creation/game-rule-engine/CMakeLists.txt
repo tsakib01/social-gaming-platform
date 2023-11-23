@@ -1,6 +1,7 @@
 add_library(gameRuleEngine
     src/GameRuleEngine.cpp
     src/RuleInterpreter.cpp
+    src/InGameUserManager.cpp
 )
 
 target_include_directories(gameRuleEngine
@@ -13,6 +14,7 @@ target_include_directories(gameRuleEngine
 
 target_link_libraries(gameRuleEngine
     gameConfigLoader
+    userManager
 )
 
 install(TARGETS gameRuleEngine
