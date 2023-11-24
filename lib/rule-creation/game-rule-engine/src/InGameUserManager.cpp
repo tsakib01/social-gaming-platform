@@ -3,20 +3,31 @@
 #include <cassert>
 #include <iostream>
 
-void InGameUserManager::addNewUser(networking::Connection connection, GameEnvironment::Environment& userStates){
+void InGameUserManager::addNewUser(networking::Connection connection, GameEnvironment::Environment userStates){
     std::cout<< "Does anything happen here?" << "\n";
 
     //connection.id is passed to this function successfully
     std::cout << "THE ID HERE IS" << connection.id << "\n";
+    if( &userStates == NULL){
+        std::cout << "Address is null" << "\n";
+    }
 
     std::unique_ptr<GameEnvironment::Value> value = std::move(userStates["testidentifier"]);
     GameEnvironment::Value* theVal = value.get();
     if(value == nullptr){
         std::cout << "Value's unique pointer null!" << "\n";
     }
+    
     if(theVal == nullptr){
-        std::cout << "Value's pointer!" << "\n";
+        std::cout << "Value's pointer is null!!" << "\n";
     }
+
+    auto iterator = m_userStates.find(connection.id);
+
+    // // User should not already exist in the game.
+    assert(iterator == m_userStates.end());
+
+    m_userStates.insert({connection.id, std::move(userStates)});
 }
 
 void InGameUserManager::deleteUser(networking::Connection connection){

@@ -37,22 +37,22 @@ GameInstance::addUsers(const std::vector<User>& users) {
     // TODO: Commented out because this results in a seg-fault - need to fix
     for (const User& user : users) {
         GameEnvironment::Environment dummyEnvironment;
-        std::map<GameEnvironment::Identifier, std::unique_ptr<GameEnvironment::Value>> tester;
-        GameEnvironment::Value testValue;
-        testValue.value = 500;
-        std::unique_ptr<GameEnvironment::Value> testValuePtr;
-        testValuePtr -> value;
-        std::map<GameEnvironment::Identifier, std::unique_ptr<GameEnvironment::Value>> testMap;
-        GameEnvironment::Identifier testIdentifier = "testidentifier";
-        testMap.insert({testIdentifier, std::move(testValuePtr)});
-        std::cout << "Before adding, user ID is:" << user.userID.id << "\n";
-        m_inGameUserManager->addNewUser(user.userID, testMap);
+        // std::map<GameEnvironment::Identifier, std::unique_ptr<GameEnvironment::Value>> tester;
+        //GameEnvironment::Value testValue;
+        // testValue.value = 500;
+        // std::unique_ptr<GameEnvironment::Value> testValuePtr;
+        // testValuePtr -> value;
+        // std::map<GameEnvironment::Identifier, std::unique_ptr<GameEnvironment::Value>> testMap;
+        // GameEnvironment::Identifier testIdentifier = "testidentifier";
+        // testMap.insert({testIdentifier, std::move(testValuePtr)});
+        // std::cout << "Before adding, user ID is:" << user.userID.id << "\n";
+        m_inGameUserManager.addNewUser(user.userID, std::move(dummyEnvironment));
     }
 }
 
 void
 GameInstance::deleteUsers(const std::vector<User>& users) {
     for (const User& user : users) {
-        m_inGameUserManager->deleteUser(user.userID);
+        m_inGameUserManager.deleteUser(user.userID);
     }
 }

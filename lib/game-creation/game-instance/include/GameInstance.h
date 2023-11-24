@@ -21,7 +21,7 @@ public:
 private:
     std::unique_ptr<RuleTree> m_gameRules;
     std::unique_ptr<GameState> m_gameState;
-    std::unique_ptr<InGameUserManager> m_inGameUserManager;
+    InGameUserManager m_inGameUserManager;
     // std::stack<std::shared_ptr<RuleNode>> instructionStack;
     uint16_t m_roomCode;
 };
