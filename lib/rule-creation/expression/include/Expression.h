@@ -18,9 +18,10 @@ public:
 /// Example: `myVar + 1` -> `1` is a LiteralExpression
 class LiteralExpression : public Expression {
 public:
-    LiteralExpression(GameEnvironment::Value& value) : value(value) {}
+    LiteralExpression(std::unique_ptr<GameEnvironment::Value> value)
+        : value(std::move(value)) {}
 
-    GameEnvironment::Value& value;
+    std::unique_ptr<GameEnvironment::Value> value;
 };
 
 /// An expression that identifies the value of a variable
