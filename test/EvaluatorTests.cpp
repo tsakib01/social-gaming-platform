@@ -266,3 +266,151 @@ TEST_F(EvaluatorTest, TestInvalidDivideOperations) {
     mapValue.value = std::make_unique<GameEnvironment::Map>();
     EXPECT_THROW(evaluator.evaluate(OPERATOR::DIVIDE, {&mapValue, &mapValue}), std::runtime_error);
 }
+
+// Test case for OR operation
+TEST_F(EvaluatorTest, TestValidOrOperation) {
+    // Two true values
+    GameEnvironment::Value trueValue1, trueValue2;
+    trueValue1.value = true;
+    trueValue2.value = true;
+    EXPECT_EQ(std::get<bool>(evaluator.evaluate(OPERATOR::OR, {&trueValue1, &trueValue2}).value), true);
+
+    // One true and one false value
+    GameEnvironment::Value falseValue;
+    falseValue.value = false;
+    EXPECT_EQ(std::get<bool>(evaluator.evaluate(OPERATOR::OR, {&trueValue1, &falseValue}).value), true);
+
+    // Two false values
+    GameEnvironment::Value falseValue2;
+    falseValue2.value = false;
+    EXPECT_EQ(std::get<bool>(evaluator.evaluate(OPERATOR::OR, {&falseValue, &falseValue2}).value), false);
+}
+
+// Test case for invalid OR operations
+TEST_F(EvaluatorTest, TestInvalidOrOperations) {
+    // Only 1 argument for boolean
+    GameEnvironment::Value boolValue;
+    boolValue.value = true;
+    EXPECT_THROW(evaluator.evaluate(OPERATOR::OR, {&boolValue}), std::runtime_error);
+
+    // Try to OR 3 arguments for booleans
+    EXPECT_THROW(evaluator.evaluate(OPERATOR::OR, {&boolValue, &boolValue, &boolValue}), std::runtime_error);
+
+    // Try to OR two integers
+    GameEnvironment::Value intValue1, intValue2;
+    intValue1.value = 5;
+    intValue2.value = 7;
+    EXPECT_THROW(evaluator.evaluate(OPERATOR::OR, {&intValue1, &intValue2}), std::runtime_error);
+
+    // Try to OR two strings
+    GameEnvironment::Value stringValue1, stringValue2;
+    stringValue1.value = std::string_view("Hello");
+    stringValue2.value = std::string_view("World");
+    EXPECT_THROW(evaluator.evaluate(OPERATOR::OR, {&stringValue1, &stringValue2}), std::runtime_error);
+
+    // Try to OR two vector pointers
+    GameEnvironment::Value vectorValue;
+    vectorValue.value = std::make_unique<GameEnvironment::List>();
+    EXPECT_THROW(evaluator.evaluate(OPERATOR::OR, {&vectorValue, &vectorValue}), std::runtime_error);
+
+    // Try to OR two Map pointers
+    GameEnvironment::Value mapValue;
+    mapValue.value = std::make_unique<GameEnvironment::Map>();
+    EXPECT_THROW(evaluator.evaluate(OPERATOR::OR, {&mapValue, &mapValue}), std::runtime_error);
+}
+
+// Test case for AND operation
+TEST_F(EvaluatorTest, TestValidAndOperation) {
+    // Two true values
+    GameEnvironment::Value trueValue1, trueValue2;
+    trueValue1.value = true;
+    trueValue2.value = true;
+    EXPECT_EQ(std::get<bool>(evaluator.evaluate(OPERATOR::AND, {&trueValue1, &trueValue2}).value), true);
+
+    // One true and one false value
+    GameEnvironment::Value falseValue;
+    falseValue.value = false;
+    EXPECT_EQ(std::get<bool>(evaluator.evaluate(OPERATOR::AND, {&trueValue1, &falseValue}).value), false);
+
+    // Two false values
+    GameEnvironment::Value falseValue2;
+    falseValue2.value = false;
+    EXPECT_EQ(std::get<bool>(evaluator.evaluate(OPERATOR::AND, {&falseValue, &falseValue2}).value), false);
+}
+
+// Test case for invalid AND operations
+TEST_F(EvaluatorTest, TestInvalidAndOperations) {
+    // Only 1 argument for boolean
+    GameEnvironment::Value boolValue;
+    boolValue.value = true;
+    EXPECT_THROW(evaluator.evaluate(OPERATOR::AND, {&boolValue}), std::runtime_error);
+
+    // Try to AND 3 arguments for booleans
+    EXPECT_THROW(evaluator.evaluate(OPERATOR::AND, {&boolValue, &boolValue, &boolValue}), std::runtime_error);
+
+    // Try to AND two integers
+    GameEnvironment::Value intValue1, intValue2;
+    intValue1.value = 5;
+    intValue2.value = 7;
+    EXPECT_THROW(evaluator.evaluate(OPERATOR::AND, {&intValue1, &intValue2}), std::runtime_error);
+
+    // Try to AND two strings
+    GameEnvironment::Value stringValue1, stringValue2;
+    stringValue1.value = std::string_view("Hello");
+    stringValue2.value = std::string_view("World");
+    EXPECT_THROW(evaluator.evaluate(OPERATOR::AND, {&stringValue1, &stringValue2}), std::runtime_error);
+
+    // Try to AND two vector pointers
+    GameEnvironment::Value vectorValue;
+    vectorValue.value = std::make_unique<GameEnvironment::List>();
+    EXPECT_THROW(evaluator.evaluate(OPERATOR::AND, {&vectorValue, &vectorValue}), std::runtime_error);
+
+    // Try to AND two Map pointers
+    GameEnvironment::Value mapValue;
+    mapValue.value = std::make_unique<GameEnvironment::Map>();
+    EXPECT_THROW(evaluator.evaluate(OPERATOR::AND, {&mapValue, &mapValue}), std::runtime_error);
+}
+
+// Test case for NOT operation
+TEST_F(EvaluatorTest, TestValidNotOperation) {
+    // NOT true
+    GameEnvironment::Value trueValue;
+    trueValue.value = true;
+    EXPECT_EQ(std::get<bool>(evaluator.evaluate(OPERATOR::NOT, {&trueValue}).value), false);
+
+    // NOT false
+    GameEnvironment::Value falseValue;
+    falseValue.value = false;
+    EXPECT_EQ(std::get<bool>(evaluator.evaluate(OPERATOR::NOT, {&falseValue}).value), true);
+}
+
+// Test case for invalid NOT operations
+TEST_F(EvaluatorTest, TestInvalidNotOperations) {
+    // No argument provided
+    EXPECT_THROW(evaluator.evaluate(OPERATOR::NOT, {}), std::runtime_error);
+
+    // Two operands
+    GameEnvironment::Value boolValue;
+    boolValue.value = true;
+    EXPECT_THROW(evaluator.evaluate(OPERATOR::NOT, {&boolValue, &boolValue}), std::runtime_error);
+
+    // Try to NOT an integer
+    GameEnvironment::Value intValue;
+    intValue.value = 42;
+    EXPECT_THROW(evaluator.evaluate(OPERATOR::NOT, {&intValue}), std::runtime_error);
+
+    // Try to NOT a string
+    GameEnvironment::Value stringValue;
+    stringValue.value = std::string_view("Hello");
+    EXPECT_THROW(evaluator.evaluate(OPERATOR::NOT, {&stringValue}), std::runtime_error);
+
+    // Try to NOT a vector pointer
+    GameEnvironment::Value vectorValue;
+    vectorValue.value = std::make_unique<GameEnvironment::List>();
+    EXPECT_THROW(evaluator.evaluate(OPERATOR::NOT, {&vectorValue}), std::runtime_error);
+
+    // Try to NOT a Map pointer
+    GameEnvironment::Value mapValue;
+    mapValue.value = std::make_unique<GameEnvironment::Map>();
+    EXPECT_THROW(evaluator.evaluate(OPERATOR::NOT, {&mapValue}), std::runtime_error);
+}

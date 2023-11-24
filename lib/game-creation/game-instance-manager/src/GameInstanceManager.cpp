@@ -42,14 +42,12 @@ GameInstanceManager::startGame(uint16_t roomCode) {
 
     if (it != m_gameList.end()) {
         (*it)->startGame();
-        m_activeGameList.push_back(std::move(*it));
-        m_gameList.erase(it);
     }
 }
 
 void 
 GameInstanceManager::finishGame() {
-    // Should remove the game from both gameList and m_activeGameList
+    // Should remove the game from both gameList
 }
 
 void 
@@ -66,6 +64,8 @@ GameInstanceManager::runCycle() {
     //             return game->gameIsFinished();
     //         }), m_gameList.end());
     // }
+
+    // After a game finishes exeuction (until an input), call gameInstance.flipRunWaitState()
 }
 
 std::vector<uint16_t> 
