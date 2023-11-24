@@ -36,12 +36,13 @@ GameInstanceManager::createGameInstance(std::string_view gameFilePath) {
 
 void
 GameInstanceManager::startGame(uint16_t roomCode) {
-    // Move from gameList to activeGameList
+    // Find GameInstance
+    // Call gameInstance.startGame()
 }
 
 void 
 GameInstanceManager::finishGame() {
-    // Should remove the game from both gameList and m_activeGameList
+    // Should remove the game from both gameList
 }
 
 void 
@@ -58,6 +59,8 @@ GameInstanceManager::runCycle() {
     //             return game->gameIsFinished();
     //         }), m_gameList.end());
     // }
+
+    // After a game finishes exeuction (until an input), call gameInstance.flipRunWaitState()
 }
 
 std::vector<uint16_t> 

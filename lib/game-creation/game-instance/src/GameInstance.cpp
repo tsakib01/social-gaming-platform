@@ -9,6 +9,8 @@ std::unique_ptr<GameState> gameState, uint16_t roomCode)
     // instructionStack.push(rulesRoot);
 
     // UNIMPLEMENTED While Rule Execution is restructured
+
+    m_state = GameInstanceState::QUEUED;
 }
 
 void 
@@ -20,6 +22,8 @@ GameInstance::startGame() {
     //     executeNextInstruction();
     // }
     // std::cout << "Game ended." << std::endl;
+
+    m_state = GameInstanceState::RUNNING;
 }
 
 void 
@@ -52,4 +56,9 @@ GameInstance::gameIsFinished() {
 uint16_t 
 GameInstance::getRoomCode() {
     return m_roomCode;
+}
+
+GameInstanceState
+GameInstance::getGameInstanceState() {
+    return m_state;
 }
