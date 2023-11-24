@@ -36,8 +36,13 @@ GameInstanceManager::createGameInstance(std::string_view gameFilePath) {
 
 void
 GameInstanceManager::startGame(uint16_t roomCode) {
-    // Find GameInstance
-    // Call gameInstance.startGame()
+    auto it = std::find_if(m_gameList.begin(), m_gameList.end(), [roomCode](const std::unique_ptr<GameInstance>& game) {
+        return game->getRoomCode() == roomCode;
+    });
+
+    if (it != m_gameList.end()) {
+        (*it)->startGame();
+    }
 }
 
 void 
@@ -47,19 +52,15 @@ GameInstanceManager::finishGame() {
 
 void 
 GameInstanceManager::runCycle() {
-    // BLOCKED While Rules are being restructured
-
-    // while (!m_gameList.empty()) {
-    //     for (std::unique_ptr<GameInstance>& game : m_gameList) {
-    //         game->executeNextInstruction();
-    //     }
-
-    //     m_gameList.erase(std::remove_if(m_gameList.begin(), m_gameList.end(),
-    //         [](const std::unique_ptr<GameInstance>& game) {
-    //             return game->gameIsFinished();
-    //         }), m_gameList.end());
-    // }
-
+    while (!m_gameList.empty()) {
+        for (std::unique_ptr<GameInstance>& game : m_gameList) {
+            game->executeNextInstruction();
+        }
+        m_gameList.erase(std::remove_if(m_gameList.begin(), m_gameList.end(),
+            [](const std::unique_ptr<GameInstance>& game) {
+                return game->gameIsFinished();
+            }), m_gameList.end());
+    }
     // After a game finishes exeuction (until an input), call gameInstance.flipRunWaitState()
 }
 
