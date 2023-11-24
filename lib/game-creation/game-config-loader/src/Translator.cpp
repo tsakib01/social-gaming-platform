@@ -117,23 +117,28 @@ DiscardFactory::createImpl(const ts::Node& node) {
 std::unique_ptr<Rule>
 MessageFactory::createImpl(const ts::Node& node) {
     std::cout << "Message Rule Created\n";
-    auto rule = std::make_unique<MessageRule>();
+
+    auto contentLiteralExpr = GameEnvironment::Value{};
+    contentLiteralExpr.value = node
+        .getChildByFieldName("content")
+        .getNamedChild(0)
+        .getSourceRange(translator->source);
 
     ts::Node players = node.getChildByFieldName("players");
     if (players.getSourceRange(translator->source) == "all") {
-        rule->players = std::make_unique<LiteralExpression<std::string_view>>("all");
-    } else {
-        rule->players = translator->createExpression(players);
+        auto allLiteralExpr = GameEnvironment::Value{};
+        allLiteralExpr.value = "all";
+        
+        return std::make_unique<MessageRule>(
+            LiteralExpression{contentLiteralExpr},
+            std::make_unique<LiteralExpression>(allLiteralExpr)
+        );
     }
-    
-    rule->content = LiteralExpression<std::string_view> {
-        node.getChildByFieldName("content")
-            .getNamedChild(0)
-            .getSourceRange(translator->source)
-    };
 
-    return rule;
-
+    return std::make_unique<MessageRule>(
+        LiteralExpression{contentLiteralExpr},
+        translator->createExpression(players)
+    );
 }
 
 
@@ -191,7 +196,9 @@ IdentifierFactory::createImpl(const ts::Node& node) {
 std::unique_ptr<Expression>
 BooleanFactory::createImpl(const ts::Node& node) {
     bool value = node.getSourceRange(translator->source) == "true" ? true : false;
-    return std::make_unique<LiteralExpression<bool>>(value);
+    auto boolLiteralExpr = GameEnvironment::Value{};
+    boolLiteralExpr.value = value;
+    return std::make_unique<LiteralExpression>(boolLiteralExpr);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

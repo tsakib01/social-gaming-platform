@@ -94,7 +94,10 @@ public:
 /// A rule that represents a message to be sent to a list of players
 class MessageRule : public Rule {
 public:
-    LiteralExpression<std::string_view> content;
+    MessageRule(const LiteralExpression& content, std::unique_ptr<Expression> players)
+        : content(content), players(std::move(players)) {}
+
+    const LiteralExpression& content;
     std::unique_ptr<Expression> players;
 
     void accept(RuleVisitor& visitor) override {
