@@ -21,7 +21,8 @@ ServerManager::startServer() {
             errorWhileUpdating = true;
         }
 
-		gameInstanceManager->runCycle();
+		// Commented out while being reworked, also makes sure games are added to the game list so they can be joined.
+		//gameInstanceManager->runCycle();
 
 		const auto incoming = server->receive();
 		
