@@ -31,10 +31,12 @@ void InGameUserManager::addNewUser(networking::Connection connection, GameEnviro
 }
 
 void InGameUserManager::deleteUser(networking::Connection connection){
+    std::cout << "THE ID TO DELETE HERE IS" << connection.id << "\n";
     // erase returns 0 if something was not erased.
     // If assert failed, that means the user already doesn't exist in this game
     // which should never happen if this is called.
-    assert(std::move(InGameUserManager::m_userStates).erase(connection.id) != 0); 
+    //assert(m_userStates.erase(connection.id) != 0); 
+    assert(m_userStates.erase(connection.id) != 0);
 }
 
 // Ref: https://www.javatpoint.com/post/cpp-map-find-function

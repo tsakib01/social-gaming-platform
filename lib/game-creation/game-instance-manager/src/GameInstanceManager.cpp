@@ -39,6 +39,9 @@ GameInstanceManager::startGame(uint16_t roomCode, const std::vector<User>& users
     // Move from gameList to activeGameList
     
     addUsersToGame(roomCode, users);
+
+    //Temporary addition to test deletion
+    deleteUsersFromGame(roomCode, users);
 }
 
 void 
