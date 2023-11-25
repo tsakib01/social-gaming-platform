@@ -17,4 +17,5 @@ install(TARGETS gameInstance
 target_link_libraries(gameInstance
     gameConfigLoader
     cpp-tree-sitter
+    ruleExecute
 )

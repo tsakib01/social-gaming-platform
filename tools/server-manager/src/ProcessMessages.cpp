@@ -23,15 +23,14 @@ ServerManager::processIntro(const Message& message) {
 	if (message.text == "J") {
 		userManager->setUserState(message.connection, UserState::JOIN_GAME);
 		return std::deque<Message>{
-			{message.connection, "Please enter a room code.\n"}};
+			{message.connection, "Please enter a room code, or type (B) to cancel.\n"}};
 	}
 
 	else if (message.text == "C") {
 		userManager->setUserState(message.connection, UserState::GAME_SELECT);
 		return std::deque<Message>{
 			{buildGameFiles(message)}}; 
-	}
-
+	}	
 	else {
 		return std::deque<Message>{
 			{message.connection, "Invalid, try again.\n"}};
@@ -63,7 +62,10 @@ ServerManager::processJoinGame(const Message& message) {
 		}
 	} 
 
-	catch (const std::invalid_argument& e) {
+	catch (const std::invalid_argument& e) {		
+		if(message.text == "B"){
+			return processNew(message);
+		}
 		return std::deque<Message>{
 			{message.connection, "Please enter a valid number.\n"}};
 	}
@@ -91,6 +93,9 @@ ServerManager::processGameSelect(const Message& message) {
 	}
 
 	catch (const std::invalid_argument& e) {
+		if(message.text == "B"){
+			return processNew(message);
+		}
 		return std::deque<Message>{
 			{message.connection, "Please enter an option.\n"}};
 	}
@@ -139,7 +144,7 @@ ServerManager::buildGroupMessage(const std::vector<User>& gameUsers, const std::
 Message 
 ServerManager::buildGameFiles(const Message& message){
 	std::vector<std::string> gameFiles = getGameFiles();
-	std::string gameFilesToPrint = "Enter the number for which game you'd like to play:\n";
+	std::string gameFilesToPrint = "Enter the number for which game you'd like to play, or type (B) to cancel:\n";
 	int fileCount = 1;
 	std::stringstream stringStream;
 	
