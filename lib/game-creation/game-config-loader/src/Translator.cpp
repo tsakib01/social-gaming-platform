@@ -1,5 +1,7 @@
 #include <stdexcept>
 #include "Translator.h"
+#include "GameState.h"
+#include <variant>
 #include <iostream>
 #include <set>
 #include <unordered_map>
@@ -143,7 +145,7 @@ InputChoiceFactory::createImpl(const ts::Node& node) {
         node.getChildByFieldName("player").getSourceRange(translator->source)
     };
     rule->prompt = translator->createExpression(node.getChildByFieldName("prompt"));
-    // rule->choices = translator->createExpression(node.getChildByFieldName("choices"));
+    rule->choices = translator->createExpression(node.getChildByFieldName("choices"));
     return rule;
 }
 
@@ -205,6 +207,13 @@ const std::unordered_map<std::string_view, Operator> symbolsToOperators {
     {"%",   Operator::MOD}
 };
 
+const std::unordered_map<std::string_view, Builtin> spellingsToBuiltins {
+    {"upfrom",      Builtin::UPFROM},
+    {"size",        Builtin::SIZE},
+    {"contains",    Builtin::CONTAINS},
+    {"collect",     Builtin::COLLECT},
+};
+
 bool isLiteralExpression(const ts::Node& node) {
     auto type = node.getNamedChild(0).getType();
     return node.getNumNamedChildren() == 1 &&
@@ -225,6 +234,33 @@ bool isNegatedExpression(const ts::Node& node, std::string_view source) {
     return !node.getChildByFieldName("operand").isNull() &&
             node.getSourceRange(source)[0] == '!';
 }
+
+
+// Helper to construct a builtin expression from a builtin dot expression node
+// PRE: node is an expression node that contains a builtin child
+//      e.g. "players.elements.weapon.contains(weapon.name)"
+std::unique_ptr<BuiltinExpression> 
+createBuiltinExpression(ts::Node node, const Translator* translator) {
+    std::string_view spelling = node.getChildByFieldName("builtin").getSourceRange(translator->source);
+    auto builtinExpression = std::make_unique<BuiltinExpression>();
+    builtinExpression->builtin = spellingsToBuiltins.at(spelling);
+    ts::Node expressionList = node.getChild(3).getNamedChild(0);
+
+    if (!expressionList.isNull()) {
+        ts::Cursor cursor = expressionList.getCursor();
+        if (cursor.gotoFirstChild()) {
+            do {
+                ts::Node node = cursor.getCurrentNode();
+                if (node.getType() == "expression") {
+                    builtinExpression->arguments.push_back(translator->createExpression(node));    
+                }
+            } while (cursor.gotoNextSibling());
+        }
+    }
+
+    return builtinExpression;
+}
+
 
 std::unique_ptr<Expression>
 DummyExpressionFactory::createImpl(const ts::Node& node) {
@@ -248,15 +284,27 @@ DummyExpressionFactory::createImpl(const ts::Node& node) {
     }
 
     if (isDotExpression(node, translator->source)) {
-        std::cout << "DOT Expression found\n";
-        std::cout << node.getSourceRange(translator->source) << '\n';
-        for (uint32_t i = 0; i < node.getNumChildren(); i++) {
-            std::cout << i << ": " << node.getChild(i).getSourceRange(translator->source) << '\n';
+        // Identifier dot expression
+        if (!node.getChildByFieldName("identifier").isNull()) {
+            return std::make_unique<BinaryExpression>(
+                translator->createExpression(node.getChild(0)),
+                translator->createExpression(node.getChild(2)),
+                Operator::DOT
+            );
+        }
+
+        // Builtin dot expression
+        if (!node.getChildByFieldName("builtin").isNull()) {
+            auto builtinExpression = createBuiltinExpression(node, translator); 
+            return std::make_unique<BinaryExpression>(
+                translator->createExpression(node.getChild(0)),
+                std::move(builtinExpression),
+                Operator::DOT
+            );
         }
     }
     
-    return {};
-    // throw std::runtime_error("Count not deduce type of expression");
+    throw std::runtime_error("Count not deduce type of expression");
 } 
 
 

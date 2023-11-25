@@ -5,7 +5,28 @@
 
 /// Operations that can be applied to expression(s).
 enum class Operator{
-    PLUS, SUBTRACT, MULTIPLY, DIVISION, OR, IDENTIFIER, DOT
+    OR,
+    AND,
+    EQUALS,
+    NOT,
+    LT,
+    LTE,
+    GT,
+    GTE,
+    PLUS,
+    SUBTRACT,
+    MULTIPLY,
+    DIVISION,
+    MOD,
+    DOT
+};
+
+/// Builtin operations
+enum class Builtin{
+    UPFROM,
+    SIZE,
+    CONTAINS,
+    COLLECT
 };
 
 /// An expression interface that represents a statement in the game config that can be evaluated to a value
@@ -59,6 +80,7 @@ public:
     Operator op;
 };
 
+
 // A sequence of 1 or more period-delimited identifiers (e.g. "players.elements.weapon")
 class QualifiedIdentifier {
 public:
@@ -76,6 +98,17 @@ public:
         identifiers.push_back(qualifiedIdentifier);
     }
     std::vector<GameEnvironment::Identifier> identifiers;
+};
+
+
+class BuiltinExpression : public Expression {
+public:
+    BuiltinExpression() = default;
+
+    Builtin builtin;
+    // A vector of expressions instead of a GameEnvironment::List since 
+    // GameEnvironment::Value is incompatible with dot expressions
+    std::vector<std::unique_ptr<Expression>> arguments; 
 };
 
 #endif
