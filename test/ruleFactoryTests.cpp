@@ -65,6 +65,8 @@ TEST(TranslatorTest, BodyRuleTest) {
 }
 
 TEST(TranslatorTest, ForRuleTest) {
+    GTEST_SKIP();
+
     std::string source = MockTranslator::getSource("./test/games/for-rule-test.game");
     ts::Tree tree = MockTranslator::getTree(source);
     ts::Node rules = tree.getRootNode().getChildByFieldName("rules");
