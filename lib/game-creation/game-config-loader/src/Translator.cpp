@@ -1,6 +1,8 @@
 #include <stdexcept>
 #include "Translator.h"
 #include <iostream>
+#include <set>
+#include <unordered_map>
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -117,40 +119,40 @@ DiscardFactory::createImpl(const ts::Node& node) {
 std::unique_ptr<Rule>
 MessageFactory::createImpl(const ts::Node& node) {
     std::cout << "Message Rule Created\n";
+    auto rule = std::make_unique<MessageRule>();
 
-    auto content = node
-        .getChildByFieldName("content")
-        .getNamedChild(0)
-        .getSourceRange(translator->source);
-    auto contentValue = std::make_unique<LiteralExpression>(
-        std::make_unique<GameEnvironment::Value>(content));
-
+    rule->content = translator->createExpression(node.getChildByFieldName("content"));
     ts::Node players = node.getChildByFieldName("players");
+
     if (players.getSourceRange(translator->source) == "all") {
-        auto allValue = std::make_unique<LiteralExpression>(
-            std::make_unique<GameEnvironment::Value>("all"));
-        
-        return std::make_unique<MessageRule>(std::move(contentValue), std::move(allValue));
+        rule->players = std::make_unique<LiteralExpression>(
+                std::make_unique<GameEnvironment::Value>("all"));
+    } else {
+
     }
     
-    return std::make_unique<MessageRule>(
-        std::move(contentValue),
-        translator->createExpression(players)
-    );
+    return rule;
 }
 
 
 std::unique_ptr<Rule>
 InputChoiceFactory::createImpl(const ts::Node& node) {
     std::cout << "Input Rule Created\n";
-    return std::make_unique<InputChoiceRule>();
+    auto rule = std::make_unique<InputChoiceRule>();
+    rule->player = QualifiedIdentifier{
+        node.getChildByFieldName("player").getSourceRange(translator->source)
+    };
+    rule->prompt = translator->createExpression(node.getChildByFieldName("prompt"));
+    // rule->choices = translator->createExpression(node.getChildByFieldName("choices"));
+    return rule;
 }
 
 
 std::unique_ptr<Rule>
 ScoresFactory::createImpl(const ts::Node& node) {
-    std::cout << "Scores Rule Created\n";
-    return std::make_unique<ScoresRule>();
+    auto rule = std::make_unique<ScoresRule>(); 
+    rule->keys = translator->createExpression(node.getChildByFieldName("keys"));
+    return rule;
 }
 
 
@@ -178,12 +180,87 @@ AssignmentFactory::createImpl(const ts::Node& node) {
 // Expressions
 ////////////////////////////////////////////////////////////////////////////////
 
+const std::set<std::string_view> literalExpressionTypes {
+    "boolean",
+    "number",
+    "quoted_string",
+    "list_literal",
+    "identifier",
+    "value_map"
+};
+
+const std::unordered_map<std::string_view, Operator> symbolsToOperators {
+    {"||",  Operator::OR},
+    {"&&",  Operator::AND},
+    {"=",   Operator::EQUALS},
+    {"!=",  Operator::NOT},
+    {"<",   Operator::LT},
+    {"<=",  Operator::LTE},
+    {">",   Operator::GT},
+    {">=",  Operator::GTE},
+    {"+",   Operator::PLUS},
+    {"-",   Operator::SUBTRACT},
+    {"*",   Operator::MULTIPLY},
+    {"/",   Operator::DIVISION},
+    {"%",   Operator::MOD}
+};
+
+bool isLiteralExpression(const ts::Node& node) {
+    auto type = node.getNamedChild(0).getType();
+    return node.getNumNamedChildren() == 1 &&
+            literalExpressionTypes.find(type) != literalExpressionTypes.end();
+}
+
+bool isBinaryExpression(const ts::Node& node) {
+    return !node.getChildByFieldName("lhs").isNull();
+}
+
+// PRE: node is not a literal (quoted_string) expression containing a . 
+bool isDotExpression(const ts::Node& node, std::string_view source) {
+    auto view = node.getSourceRange(source);
+    return view.find(std::string_view{"."}) != std::string_view::npos;
+}
+
+bool isNegatedExpression(const ts::Node& node, std::string_view source) {
+    return !node.getChildByFieldName("operand").isNull() &&
+            node.getSourceRange(source)[0] == '!';
+}
 
 std::unique_ptr<Expression>
 DummyExpressionFactory::createImpl(const ts::Node& node) {
-    return translator->createExpression(node.getNamedChild(0)); 
+    if (isLiteralExpression(node)) {
+        return translator->createExpression(node.getNamedChild(0));
+    }
+
+    if (isNegatedExpression(node, translator->source)) {
+        return std::make_unique<UnaryExpression>(
+            translator->createExpression(node.getChild(1)), 
+            Operator::NOT
+        );
+    }
+
+    if (isBinaryExpression(node)) {
+        return std::make_unique<BinaryExpression>(
+            translator->createExpression(node.getChild(0)),
+            translator->createExpression(node.getChild(2)),
+            symbolsToOperators.at(node.getChild(1).getSourceRange(translator->source))
+        );
+    }
+
+    if (isDotExpression(node, translator->source)) {
+        std::cout << "DOT Expression found\n";
+        std::cout << node.getSourceRange(translator->source) << '\n';
+        for (uint32_t i = 0; i < node.getNumChildren(); i++) {
+            std::cout << i << ": " << node.getChild(i).getSourceRange(translator->source) << '\n';
+        }
+    }
+    
+    return {};
+    // throw std::runtime_error("Count not deduce type of expression");
 } 
 
+
+// Literal Expression Factories
 
 std::unique_ptr<Expression>
 IdentifierFactory::createImpl(const ts::Node& node) {
@@ -197,6 +274,32 @@ BooleanFactory::createImpl(const ts::Node& node) {
     return std::make_unique<LiteralExpression>(
         std::make_unique<GameEnvironment::Value>(value));
 }
+
+
+std::unique_ptr<Expression>
+QuotedStringFactory::createImpl(const ts::Node& node) {
+    auto value = std::string{node.getSourceRange(translator->source)};
+    return std::make_unique<LiteralExpression>(
+        std::make_unique<GameEnvironment::Value>(value));
+}
+
+
+std::unique_ptr<Expression>
+ListLiteralFactory::createImpl(const ts::Node& node) {
+    std::unique_ptr<GameEnvironment::Value> value = translator->gsl->convertNode(node);
+    return std::make_unique<LiteralExpression>(std::move(value));
+}
+
+
+std::unique_ptr<Expression>
+NumberFactory::createImpl(const ts::Node& node) {
+    auto value = std::stoi(std::string{node.getSourceRange(translator->source)});
+    return std::make_unique<LiteralExpression>(
+        std::make_unique<GameEnvironment::Value>(value));
+}
+
+// TODO: value_map literal expressions
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Translator
@@ -221,9 +324,12 @@ createTranslator(std::string_view source) {
     translator.registerRuleFactory("assignment",        std::make_unique<AssignmentFactory>(&translator));
 
     // Expressions
-    translator.registerExpressionFactory("expression",  std::make_unique<DummyExpressionFactory>(&translator));
-    translator.registerExpressionFactory("identifier",  std::make_unique<IdentifierFactory>(&translator));
-    translator.registerExpressionFactory("boolean",     std::make_unique<BooleanFactory>(&translator));
+    translator.registerExpressionFactory("expression",        std::make_unique<DummyExpressionFactory>(&translator));
+    translator.registerExpressionFactory("identifier",        std::make_unique<IdentifierFactory>(&translator));
+    translator.registerExpressionFactory("boolean",           std::make_unique<BooleanFactory>(&translator));
+    translator.registerExpressionFactory("quoted_string",     std::make_unique<QuotedStringFactory>(&translator));
+    translator.registerExpressionFactory("list_literal",      std::make_unique<ListLiteralFactory>(&translator));
+    translator.registerExpressionFactory("number",            std::make_unique<NumberFactory>(&translator));
 
     return translator;
 };

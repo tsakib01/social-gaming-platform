@@ -94,12 +94,13 @@ public:
 /// A rule that represents a message to be sent to a list of players
 class MessageRule : public Rule {
 public:
+    MessageRule() = default;
     MessageRule(
         std::unique_ptr<LiteralExpression> content,
         std::unique_ptr<Expression> players
     ) : content(std::move(content)), players(std::move(players)) {}
 
-    std::unique_ptr<LiteralExpression> content;
+    std::unique_ptr<Expression> content;
     std::unique_ptr<Expression> players;
 
     void accept(RuleVisitor& visitor) override {
@@ -125,15 +126,15 @@ public:
 /// A rule that represents a prompt for a choice styled input from a player
 class InputChoiceRule : public Rule {
 public:
-    /// An IdentifierExpression that evaluates to the player to prompt for input
-    IdentifierExpression to;
-    /// The prompt to display to the player
+    /// The player to prompt for input
+    QualifiedIdentifier player;
+    /// The prompt to display to the player (a string)
     std::unique_ptr<Expression> prompt;
-    /// The choices the player can make
+    /// The choices the player can make (a list)
     std::unique_ptr<Expression> choices;
-    /// The name of the player to prompt. (Not sure about this?)
-    std::unique_ptr<Expression> target;
-    /// The timeout of the prompt
+    /// The name of the player to prompt. 
+    QualifiedIdentifier target;
+    /// The timeout of the prompt (a number)
     std::unique_ptr<Expression> timeout;
 
     void accept(RuleVisitor& visitor) override {
@@ -158,7 +159,7 @@ public:
 class ScoresRule : public Rule {
 public:
     /// The list of keys
-    std::unique_ptr<Expression> listOfKeys;
+    std::unique_ptr<Expression> keys;
 
     void accept(RuleVisitor& visitor) override {
         visitor.visit(*this);
