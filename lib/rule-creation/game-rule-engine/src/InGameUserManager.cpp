@@ -8,7 +8,7 @@ void InGameUserManager::addNewUser(networking::Connection connection, GameEnviro
     //connection.id is passed to this function successfully
     std::cout << "THE ID HERE IS: " << connection.id << "\n";
 
-    // Checking that
+    // Checking that key-value mappings are are reachable
     // std::unique_ptr<GameEnvironment::Value> value = std::move(userStates["testidentifier"]);
     // GameEnvironment::Value* theVal = value.get();
     // if(value == nullptr){
