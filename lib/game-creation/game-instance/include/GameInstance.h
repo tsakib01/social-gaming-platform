@@ -21,6 +21,8 @@ public:
 private:
     std::unique_ptr<RuleTree> m_gameRules;
     std::unique_ptr<GameState> m_gameState;
+
+    // TODO: Figure out if use of unique_ptr is possible with InGameUserManager
     InGameUserManager m_inGameUserManager;
     // std::stack<std::shared_ptr<RuleNode>> instructionStack;
     uint16_t m_roomCode;

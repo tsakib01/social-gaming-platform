@@ -18,6 +18,8 @@ void InGameUserManager::addNewUser(networking::Connection connection, GameEnviro
     //     std::cout << "Value's pointer is null!!" << "\n";
     // }
 
+    // The size returned at the moment is 0. Why?
+    std::cout << "m_userStates.size() is " << m_userStates.size() << '\n';
     auto iterator = m_userStates.find(connection.id);
 
     // User should not already exist in the game.
@@ -40,28 +42,28 @@ void InGameUserManager::deleteUser(networking::Connection connection){
     assert(m_userStates.erase(connection.id) != 0);
 }
 
-// Ref: https://www.javatpoint.com/post/cpp-map-find-function
-GameEnvironment::Environment InGameUserManager::getStatesOfUser(networking::Connection connection){
-    auto iterator = m_userStates.find(connection.id);
+// // Ref: https://www.javatpoint.com/post/cpp-map-find-function
+// GameEnvironment::Environment InGameUserManager::getStatesOfUser(networking::Connection connection){
+//     auto iterator = m_userStates.find(connection.id);
     
-    assert(iterator != m_userStates.end());
-    GameEnvironment::Environment statesToGet = std::move(m_userStates[connection.id]);
-    return statesToGet;
-}
+//     assert(iterator != m_userStates.end());
+//     GameEnvironment::Environment statesToGet = std::move(m_userStates[connection.id]);
+//     return statesToGet;
+// }
 
 std::map<uintptr_t, GameEnvironment::Environment> InGameUserManager::getAllUserStates(){
-    return std::move(InGameUserManager::m_userStates);
+    return std::move(m_userStates);
 }
 
-// Recall that m_userStates is of type std::map<uint32_t, std::map<Role, Environment>>
-// Create a new pair to replace the existing one that the User ID maps to.
-void InGameUserManager::setStatesOfUser(networking::Connection userID, GameEnvironment::Environment statesToSet){
-    auto iterator = m_userStates.find(userID.id);
+// // Recall that m_userStates is of type std::map<uint32_t, std::map<Role, Environment>>
+// // Create a new pair to replace the existing one that the User ID maps to.
+// void InGameUserManager::setStatesOfUser(networking::Connection userID, GameEnvironment::Environment statesToSet){
+//     auto iterator = m_userStates.find(userID.id);
 
-    // User SHOULD already exist in the game.
-    assert(iterator != m_userStates.end());
+//     // User SHOULD already exist in the game.
+//     assert(iterator != m_userStates.end());
 
-    // insert() doesn't work when the key (the userID in this case) already exists
-    // in the map, so use the line below instead to replace what the userID is mapped to.
-    InGameUserManager::m_userStates[userID.id] = std::move(statesToSet);
-}
+//     // insert() doesn't work when the key (the userID in this case) already exists
+//     // in the map, so use the line below instead to replace what the userID is mapped to.
+//     InGameUserManager::m_userStates[userID.id] = std::move(statesToSet);
+// }
