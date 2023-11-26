@@ -10,8 +10,9 @@
 class GameInstance {
 public:
     GameInstance(std::unique_ptr<RuleTree> rules, std::unique_ptr<GameState> state, uint16_t m_roomCode);
-    ~GameInstance() {};
 
+    ~GameInstance() {};
+    void startGame();
     void executeNextInstruction();
     uint16_t getRoomCode();
 

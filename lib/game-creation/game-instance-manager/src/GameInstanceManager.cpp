@@ -37,7 +37,6 @@ GameInstanceManager::createGameInstance(std::string_view gameFilePath) {
 void
 GameInstanceManager::startGame(uint16_t roomCode, const std::vector<User>& users) {
     // Move from gameList to activeGameList
-    
     addUsersToGame(roomCode, users);
 }
 
