@@ -8,6 +8,7 @@ void InGameUserManager::addNewUser(networking::Connection connection, GameEnviro
     //connection.id is passed to this function successfully
     std::cout << "THE ID HERE IS: " << connection.id << "\n";
 
+    // Checking that
     // std::unique_ptr<GameEnvironment::Value> value = std::move(userStates["testidentifier"]);
     // GameEnvironment::Value* theVal = value.get();
     // if(value == nullptr){
@@ -30,16 +31,16 @@ void InGameUserManager::addNewUser(networking::Connection connection, GameEnviro
 
 void InGameUserManager::deleteUser(networking::Connection connection){
     std::cout << "THE ID TO DELETE HERE IS: " << connection.id << "\n";
-    // erase returns 0 if something was not erased.
+    std::cout << "Before deletion, m_userStates.size() is " << m_userStates.size() << '\n';
+
     // If assert failed, that means the user already doesn't exist in this game
     // which should never happen if this is called.
-
     auto iterator = m_userStates.find(connection.id);
-    // // Both assserts fail because the user cannot be found.
+    // Both assserts fail because the user cannot be found.
     assert(iterator != m_userStates.end());
 
-    m_userStates.erase(iterator, m_userStates.end());
-    std::cout << "m_userStates.size() is " << m_userStates.size() << '\n';
+    m_userStates.erase(iterator);
+    std::cout << "After deletion, m_userStates.size() is " << m_userStates.size() << '\n';
 }
 
 // // Ref: https://www.javatpoint.com/post/cpp-map-find-function
