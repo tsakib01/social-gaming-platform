@@ -19,7 +19,7 @@ void InGameUserManager::addNewUser(networking::Connection connection, GameEnviro
     // }
 
     // The size returned at the moment is 0. Why?
-    std::cout << "m_userStates.size() is " << m_userStates.size() << '\n';
+    // std::cout << "m_userStates.size() is " << m_userStates.size() << '\n';
     auto iterator = m_userStates.find(connection.id);
 
     // User should not already exist in the game.
@@ -35,11 +35,11 @@ void InGameUserManager::deleteUser(networking::Connection connection){
     // which should never happen if this is called.
 
     auto iterator = m_userStates.find(connection.id);
-    // Both assserts fail because the user cannot be found.
+    // // Both assserts fail because the user cannot be found.
     assert(iterator != m_userStates.end());
 
-    // ID is successfully passed, but it appears users don't exist?
-    assert(m_userStates.erase(connection.id) != 0);
+    m_userStates.erase(iterator, m_userStates.end());
+    std::cout << "m_userStates.size() is " << m_userStates.size() << '\n';
 }
 
 // // Ref: https://www.javatpoint.com/post/cpp-map-find-function

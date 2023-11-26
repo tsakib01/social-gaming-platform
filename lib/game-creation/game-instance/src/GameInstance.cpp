@@ -5,9 +5,10 @@ GameInstance::GameInstance(std::unique_ptr<RuleTree> gameRules,
 std::unique_ptr<GameState> gameState, uint16_t roomCode)
     : m_gameRules(std::move(gameRules)), m_gameState(std::move(gameState)), m_roomCode(roomCode)
 {
+    m_inGameUserManager = std::make_unique<InGameUserManager>();
     // const std::shared_ptr<RuleNode> rulesRoot = gameRules->getRules();
     // instructionStack.push(rulesRoot);
-
+    
     // UNIMPLEMENTED While Rule Execution is restructured
 }
 
@@ -46,7 +47,7 @@ GameInstance::addUsers(const std::vector<User>& users) {
         // testMap.insert({testIdentifier, std::move(testValuePtr)});
         std::cout << "Before adding, user ID is:" << user.userID.id << "\n";
         //m_inGameUserManager->addNewUser(user.userID, testMap);
-        m_inGameUserManager.addNewUser(user.userID, std::move(dummyEnvironment));
+        m_inGameUserManager->addNewUser(user.userID, std::move(dummyEnvironment));
     }
 
     // std::map<uintptr_t, GameEnvironment::Environment> daMap = m_inGameUserManager->getAllUserStates();
@@ -58,32 +59,8 @@ GameInstance::addUsers(const std::vector<User>& users) {
 
 void
 GameInstance::deleteUsers(const std::vector<User>& users) {
-    std::map<uintptr_t, GameEnvironment::Environment>* m_tilemap;
-
-        // for (const User& user : users) {
-        // GameEnvironment::Environment dummyEnvironment;
-        // std::map<GameEnvironment::Identifier, std::unique_ptr<GameEnvironment::Value>> tester;
-        // GameEnvironment::Value testValue;
-        // testValue.value = 500;
-        // std::unique_ptr<GameEnvironment::Value> testValuePtr;
-        // testValuePtr -> value;
-        // std::map<GameEnvironment::Identifier, std::unique_ptr<GameEnvironment::Value>> testMap;
-        // GameEnvironment::Identifier testIdentifier = "testidentifier";
-        // testMap.insert({testIdentifier, std::move(testValuePtr)});
-        // std::cout << "IN DELETE! user ID is:" << user.userID.id << "\n";
-        // m_inGameUserManager.addNewUser(user.userID, std::move(testMap));
-        // //m_inGameUserManager.addNewUser(user.userID, std::move(dummyEnvironment));
-        // }
-    
-    std::map<uintptr_t, GameEnvironment::Environment> daMap = std::move(m_inGameUserManager.getAllUserStates());
-    // The returned map is empty for some reason...
-    for (auto const &pair: daMap){
-        std::cout << "Here is a person's data which should be getting deleted: " << pair.first << "\n";
-    }
     for (const User& user : users) {
-        m_inGameUserManager.deleteUser(user.userID);
+        m_inGameUserManager->deleteUser(user.userID);
     }
-    for (auto const &pair: daMap){
-        std::cout << "This person should have been deleted by now: " << pair.first << "\n";
-    }
+
 }
