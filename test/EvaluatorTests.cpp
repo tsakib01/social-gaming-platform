@@ -414,3 +414,290 @@ TEST_F(EvaluatorTest, TestInvalidNotOperations) {
     mapValue.value = std::make_unique<GameEnvironment::Map>();
     EXPECT_THROW(evaluator.evaluate(OPERATOR::NOT, {&mapValue}), std::runtime_error);
 }
+
+// Test case for EQUAL operation - Primitive Types
+TEST_F(EvaluatorTest, TestEqualPrimitiveTypes) {
+    // Integer equality
+    GameEnvironment::Value intValue1(5), intValue2(5);
+    EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&intValue1, &intValue2}).value));
+
+    // Non-Equal
+    intValue2.value = 10;
+    EXPECT_FALSE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&intValue1, &intValue2}).value));
+
+    // Boolean equality
+    GameEnvironment::Value boolValue1(true), boolValue2(true);
+    EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&boolValue1, &boolValue2}).value));
+
+    // Non-equal
+    boolValue2.value = false;
+    EXPECT_FALSE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&boolValue1, &boolValue2}).value));
+
+    // String equality
+    GameEnvironment::Value strValue1("Hello"), strValue2("Hello");
+    EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&strValue1, &strValue2}).value));
+
+    // Non-Equal
+    strValue2.value = std::string_view("World");
+    EXPECT_FALSE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&strValue1, &strValue2}).value));
+}
+
+// Test case for EQUAL operation - List of integers
+TEST_F(EvaluatorTest, TestEqualIntList){
+    // List of integers
+    std::unique_ptr<GameEnvironment::List> intList1 = std::make_unique<GameEnvironment::List>();
+    std::unique_ptr<GameEnvironment::List> intList2 = std::make_unique<GameEnvironment::List>();
+    std::unique_ptr<GameEnvironment::List> intList3 = std::make_unique<GameEnvironment::List>();
+
+    // Populating lists with 5 elements
+    for (int i = 0; i < 5; i++) {
+        intList1->push_back(std::make_unique<GameEnvironment::Value>(i));
+        intList2->push_back(std::make_unique<GameEnvironment::Value>(i));
+        intList3->push_back(std::make_unique<GameEnvironment::Value>(i + 1));
+    }
+
+    GameEnvironment::Value intListValue1(std::move(intList1));
+    GameEnvironment::Value intListValue2(std::move(intList2));
+    GameEnvironment::Value intListValue3(std::move(intList3));
+
+    EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&intListValue1, &intListValue2}).value));
+    EXPECT_FALSE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&intListValue1, &intListValue3}).value));
+}
+
+// Test case for EQUAL operation - List of bool
+TEST_F(EvaluatorTest, TestEqualBoolList){
+    // // List of booleans
+    std::unique_ptr<GameEnvironment::List> boolList1 = std::make_unique<GameEnvironment::List>();
+    std::unique_ptr<GameEnvironment::List> boolList2 = std::make_unique<GameEnvironment::List>();
+    std::unique_ptr<GameEnvironment::List> boolList3 = std::make_unique<GameEnvironment::List>();
+
+    // Populating lists with 5 elements
+    for (int i = 0; i < 5; i++) {
+        boolList1->push_back(std::make_unique<GameEnvironment::Value>(i % 2 == 0));
+        boolList2->push_back(std::make_unique<GameEnvironment::Value>(i % 2 == 0));
+        boolList3->push_back(std::make_unique<GameEnvironment::Value>(i % 2 == 1));
+    }
+
+    GameEnvironment::Value boolListValue1(std::move(boolList1));
+    GameEnvironment::Value boolListValue2(std::move(boolList2));
+    GameEnvironment::Value boolListValue3(std::move(boolList3));
+
+    EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&boolListValue1, &boolListValue2}).value));
+    EXPECT_FALSE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&boolListValue1, &boolListValue3}).value));
+}
+
+// Test case for EQUAL operation - List of string
+TEST_F(EvaluatorTest, TestEqualStringList){
+    // List of strings
+    std::unique_ptr<GameEnvironment::List> stringList1 = std::make_unique<GameEnvironment::List>();
+    std::unique_ptr<GameEnvironment::List> stringList2 = std::make_unique<GameEnvironment::List>();
+    std::unique_ptr<GameEnvironment::List> stringList3 = std::make_unique<GameEnvironment::List>();
+
+    // Populating lists with 5 elements
+    for (int i = 0; i < 5; i++) {
+        stringList1->push_back(std::make_unique<GameEnvironment::Value>(std::string_view("Hello")));
+        stringList2->push_back(std::make_unique<GameEnvironment::Value>(std::string_view("Hello")));
+        stringList3->push_back(std::make_unique<GameEnvironment::Value>(std::string_view("World")));
+    }
+
+    GameEnvironment::Value stringListValue1(std::move(stringList1));
+    GameEnvironment::Value stringListValue2(std::move(stringList2));
+    GameEnvironment::Value stringListValue3(std::move(stringList3));
+
+    EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&stringListValue1, &stringListValue2}).value));
+    EXPECT_FALSE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&stringListValue1, &stringListValue3}).value));
+}
+
+// Test case for EQUAL operation - List of list of integers
+TEST_F(EvaluatorTest, TestEqualListOfIntList) {
+    // List of list of integers
+    std::unique_ptr<GameEnvironment::List> listOfIntList1 = std::make_unique<GameEnvironment::List>();
+    std::unique_ptr<GameEnvironment::List> listOfIntList2 = std::make_unique<GameEnvironment::List>();
+    std::unique_ptr<GameEnvironment::List> listOfIntList3 = std::make_unique<GameEnvironment::List>();
+
+    // Populating lists with 5 elements
+    for (int i = 0; i < 5; i++) {
+        std::unique_ptr<GameEnvironment::List> innerList1 = std::make_unique<GameEnvironment::List>();
+        std::unique_ptr<GameEnvironment::List> innerList2 = std::make_unique<GameEnvironment::List>();
+        std::unique_ptr<GameEnvironment::List> innerList3 = std::make_unique<GameEnvironment::List>();
+
+        for (int j = 0; j < 5; j++) {
+            innerList1->push_back(std::make_unique<GameEnvironment::Value>(j));
+            innerList2->push_back(std::make_unique<GameEnvironment::Value>(j));
+            innerList3->push_back(std::make_unique<GameEnvironment::Value>(j + 1));
+        }
+
+        listOfIntList1->push_back(std::make_unique<GameEnvironment::Value>(std::move(innerList1)));
+        listOfIntList2->push_back(std::make_unique<GameEnvironment::Value>(std::move(innerList2)));
+        listOfIntList3->push_back(std::make_unique<GameEnvironment::Value>(std::move(innerList3)));
+    }
+
+    GameEnvironment::Value listOfIntListValue1(std::move(listOfIntList1));
+    GameEnvironment::Value listOfIntListValue2(std::move(listOfIntList2));
+    GameEnvironment::Value listOfIntListValue3(std::move(listOfIntList3));
+
+    EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&listOfIntListValue1, &listOfIntListValue2}).value));
+    EXPECT_FALSE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&listOfIntListValue1, &listOfIntListValue3}).value));
+}
+
+// Test case for EQUAL operation - List of Map
+TEST_F(EvaluatorTest, TestEqualListOfMap) {
+    // List of maps
+    std::unique_ptr<GameEnvironment::List> listOfMap1 = std::make_unique<GameEnvironment::List>();
+    std::unique_ptr<GameEnvironment::List> listOfMap2 = std::make_unique<GameEnvironment::List>();
+    std::unique_ptr<GameEnvironment::List> listOfMap3 = std::make_unique<GameEnvironment::List>();
+
+    // Populating lists with 5 elements
+    for (int i = 0; i < 5; i++) {
+        std::unique_ptr<GameEnvironment::Map> innerMap1 = std::make_unique<GameEnvironment::Map>();
+        std::unique_ptr<GameEnvironment::Map> innerMap2 = std::make_unique<GameEnvironment::Map>();
+        std::unique_ptr<GameEnvironment::Map> innerMap3 = std::make_unique<GameEnvironment::Map>();
+
+        for (int j = 0; j < 5; j++) {
+            innerMap1->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(j));
+            innerMap2->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(j));
+            innerMap3->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(j + 1));
+        }
+
+        listOfMap1->push_back(std::make_unique<GameEnvironment::Value>(std::move(innerMap1)));
+        listOfMap2->push_back(std::make_unique<GameEnvironment::Value>(std::move(innerMap2)));
+        listOfMap3->push_back(std::make_unique<GameEnvironment::Value>(std::move(innerMap3)));
+    }
+
+    GameEnvironment::Value listOfMapValue1(std::move(listOfMap1));
+    GameEnvironment::Value listOfMapValue2(std::move(listOfMap2));
+    GameEnvironment::Value listOfMapValue3(std::move(listOfMap3));
+
+    EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&listOfMapValue1, &listOfMapValue2}).value));
+    EXPECT_FALSE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&listOfMapValue1, &listOfMapValue3}).value));
+}
+
+// Test case for EQUAL operation - Map of integers
+TEST_F(EvaluatorTest, TestEqualMapOfInt) {
+    // Map of integers
+    std::unique_ptr<GameEnvironment::Map> intMap1 = std::make_unique<GameEnvironment::Map>();
+    std::unique_ptr<GameEnvironment::Map> intMap2 = std::make_unique<GameEnvironment::Map>();
+    std::unique_ptr<GameEnvironment::Map> intMap3 = std::make_unique<GameEnvironment::Map>();
+
+    // Populating lists with 5 elements
+    for (int i = 0; i < 5; i++) {
+        intMap1->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(i));
+        intMap2->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(i));
+        intMap3->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(i + 1));
+    }
+
+    GameEnvironment::Value intMapValue1(std::move(intMap1));
+    GameEnvironment::Value intMapValue2(std::move(intMap2));
+    GameEnvironment::Value intMapValue3(std::move(intMap3));
+
+    EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&intMapValue1, &intMapValue2}).value));
+    EXPECT_FALSE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&intMapValue1, &intMapValue3}).value));
+}
+
+// Test case for EQUAL operation - Map of booleans
+TEST_F(EvaluatorTest, TestEqualMapOfBool) {
+    // Map of booleans
+    std::unique_ptr<GameEnvironment::Map> boolMap1 = std::make_unique<GameEnvironment::Map>();
+    std::unique_ptr<GameEnvironment::Map> boolMap2 = std::make_unique<GameEnvironment::Map>();
+    std::unique_ptr<GameEnvironment::Map> boolMap3 = std::make_unique<GameEnvironment::Map>();
+
+    // Populating lists with 5 elements
+    for (int i = 0; i < 5; i++) {
+        boolMap1->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(i % 2 == 0));
+        boolMap2->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(i % 2 == 0));
+        boolMap3->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(i % 2 == 1));
+    }
+
+    GameEnvironment::Value boolMapValue1(std::move(boolMap1));
+    GameEnvironment::Value boolMapValue2(std::move(boolMap2));
+    GameEnvironment::Value boolMapValue3(std::move(boolMap3));
+
+    EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&boolMapValue1, &boolMapValue2}).value));
+    EXPECT_FALSE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&boolMapValue1, &boolMapValue3}).value));
+}
+
+// Test case for EQUAL operation - Map of strings
+TEST_F(EvaluatorTest, TestEqualMapOfString) {
+    // Map of strings
+    std::unique_ptr<GameEnvironment::Map> stringMap1 = std::make_unique<GameEnvironment::Map>();
+    std::unique_ptr<GameEnvironment::Map> stringMap2 = std::make_unique<GameEnvironment::Map>();
+    std::unique_ptr<GameEnvironment::Map> stringMap3 = std::make_unique<GameEnvironment::Map>();
+
+    // Populating lists with 5 elements
+    for (int i = 0; i < 5; i++) {
+        stringMap1->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(std::string_view("Hello")));
+        stringMap2->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(std::string_view("Hello")));
+        stringMap3->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(std::string_view("World")));
+    }
+
+    GameEnvironment::Value stringMapValue1(std::move(stringMap1));
+    GameEnvironment::Value stringMapValue2(std::move(stringMap2));
+    GameEnvironment::Value stringMapValue3(std::move(stringMap3));
+
+    EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&stringMapValue1, &stringMapValue2}).value));
+    EXPECT_FALSE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&stringMapValue1, &stringMapValue3}).value));
+}
+
+// Test case for EQUAL operation - Map of lists
+TEST_F(EvaluatorTest, TestEqualMapOfList) {
+    // Map of lists
+    std::unique_ptr<GameEnvironment::Map> mapOfList1 = std::make_unique<GameEnvironment::Map>();
+    std::unique_ptr<GameEnvironment::Map> mapOfList2 = std::make_unique<GameEnvironment::Map>();
+    std::unique_ptr<GameEnvironment::Map> mapOfList3 = std::make_unique<GameEnvironment::Map>();
+
+    // Populating lists with 5 elements
+    for (int i = 0; i < 5; i++) {
+        std::unique_ptr<GameEnvironment::List> list1 = std::make_unique<GameEnvironment::List>();
+        std::unique_ptr<GameEnvironment::List> list2 = std::make_unique<GameEnvironment::List>();
+        std::unique_ptr<GameEnvironment::List> list3 = std::make_unique<GameEnvironment::List>();
+
+        for (int j = 0; j < 5; j++) {
+            list1->push_back(std::make_unique<GameEnvironment::Value>(j));
+            list2->push_back(std::make_unique<GameEnvironment::Value>(j));
+            list3->push_back(std::make_unique<GameEnvironment::Value>(j + 1));
+        }
+
+        mapOfList1->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(std::move(list1)));
+        mapOfList2->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(std::move(list2)));
+        mapOfList3->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(std::move(list3)));
+    }
+
+    GameEnvironment::Value mapOfListValue1(std::move(mapOfList1));
+    GameEnvironment::Value mapOfListValue2(std::move(mapOfList2));
+    GameEnvironment::Value mapOfListValue3(std::move(mapOfList3));
+
+    EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&mapOfListValue1, &mapOfListValue2}).value));
+    EXPECT_FALSE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&mapOfListValue1, &mapOfListValue3}).value));
+}
+
+// Test case for EQUAL operation - Map of maps
+TEST_F(EvaluatorTest, TestEqualMapOfMap) {
+    // Map of maps
+    std::unique_ptr<GameEnvironment::Map> mapOfMap1 = std::make_unique<GameEnvironment::Map>();
+    std::unique_ptr<GameEnvironment::Map> mapOfMap2 = std::make_unique<GameEnvironment::Map>();
+    std::unique_ptr<GameEnvironment::Map> mapOfMap3 = std::make_unique<GameEnvironment::Map>();
+
+    // Populating lists with 5 elements
+    for (int i = 0; i < 5; i++) {
+        std::unique_ptr<GameEnvironment::Map> innerMap1 = std::make_unique<GameEnvironment::Map>();
+        std::unique_ptr<GameEnvironment::Map> innerMap2 = std::make_unique<GameEnvironment::Map>();
+        std::unique_ptr<GameEnvironment::Map> innerMap3 = std::make_unique<GameEnvironment::Map>();
+
+        for (int j = 0; j < 5; j++) {
+            innerMap1->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(i + j));
+            innerMap2->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(i + j));
+            innerMap3->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>((i + j) + 1));
+        }
+
+        mapOfMap1->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(std::move(innerMap1)));
+        mapOfMap2->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(std::move(innerMap2)));
+        mapOfMap3->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(std::move(innerMap3)));
+    }
+
+    GameEnvironment::Value mapOfMapValue1(std::move(mapOfMap1));
+    GameEnvironment::Value mapOfMapValue2(std::move(mapOfMap2));
+    GameEnvironment::Value mapOfMapValue3(std::move(mapOfMap3));
+
+    EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&mapOfMapValue1, &mapOfMapValue2}).value));
+    EXPECT_FALSE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&mapOfMapValue1, &mapOfMapValue3}).value));
+}
