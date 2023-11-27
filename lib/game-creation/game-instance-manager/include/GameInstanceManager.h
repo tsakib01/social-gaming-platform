@@ -29,7 +29,7 @@ private:
 
     // Generates a random unique number between 1000-9999
     uint16_t generateRoomCode();
-    std::vector<std::unique_ptr<GameInstance>>::iterator getGameIterator(uint16_t roomCode); 
+    std::unique_ptr<GameInstance>& getGameReference(uint16_t roomCode); 
 };
 
 #endif
