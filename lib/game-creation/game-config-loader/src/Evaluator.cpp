@@ -1,5 +1,6 @@
 #include "Evaluator.h"
 #include <stdexcept>
+#include <iostream>
 
 // Add operation supports
 // 1. Addition of two integers
@@ -15,13 +16,13 @@ private:
 
         GameEnvironment::Value operator()(const std::string_view& left, const std::string_view& right){
             GameEnvironment::Value value;
-            // value.value = std::string_view(std::string(left) + std::string(right));
+            value.value = std::string(left) + std::string(right);
             return value;
         }
 
         template <typename T, typename U>
         GameEnvironment::Value operator()([[maybe_unused]] const T& left, [[maybe_unused]] const U& right){
-            throw std::runtime_error("Unsupported types for addition");
+            throw std::runtime_error("Unsupported types for add");
         }
     };
 
@@ -49,7 +50,7 @@ private:
 
         template <typename T, typename U>
         GameEnvironment::Value operator()([[maybe_unused]] const T& left, [[maybe_unused]] const U& right){
-            throw std::runtime_error("Unsupported types for addition");
+            throw std::runtime_error("Unsupported types for subtract");
         }
     };
 
@@ -77,7 +78,7 @@ private:
 
         template <typename T, typename U>
         GameEnvironment::Value operator()([[maybe_unused]] const T& left, [[maybe_unused]] const U& right){
-            throw std::runtime_error("Unsupported types for addition");
+            throw std::runtime_error("Unsupported types for multiply");
         }
     };
 
@@ -124,6 +125,165 @@ private:
     } 
 };
 
+// OR operation supports
+// Taking OR for two boolean operands
+class OrOperation final : public Operation {
+private:
+    struct OrOperationVisitor {
+        GameEnvironment::Value operator()(const bool& left, const bool& right){
+            GameEnvironment::Value value;
+            value.value = (left || right);
+            return value;
+        }
+
+        template <typename T, typename U>
+        GameEnvironment::Value operator()([[maybe_unused]] const T& left, [[maybe_unused]] const U& right){
+            throw std::runtime_error("Unsupported types for OR");
+        }
+    };
+
+    // OR operation requires 2 arguments
+    bool getSpecificationImpl(std::vector<const GameEnvironment::Value*> values) const override {
+        return values.size() == 2;
+    };
+
+    GameEnvironment::Value evaluateImpl(std::vector<const GameEnvironment::Value*> values) const override{
+        return std::visit(OrOperationVisitor{}, values[0]->value, values[1]->value);
+    } 
+};
+
+// AND operation supports
+// Taking AND for two boolean operands
+class AndOperation final : public Operation {
+private:
+    struct OrOperationVisitor {
+        GameEnvironment::Value operator()(const bool& left, const bool& right){
+            GameEnvironment::Value value;
+            value.value = (left && right);
+            return value;
+        }
+
+        template <typename T, typename U>
+        GameEnvironment::Value operator()([[maybe_unused]] const T& left, [[maybe_unused]] const U& right){
+            throw std::runtime_error("Unsupported types for AND");
+        }
+    };
+
+    // AND operation requires 2 arguments
+    bool getSpecificationImpl(std::vector<const GameEnvironment::Value*> values) const override {
+        return values.size() == 2;
+    };
+
+    GameEnvironment::Value evaluateImpl(std::vector<const GameEnvironment::Value*> values) const override{
+        return std::visit(OrOperationVisitor{}, values[0]->value, values[1]->value);
+    } 
+};
+
+// NOT operation supports
+// Taking NOT for one boolean operand
+class NotOperation final : public Operation {
+private:
+    struct NotOperationVisitor {
+        GameEnvironment::Value operator()(const bool& operand){
+            GameEnvironment::Value value;
+            value.value = !operand;
+            return value;
+        }
+
+        template <typename T>
+        GameEnvironment::Value operator()([[maybe_unused]] const T& op){
+            throw std::runtime_error("Unsupported types for NOT");
+        }
+    };
+
+    // NOT operation requires only 1 argument
+    bool getSpecificationImpl(std::vector<const GameEnvironment::Value*> values) const override {
+        return values.size() == 1;
+    };
+
+    GameEnvironment::Value evaluateImpl(std::vector<const GameEnvironment::Value*> values) const override{
+        return std::visit(NotOperationVisitor{}, values[0]->value);
+    } 
+};
+
+// Equal operation supports
+// Compare equality of two Values
+class EqualOperation final : public Operation {
+private:
+    struct EqualOperationVisitor {
+        GameEnvironment::Value operator()(const int& left, const int& right){
+            bool isEqual = (left == right);
+            return GameEnvironment::Value(isEqual);
+        }
+
+        GameEnvironment::Value operator()(const bool& left, const bool& right){
+            bool isEqual = (left == right);
+            return GameEnvironment::Value(isEqual);
+        }
+
+        GameEnvironment::Value operator()(const std::string_view& left, const std::string_view& right){
+            bool isEqual = (left == right);
+            return GameEnvironment::Value(isEqual);
+        }
+
+        GameEnvironment::Value operator()(const std::unique_ptr<GameEnvironment::List>& left, const std::unique_ptr<GameEnvironment::List>& right){
+            GameEnvironment::Value value;
+            // Size different
+            if (left->size() != right->size()){
+                value.value = false;
+                return value;
+            }
+
+            bool result = true;
+            for (size_t i = 0; i < left->size(); i++){
+                GameEnvironment::Value isEqual = std::visit(EqualOperationVisitor{}, left->at(i)->value, right->at(i)->value);
+                result = result && std::get<bool>(isEqual.value);
+            }
+
+            value.value = result;
+            return value;
+        }
+
+        GameEnvironment::Value operator()(const std::unique_ptr<GameEnvironment::Map>& left, const std::unique_ptr<GameEnvironment::Map>& right){
+            GameEnvironment::Value value;
+            
+            // Size different
+            if (left->size() != right->size()){
+                value.value = false;
+                return value;
+            }
+
+            bool result = true;
+            for (const auto& [leftKey, leftValue] : *left){
+                // When left identifier is not found in right
+                auto rightItr = right->find(leftKey);
+                if (rightItr == right->end()){
+                    result = false;
+                    break;
+                }
+                GameEnvironment::Value isEqual = std::visit(EqualOperationVisitor{}, leftValue->value, rightItr->second->value);
+                result = result && std::get<bool>(isEqual.value);
+            }
+            value.value = result;
+            return value;
+        }
+
+        template <typename T, typename U>
+        GameEnvironment::Value operator()([[maybe_unused]] const T& left, [[maybe_unused]] const U& right){
+            return GameEnvironment::Value(false);
+        }
+    };
+
+    // Divide operation requires 2 arguments
+    bool getSpecificationImpl(std::vector<const GameEnvironment::Value*> values) const override {
+        return values.size() == 2;
+    };
+
+    GameEnvironment::Value evaluateImpl(std::vector<const GameEnvironment::Value*> values) const override{
+        return std::visit(EqualOperationVisitor{}, values[0]->value, values[1]->value);
+    } 
+};
+
 // Register operation to the map
 void Evaluator::registerOperation(OPERATOR operatorEnum, std::unique_ptr<Operation> operation){
     auto [it, succeeded] = operatorToOperation.try_emplace(operatorEnum, std::move(operation));
@@ -136,7 +296,6 @@ void Evaluator::registerOperation(OPERATOR operatorEnum, std::unique_ptr<Operati
 
 GameEnvironment::Value Evaluator::evaluate(OPERATOR operationEnum, std::vector<const GameEnvironment::Value*> values){
     auto operationItr = operatorToOperation.find(operationEnum);
-
     // No operation registered
     if (operationItr == operatorToOperation.end()){
         std::runtime_error("The operator is not registered");
@@ -151,5 +310,9 @@ Evaluator Evaluator::defaultEvaluatorFactory(){
     evaluator.registerOperation(OPERATOR::SUBTRACT, std::make_unique<SubtractOperation>());
     evaluator.registerOperation(OPERATOR::MULTIPLY, std::make_unique<MultiplyOperation>());
     evaluator.registerOperation(OPERATOR::DIVIDE, std::make_unique<DivideOperation>());
+    evaluator.registerOperation(OPERATOR::OR, std::make_unique<OrOperation>());
+    evaluator.registerOperation(OPERATOR::AND, std::make_unique<AndOperation>());
+    evaluator.registerOperation(OPERATOR::NOT, std::make_unique<NotOperation>());
+    evaluator.registerOperation(OPERATOR::EQUAL, std::make_unique<EqualOperation>());
     return evaluator;
 }

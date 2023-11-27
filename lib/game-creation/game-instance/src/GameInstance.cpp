@@ -3,40 +3,41 @@
 
 GameInstance::GameInstance(std::unique_ptr<RuleTree> gameRules, 
 std::unique_ptr<GameState> gameState, uint16_t roomCode)
-    : m_gameRules(std::move(gameRules)), m_gameState(std::move(gameState)), m_roomCode(roomCode)
+    : m_gameRules(std::move(gameRules)), 
+      m_gameState(std::move(gameState)),
+      m_roomCode(roomCode),
+      m_context(*m_gameState, m_gameRules->getRoot()),
+      m_ruleExecutor(m_context)
 {
     m_inGameUserManager = std::make_unique<InGameUserManager>();
     // const std::shared_ptr<RuleNode> rulesRoot = gameRules->getRules();
     // instructionStack.push(rulesRoot);
-    
-    // UNIMPLEMENTED While Rule Execution is restructured
+
+    m_state = GameInstanceState::QUEUED;
 }
 
 void 
 GameInstance::startGame() {
-    // UNIMPLEMENTED While Rule Execution is restructured
-
-    // std::cout << "\nGame started." << std::endl;
-    // while (!instructionStack.empty()) {
-    //     executeNextInstruction();
-    // }
-    // std::cout << "Game ended." << std::endl;
+    std::cout << "\nGame started." << std::endl;
+    m_state = GameInstanceState::RUNNING;
 }
 
 void 
 GameInstance::executeNextInstruction() {
-    // UNIMPLEMENTED While Rule Execution is restructured
+    while (!m_context.blocked && (m_context.instructionStack.size() > 0)) {
+        m_context.instructionStack.top()->accept(m_ruleExecutor);
+    }
+    if (m_context.blocked) {
+        m_state = GameInstanceState::WAITING;
+    }
+}
 
-    // if (instructionStack.empty()) return;
-
-    // std::shared_ptr<RuleNode> instruction = instructionStack.top();
-    // std::optional<std::shared_ptr<RuleNode>> nextInstructionNode = instruction->executeRule();
-
-    // if (nextInstructionNode.has_value()) {
-    //     instructionStack.push(nextInstructionNode.value());
-    // } else {
-    //     instructionStack.pop();
-    // }
+bool
+GameInstance::gameIsFinished() {
+    if (m_context.instructionStack.empty()) {
+        return true;
+    }
+    return false;
 }
 
 uint16_t 
@@ -72,4 +73,9 @@ GameInstance::deleteUsers(const std::vector<User>& users) {
     for (const User& user : users) {
         m_inGameUserManager->deleteUser(user.userID);
     }
+}
+
+GameInstanceState
+GameInstance::getGameInstanceState() {
+    return m_state;
 }

@@ -3,8 +3,8 @@
 ServerManager::ServerManager(const unsigned short port, const char* htmlFile) {
     server = std::make_unique<Server>(
                   port, getHTTPMessage(htmlFile),
-                  std::bind(&ServerManager::onConnect, this, std::placeholders::_1),
-                  std::bind(&ServerManager::onDisconnect, this, std::placeholders::_1));
+                  [this](auto client) { this->onConnect(client); },
+                  [this](auto client) { this->onDisconnect(client); });
     gameInstanceManager = std::make_unique<GameInstanceManager>();
     userManager = std::make_shared<UserManager>();
 	gameCommunicator = std::make_unique<GameCommunicator>();
@@ -21,7 +21,8 @@ ServerManager::startServer() {
             errorWhileUpdating = true;
         }
 
-		gameInstanceManager->runCycle();
+		// Commented out while being reworked, also makes sure games are added to the game list so they can be joined.
+		//gameInstanceManager->runCycle();
 
 		const auto incoming = server->receive();
 		

@@ -26,7 +26,6 @@ public:
 
 private:
     std::vector<std::unique_ptr<GameInstance>> m_gameList;
-    std::vector<std::unique_ptr<GameInstance>> m_activeGameList;
 
     // Generates a random unique number between 1000-9999
     uint16_t generateRoomCode();

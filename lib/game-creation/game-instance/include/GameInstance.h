@@ -4,8 +4,15 @@
 #include "Translator.h"
 #include "GameState.h"
 #include "InGameUserManager.h"
+#include "RuleExecute.h"
 #include <stack>
 #include <iostream>
+
+enum class GameInstanceState {
+    QUEUED,
+    RUNNING,
+    WAITING
+};
 
 class GameInstance {
 public:
@@ -13,8 +20,10 @@ public:
 
     ~GameInstance() {};
     void startGame();
+    bool gameIsFinished();
     void executeNextInstruction();
     uint16_t getRoomCode();
+    GameInstanceState getGameInstanceState();
 
     void addUsers(const std::vector<User>& users);
     void deleteUsers(const std::vector<User>& users);
@@ -23,8 +32,10 @@ private:
     std::unique_ptr<RuleTree> m_gameRules;
     std::unique_ptr<GameState> m_gameState;
     std::unique_ptr<InGameUserManager> m_inGameUserManager;
-    // std::stack<std::shared_ptr<RuleNode>> instructionStack;
     uint16_t m_roomCode;
+    GameInstanceState m_state;
+    ExecuteContext m_context;
+    RuleExecuteVisitor m_ruleExecutor;
 };
 
 #endif

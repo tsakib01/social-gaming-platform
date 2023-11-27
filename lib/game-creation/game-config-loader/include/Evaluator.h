@@ -8,7 +8,7 @@
 
 // Allowed operations by evaluator
 enum class OPERATOR {
-    ADD, OPERATION, SUBTRACT, MULTIPLY, DIVIDE, EQUAL, NOT_EQUAL
+    ADD, SUBTRACT, MULTIPLY, DIVIDE, OR, AND, NOT, EQUAL
 };
 
 // An interface of Operation
