@@ -36,11 +36,11 @@ void InGameUserManager::deleteUser(networking::Connection connection){
 }
 
 // Ref: https://www.javatpoint.com/post/cpp-map-find-function
-GameEnvironment::Environment InGameUserManager::getStatesOfUser(networking::Connection connection){
+GameEnvironment::Environment& InGameUserManager::getStatesOfUser(networking::Connection connection){
     auto iterator = m_userStates.find(connection.id);
     
     assert(iterator != m_userStates.end());
-    GameEnvironment::Environment statesToGet = std::move(m_userStates[connection.id]);
+    GameEnvironment::Environment& statesToGet = m_userStates[connection.id];
     return statesToGet;
 }
 
