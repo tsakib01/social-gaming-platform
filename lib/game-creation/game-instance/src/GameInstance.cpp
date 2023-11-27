@@ -13,6 +13,17 @@ std::unique_ptr<GameState> gameState, uint16_t roomCode)
 }
 
 void 
+GameInstance::startGame() {
+    // UNIMPLEMENTED While Rule Execution is restructured
+
+    // std::cout << "\nGame started." << std::endl;
+    // while (!instructionStack.empty()) {
+    //     executeNextInstruction();
+    // }
+    // std::cout << "Game ended." << std::endl;
+}
+
+void 
 GameInstance::executeNextInstruction() {
     // UNIMPLEMENTED While Rule Execution is restructured
 
