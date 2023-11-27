@@ -26,6 +26,9 @@ public:
     void enumProcess();
     void processSetup();
     void print();
+    std::string_view getIdentifier();
+    std::string_view getPrompt();
+    std::string_view getRestInfo();
 private:
     std::string_view identifier;
     KIND kind;
