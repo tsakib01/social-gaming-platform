@@ -57,7 +57,7 @@ public:
 
 private:
     std::vector<User> users;
-    std::vector<User>::iterator getUserItrByID(Connection userID);
+    std::vector<User>::iterator getUserIteratorByID(Connection userID);
 };
 
 #endif
