@@ -8,50 +8,49 @@ public:
         const Evaluator& evaluator,
         const GameState& gameState) :
         m_evaluator(evaluator),
-        m_gameState(gameState),
-        m_result(std::make_unique<GameEnvironment::Value>()) {}
+        m_gameState(gameState) {}
         
     
-    void visit(const LiteralExpression& expression) const override {
-        m_result->value = expression.value->value;
+    std::unique_ptr<GameEnvironment::Value>
+    visit(const LiteralExpression& expression) override {
+        return std::make_unique<GameEnvironment::Value>(expression.value->value);
     }
 
-    void visit(const IdentifierExpression& expression) const override {
-
-    }
-
-    void visit(const BinaryExpression& expression) const override {
-
-    }
-
-    void visit(const UnaryExpression& expression) const override {
+    std::unique_ptr<GameEnvironment::Value>
+    visit(const IdentifierExpression& expression) override {
 
     }
 
-    void visit(const QualifiedIdentifier& expression) const override {
+    std::unique_ptr<GameEnvironment::Value>
+    visit(const BinaryExpression& expression) override {
 
     }
 
-    void visit([[maybe_unused]] const Expression& expression) const override {
+    std::unique_ptr<GameEnvironment::Value>
+    visit(const UnaryExpression& expression) override {
+
+    }
+
+    std::unique_ptr<GameEnvironment::Value>
+    visit(const QualifiedIdentifier& expression) override {
+
+    }
+
+    std::unique_ptr<GameEnvironment::Value>
+    visit([[maybe_unused]] const Expression& expression) override {
         throw std::runtime_error("Case Unreachable");
-    }
-
-    std::unique_ptr<GameEnvironment::Value> getResult() {
-        return std::move(m_result);
     }
 
 private:
     const Evaluator& m_evaluator;
     const GameState& m_gameState;
-    std::unique_ptr<GameEnvironment::Value> m_result;
 };
 
 ExpressionEvaluator::ExpressionEvaluator(const GameState& state, const Evaluator& evaluator)
     : m_gameState(state), m_evaluator(evaluator) {}
 
 std::unique_ptr<GameEnvironment::Value>
-ExpressionEvaluator::evaluate(const Expression& expression) const {
+ExpressionEvaluator::evaluate(Expression& expression) {
     auto visitor = ExpressionEvaluateVisitor(m_evaluator, m_gameState);
-    expression.accept(visitor);
-    return visitor.getResult();
+    return expression.accept(visitor);
 }

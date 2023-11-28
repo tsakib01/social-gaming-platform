@@ -13,12 +13,18 @@ class QualifiedIdentifier;
 class ExpressionVisitor {
 public:
     virtual ~ExpressionVisitor() = default;
-    virtual void visit(const LiteralExpression& expression) const = 0;
-    virtual void visit(const IdentifierExpression& expression) const = 0;
-    virtual void visit(const BinaryExpression& expression) const = 0;
-    virtual void visit(const UnaryExpression& expression) const = 0;
-    virtual void visit(const QualifiedIdentifier& expression) const = 0;
-    virtual void visit(const Expression& expression) const = 0;
+    virtual std::unique_ptr<GameEnvironment::Value>
+    visit(const LiteralExpression& expression) = 0;
+    virtual std::unique_ptr<GameEnvironment::Value>
+    visit(const IdentifierExpression& expression) = 0;
+    virtual std::unique_ptr<GameEnvironment::Value>
+    visit(const BinaryExpression& expression) = 0;
+    virtual std::unique_ptr<GameEnvironment::Value>
+    visit(const UnaryExpression& expression) = 0;
+    virtual std::unique_ptr<GameEnvironment::Value>
+    visit(const QualifiedIdentifier& expression) = 0;
+    virtual std::unique_ptr<GameEnvironment::Value>
+    visit(const Expression& expression) = 0;
 };
 
 /// Operations that can be applied to expression(s).
@@ -30,7 +36,8 @@ enum class Operator{
 class Expression {
 public:
     virtual ~Expression() = default;
-    virtual void accept(ExpressionVisitor& visitor) const = 0;
+    virtual std::unique_ptr<GameEnvironment::Value>
+    accept(ExpressionVisitor& visitor) = 0;
 };
 
 /// A constant expression that is just a literal value
@@ -40,8 +47,9 @@ public:
     LiteralExpression(std::unique_ptr<GameEnvironment::Value> value)
         : value(std::move(value)) {}
     
-    void accept(ExpressionVisitor& visitor) const override {
-        visitor.visit(*this);
+    std::unique_ptr<GameEnvironment::Value>
+    accept(ExpressionVisitor& visitor) override {
+        return visitor.visit(*this);
     }
 
     std::unique_ptr<GameEnvironment::Value> value;
@@ -55,8 +63,9 @@ public:
     IdentifierExpression() = default;
     IdentifierExpression(GameEnvironment::Identifier identifier) : identifier(identifier){}
 
-    void accept(ExpressionVisitor& visitor) const override {
-        visitor.visit(*this);
+    std::unique_ptr<GameEnvironment::Value>
+    accept(ExpressionVisitor& visitor) override {
+        return visitor.visit(*this);
     }
 
     GameEnvironment::Identifier identifier;
@@ -70,8 +79,9 @@ public:
     : leftOperand(std::move(leftOperand)), rightOperand(std::move(rightOperand)), op(op)
     {}
 
-    void accept(ExpressionVisitor& visitor) const override {
-        visitor.visit(*this);
+    std::unique_ptr<GameEnvironment::Value>
+    accept(ExpressionVisitor& visitor) override {
+        return visitor.visit(*this);
     }
 
     std::unique_ptr<Expression> leftOperand;
@@ -87,8 +97,9 @@ public:
     : operand(std::move(operand)), op(op)
     {}
 
-    void accept(ExpressionVisitor& visitor) const override {
-        visitor.visit(*this);
+    std::unique_ptr<GameEnvironment::Value>
+    accept(ExpressionVisitor& visitor) override {
+        return visitor.visit(*this);
     }
 
     std::unique_ptr<Expression> operand;
@@ -112,8 +123,9 @@ public:
         identifiers.push_back(qualifiedIdentifier);
     }
 
-    void accept(ExpressionVisitor& visitor) const {
-        visitor.visit(*this);
+    std::unique_ptr<GameEnvironment::Value>
+    accept(ExpressionVisitor& visitor) const {
+        return visitor.visit(*this);
     }
     
     std::vector<GameEnvironment::Identifier> identifiers;

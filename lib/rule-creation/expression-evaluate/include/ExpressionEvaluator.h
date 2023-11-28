@@ -9,7 +9,7 @@ public:
     ExpressionEvaluator(const GameState& state, const Evaluator& evaluator);
     
     std::unique_ptr<GameEnvironment::Value>
-    evaluate(const Expression& expression) const;
+    evaluate(Expression& expression);
 
 private:
     const GameState& m_gameState;
