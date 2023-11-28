@@ -14,7 +14,7 @@ public:
     std::vector<std::string_view> getIdentifiers();
     std::vector<std::string_view> getPrompts();
     std::vector<std::string_view> getRestInfos();
-    bool checkResponse(std::string_view identifier,std::string_view response);
+    bool isResponseValid(std::string_view identifier,std::string_view response);
 private:
     std::vector<std::unique_ptr<SetupInstance>> setups;
     std::shared_ptr<GameSetupLoader> SetupLoader;

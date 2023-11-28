@@ -31,7 +31,7 @@ std::vector<std::string_view> GameSetup::getRestInfos(){
     }
     return restInfos;
 }
-bool GameSetup::checkResponse(std::string_view identifier,std::string_view response){
+bool GameSetup::isResponseValid(std::string_view identifier,std::string_view response){
     for(auto const& setup :setups){
         if(identifier == setup->getIdentifier()){
             return setup->checkResponse(response);
