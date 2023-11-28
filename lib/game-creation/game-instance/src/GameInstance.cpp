@@ -45,14 +45,11 @@ GameInstance::getRoomCode() {
     return m_roomCode;
 }
 
-// TODO: Figure out where/how to insert an Identifier/Value key-value mapping
-// and then access it in InGameUserManager. The code below seems to leave the key-value pairing 
-// as nullptrs, but their declaration doesn't necessarily have to come from GameInstance itself.
 void
 GameInstance::addUsers(const std::vector<User>& users) {
     for (const User& user : users) {
-        GameEnvironment::Environment dummyEnvironment;
-        m_inGameUserManager->addNewUser(user.userID, std::move(dummyEnvironment));
+        GameEnvironment::Environment emptyEnvironment;
+        m_inGameUserManager->addNewUser(user.userID, std::move(emptyEnvironment));
     }
 }
 
@@ -60,6 +57,19 @@ void
 GameInstance::deleteUsers(const std::vector<User>& users) {
     for (const User& user : users) {
         m_inGameUserManager->deleteUser(user.userID);
+    }
+}
+
+// TODO: Figure out where/how to insert an Identifier/Value key-value mapping
+// and then access it in InGameUserManager. The code below seems to leave the key-value pairing 
+// as nullptrs, but their declaration doesn't necessarily have to come from GameInstance itself.
+void
+GameInstance::updateUserStates(const std::vector<User>& users) {
+        for (const User& user : users) {
+
+        // This Enviroment has to be taken from somewhere...
+        GameEnvironment::Environment environmentToUse;
+        m_inGameUserManager->setStatesOfUser(user.userID, environmentToUse);
     }
 }
 

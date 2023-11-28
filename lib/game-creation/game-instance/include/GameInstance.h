@@ -27,6 +27,7 @@ public:
 
     void addUsers(const std::vector<User>& users);
     void deleteUsers(const std::vector<User>& users);
+    void updateUserStates(const std::vector<User>& users);
 
 private:
     std::unique_ptr<RuleTree> m_gameRules;
