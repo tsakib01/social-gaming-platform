@@ -169,4 +169,16 @@ public:
     void reset() override {}
 };
 
+class ReverseRule : public Rule {
+public:
+    ReverseRule(const std::shared_ptr<RuleNode> node, std::string_view source) 
+        : Rule(node, source)
+    {
+        std::cout << "Reverse Rule created" << std::endl;
+    }
+
+    std::optional<std::shared_ptr<RuleNode>> execute() override;
+    void reset() override {}
+};
+
 #endif

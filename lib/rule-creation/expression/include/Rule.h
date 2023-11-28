@@ -17,6 +17,7 @@ class MessageRule;
 class ParallelForRule;
 class InputChoiceRule;
 class ExtendRule;
+class ReverseRule;
 class ScoresRule;
 class Rule;
 
@@ -30,6 +31,7 @@ public:
     virtual void visit(ParallelForRule& rule) = 0;
     virtual void visit(InputChoiceRule& rule) = 0;
     virtual void visit(ExtendRule& rule) = 0;
+    virtual void visit(ReverseRule& rule) = 0;
     virtual void visit(ScoresRule& rule) = 0;
     virtual void visit(Rule& rule) = 0;
 };
@@ -147,6 +149,17 @@ public:
     QualifiedIdentifier target;
     /// The item to add
     std::unique_ptr<Expression> value;
+
+    void accept(RuleVisitor& visitor) override {
+        visitor.visit(*this);
+    }
+};
+
+/// A rule that reverses a list
+class ReverseRule : public Rule {
+public:
+    /// The list to add to
+    QualifiedIdentifier target;
 
     void accept(RuleVisitor& visitor) override {
         visitor.visit(*this);

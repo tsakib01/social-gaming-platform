@@ -55,6 +55,11 @@ RuleInterpreter::createRuleNode(std::optional<ts::Node> node, std::string_view s
             ruleNode->setRule(std::move(rule), "extend");
             return ruleNode;
         }
+        if (type == "reverse") {
+            std::unique_ptr<Rule> rule = std::make_unique<ReverseRule>(ruleNode, source);
+            ruleNode->setRule(std::move(rule), "reverse");
+            return ruleNode;
+        }
         if (type == "parallel_for") {
             std::unique_ptr<Rule> rule = std::make_unique<ParallelForRule>(ruleNode, source);
             ruleNode->setRule(std::move(rule), "parallel_for");

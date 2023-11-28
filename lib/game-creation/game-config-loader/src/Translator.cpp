@@ -185,6 +185,14 @@ AssignmentFactory::createImpl(const ts::Node& node) {
     return rule;
 }
 
+std::unique_ptr<Rule>
+ReverseFactory::createImpl(const ts::Node& node) {
+    std::cout << "Reverse Rule Created\n";
+    auto rule = std::make_unique<ReverseRule>(); 
+    rule->target = QualifiedIdentifier{node.getChildByFieldName("target").getSourceRange(translator->source)};
+    return rule;
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Expressions
@@ -378,6 +386,7 @@ createTranslator(std::string_view source) {
     translator.registerRuleFactory("scores",            std::make_unique<ScoresFactory>(&translator));
     translator.registerRuleFactory("extend",            std::make_unique<ExtendFactory>(&translator));
     translator.registerRuleFactory("assignment",        std::make_unique<AssignmentFactory>(&translator));
+    translator.registerRuleFactory("reverse",           std::make_unique<ReverseFactory>(&translator));
 
     // Expressions
     translator.registerExpressionFactory("expression",        std::make_unique<DummyExpressionFactory>(&translator));

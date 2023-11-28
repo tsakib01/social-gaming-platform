@@ -150,6 +150,13 @@ private:
     std::unique_ptr<Rule> createImpl(const ts::Node& node);
 };
 
+class ReverseFactory final : public RuleFactory {
+public:
+    ReverseFactory(const Translator* translator) : RuleFactory(translator) {}
+private:
+    std::unique_ptr<Rule> createImpl(const ts::Node& node);
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 // Expressions
 ////////////////////////////////////////////////////////////////////////////////
