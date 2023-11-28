@@ -126,14 +126,12 @@ public:
 /// A rule that represents a prompt for a choice styled input from a player
 class InputChoiceRule : public Rule {
 public:
-    /// The player to prompt for input
-    QualifiedIdentifier player;
+    /// The target to prompt for input (player, audience member...)
+    QualifiedIdentifier target;
     /// The prompt to display to the player (a string)
     std::unique_ptr<Expression> prompt;
     /// The choices the player can make (a list)
     std::unique_ptr<Expression> choices;
-    /// The name of the player to prompt. 
-    QualifiedIdentifier target;
     /// The timeout of the prompt (a number)
     std::unique_ptr<Expression> timeout;
 

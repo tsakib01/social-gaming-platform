@@ -141,11 +141,19 @@ std::unique_ptr<Rule>
 InputChoiceFactory::createImpl(const ts::Node& node) {
     std::cout << "Input Rule Created\n";
     auto rule = std::make_unique<InputChoiceRule>();
-    rule->player = QualifiedIdentifier{
+
+    rule->target = QualifiedIdentifier{
         node.getChildByFieldName("player").getSourceRange(translator->source)
     };
+
     rule->prompt = translator->createExpression(node.getChildByFieldName("prompt"));
     rule->choices = translator->createExpression(node.getChildByFieldName("choices"));
+
+    ts::Node timeoutNode = node.getChildByFieldName("timeout");
+    if (!timeoutNode.isNull()) {
+        rule->timeout = translator->createExpression(timeoutNode);
+    }
+
     return rule;
 }
 
