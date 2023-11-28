@@ -18,6 +18,8 @@ int main(int argc, char** argv) {
     GameConfigLoader gameConfigLoader{gameFilePath};
     auto setup = gameConfigLoader.createGameSetup();
     setup->processGameSetups();
+    auto identifers=setup->getIdentifiers();
+
     GameInstanceManager gameInstanceManager = GameInstanceManager();
     auto invCode = gameInstanceManager.createGameInstance(gameFilePath);
     gameInstanceManager.startGame(invCode, {});
