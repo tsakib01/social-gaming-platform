@@ -19,8 +19,6 @@ int main(int argc, char** argv) {
     auto setup = gameConfigLoader.createGameSetup();
     setup->processGameSetups();
     auto identifers=setup->getIdentifiers();
-    std::cout<<identifers[0]<<std::endl;
-    std::cout<<setup->checkResponse(identifers[0],"10")<<std::endl;
 
     GameInstanceManager gameInstanceManager = GameInstanceManager();
     auto invCode = gameInstanceManager.createGameInstance(gameFilePath);
