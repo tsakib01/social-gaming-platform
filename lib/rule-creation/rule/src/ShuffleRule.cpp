@@ -1,7 +1,7 @@
 #include "Rule.h"
 
 std::optional<std::shared_ptr<RuleNode>> 
-ReverseRule::execute() {
-    std::cout << "Executing ReverseRule..." << std::endl;
+ShuffleRule::execute() {
+    std::cout << "Executing ShuffleRule..." << std::endl;
     return std::nullopt;
 }

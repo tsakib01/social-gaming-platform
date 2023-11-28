@@ -181,4 +181,16 @@ public:
     void reset() override {}
 };
 
+class ShuffleRule : public Rule {
+public:
+    ShuffleRule(const std::shared_ptr<RuleNode> node, std::string_view source) 
+        : Rule(node, source)
+    {
+        std::cout << "Shuffle Rule created" << std::endl;
+    }
+
+    std::optional<std::shared_ptr<RuleNode>> execute() override;
+    void reset() override {}
+};
+
 #endif

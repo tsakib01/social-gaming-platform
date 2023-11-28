@@ -157,6 +157,13 @@ private:
     std::unique_ptr<Rule> createImpl(const ts::Node& node);
 };
 
+class ShuffleFactory final : public RuleFactory {
+public:
+    ShuffleFactory(const Translator* translator) : RuleFactory(translator) {}
+private:
+    std::unique_ptr<Rule> createImpl(const ts::Node& node);
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 // Expressions
 ////////////////////////////////////////////////////////////////////////////////

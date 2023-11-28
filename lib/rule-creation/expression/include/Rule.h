@@ -18,6 +18,7 @@ class ParallelForRule;
 class InputChoiceRule;
 class ExtendRule;
 class ReverseRule;
+class ShuffleRule;
 class ScoresRule;
 class Rule;
 
@@ -32,6 +33,7 @@ public:
     virtual void visit(InputChoiceRule& rule) = 0;
     virtual void visit(ExtendRule& rule) = 0;
     virtual void visit(ReverseRule& rule) = 0;
+    virtual void visit(ShuffleRule& rule) = 0;
     virtual void visit(ScoresRule& rule) = 0;
     virtual void visit(Rule& rule) = 0;
 };
@@ -157,6 +159,17 @@ public:
 
 /// A rule that reverses a list
 class ReverseRule : public Rule {
+public:
+    /// The list to add to
+    QualifiedIdentifier target;
+
+    void accept(RuleVisitor& visitor) override {
+        visitor.visit(*this);
+    }
+};
+
+/// A rule that shuffles a list
+class ShuffleRule : public Rule {
 public:
     /// The list to add to
     QualifiedIdentifier target;

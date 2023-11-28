@@ -11,6 +11,7 @@ add_library(rule
     src/Rule.cpp
     src/ScoresRule.cpp
     src/ReverseRule.cpp
+    src/ShuffleRule.cpp
 )
 
 target_include_directories(rule
