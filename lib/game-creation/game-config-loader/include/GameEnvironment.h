@@ -21,7 +21,7 @@ namespace GameEnvironment{
     class Value;
     using Map = std::map<Identifier, std::unique_ptr<Value>>;
     using List = std::vector<std::unique_ptr<Value>>;
-        
+    
     class Value{
     public:
         Value() = default;

@@ -16,7 +16,7 @@ private:
 
         GameEnvironment::Value operator()(const std::string_view& left, const std::string_view& right){
             GameEnvironment::Value value;
-            // value.value = std::string(left) + std::string(right);
+            value.value = std::string(left) + std::string(right);
             return value;
         }
 
@@ -284,6 +284,55 @@ private:
     } 
 };
 
+class CopyOperation final : public Operation {
+public:
+    struct CopyVistor {
+        GameEnvironment::Value
+        operator()(int value) const {
+            return GameEnvironment::Value(value);
+        }
+        GameEnvironment::Value
+        operator()(bool value) const {
+            return GameEnvironment::Value(value);
+        }
+        GameEnvironment::Value
+        operator()(const std::string_view& value) const {
+            return GameEnvironment::Value(value);
+        }
+        GameEnvironment::Value
+        operator()(const std::unique_ptr<GameEnvironment::Map>& map) const {
+            // auto copyMap = std::unique_ptr<GameEnvironment::Map>();
+            // for (const auto& [key, val] : *map) {
+            //     auto copyValue = std::visit(CopyVistor{}, val->value);
+            //     copyMap->emplace(key, copyValue);
+            // }
+            // return GameEnvironment::Value(std::move(copyMap));
+            return GameEnvironment::Value();
+        }
+        GameEnvironment::Value
+        operator()(const std::unique_ptr<GameEnvironment::List>& value) const {
+            // auto copyList = std::unique_ptr<List>();
+            // for (auto [key, val] : *value) {
+            //     Value copyValue = std::visit(PrintVisitor{}, val->value);
+            //     copyList->emplace(key, copyValue);
+            // }
+            return GameEnvironment::Value();
+        }
+        GameEnvironment::Value
+        operator()(const GameEnvironment::Value& value) const {
+            return std::visit(*this, value.value);
+        }
+    };
+
+    bool getSpecificationImpl(std::vector<const GameEnvironment::Value*> values) const override {
+        return values.size() == 1;
+    };
+
+    GameEnvironment::Value evaluateImpl(std::vector<const GameEnvironment::Value*> values) const override{
+        return std::visit(CopyVistor{}, values[0]->value);
+    } 
+};
+
 // Register operation to the map
 void Evaluator::registerOperation(OPERATOR operatorEnum, std::unique_ptr<Operation> operation){
     auto [it, succeeded] = operatorToOperation.try_emplace(operatorEnum, std::move(operation));
@@ -314,5 +363,6 @@ Evaluator Evaluator::defaultEvaluatorFactory(){
     evaluator.registerOperation(OPERATOR::AND, std::make_unique<AndOperation>());
     evaluator.registerOperation(OPERATOR::NOT, std::make_unique<NotOperation>());
     evaluator.registerOperation(OPERATOR::EQUAL, std::make_unique<EqualOperation>());
+    evaluator.registerOperation(OPERATOR::COPY, std::make_unique<CopyOperation>());
     return evaluator;
 }
