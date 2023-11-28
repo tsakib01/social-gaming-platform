@@ -14,17 +14,15 @@ class ExpressionVisitor {
 public:
     virtual ~ExpressionVisitor() = default;
     virtual std::unique_ptr<GameEnvironment::Value>
-    visit(const LiteralExpression& expression) = 0;
+    operator()(const LiteralExpression& expression) = 0;
     virtual std::unique_ptr<GameEnvironment::Value>
-    visit(const IdentifierExpression& expression) = 0;
+    operator()(const IdentifierExpression& expression) = 0;
     virtual std::unique_ptr<GameEnvironment::Value>
-    visit(const BinaryExpression& expression) = 0;
+    operator()(const BinaryExpression& expression) = 0;
     virtual std::unique_ptr<GameEnvironment::Value>
-    visit(const UnaryExpression& expression) = 0;
+    operator()(const UnaryExpression& expression) = 0;
     virtual std::unique_ptr<GameEnvironment::Value>
-    visit(const QualifiedIdentifier& expression) = 0;
-    virtual std::unique_ptr<GameEnvironment::Value>
-    visit(const Expression& expression) = 0;
+    operator()(const Expression& expression) = 0;
 };
 
 /// Operations that can be applied to expression(s).
@@ -46,12 +44,12 @@ class LiteralExpression : public Expression {
 public:
     LiteralExpression(std::unique_ptr<GameEnvironment::Value> value)
         : value(std::move(value)) {}
-    
-    std::unique_ptr<GameEnvironment::Value>
-    accept(ExpressionVisitor& visitor) override {
-        return visitor.visit(*this);
-    }
 
+    std::unique_ptr<GameEnvironment::Value>
+    accept(ExpressionVisitor& visitor) {
+        return visitor(*this);
+    }
+    
     std::unique_ptr<GameEnvironment::Value> value;
 };
 
@@ -65,7 +63,7 @@ public:
 
     std::unique_ptr<GameEnvironment::Value>
     accept(ExpressionVisitor& visitor) override {
-        return visitor.visit(*this);
+        return visitor(*this);
     }
 
     GameEnvironment::Identifier identifier;
@@ -81,7 +79,7 @@ public:
 
     std::unique_ptr<GameEnvironment::Value>
     accept(ExpressionVisitor& visitor) override {
-        return visitor.visit(*this);
+        return visitor(*this);
     }
 
     std::unique_ptr<Expression> leftOperand;
@@ -99,7 +97,7 @@ public:
 
     std::unique_ptr<GameEnvironment::Value>
     accept(ExpressionVisitor& visitor) override {
-        return visitor.visit(*this);
+        return visitor(*this);
     }
 
     std::unique_ptr<Expression> operand;
@@ -121,11 +119,6 @@ public:
         }
 
         identifiers.push_back(qualifiedIdentifier);
-    }
-
-    std::unique_ptr<GameEnvironment::Value>
-    accept(ExpressionVisitor& visitor) const {
-        return visitor.visit(*this);
     }
     
     std::vector<GameEnvironment::Identifier> identifiers;
