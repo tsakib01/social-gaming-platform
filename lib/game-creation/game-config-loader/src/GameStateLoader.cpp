@@ -12,6 +12,8 @@ namespace SYMBOL{
     const int BOOL = 123;
     const int LIST = 126;
     const int MAP = 128;
+    const int NUMBER_RANGE = 124;
+    const int SETUP = 92;
 }
 
 class ConvertNodeToNumber final : public ConvertInterface {
@@ -135,6 +137,53 @@ std::unique_ptr<GameEnvironment::Environment> GameStateLoader::getEnvironment(co
     }
     return environment;
 }
+
+std::unique_ptr<GameEnvironment::Value> convertNumRangeToValue(std::string_view input){
+    auto range =  convertToRange(input);
+    auto max = std::make_unique<GameEnvironment::Value>();
+    auto min = std::make_unique<GameEnvironment::Value>();
+    auto rangeValue = std::make_unique<GameEnvironment::Value>();
+    std::unique_ptr<GameEnvironment::Map> rangeMap = std::make_unique<GameEnvironment::Environment>();
+    min->value=range.first;
+    max->value=range.second;
+    rangeMap->insert(std::make_pair("min", std::move(min)));
+    rangeMap->insert(std::make_pair("max", std::move(max)));
+    rangeValue->value = std::move(rangeMap);
+    return rangeValue;
+}
+
+std::unique_ptr<GameEnvironment::Environment>  GameStateLoader::getConfigEnvironment(const ts::Node& root){
+    std::unique_ptr<GameEnvironment::Map> configMap = std::make_unique<GameEnvironment::Environment>();
+    std::unique_ptr<GameEnvironment::Environment> toReturnEnvironment = std::make_unique<GameEnvironment::Environment>();
+    auto toStore = std::make_unique<GameEnvironment::Value>();
+    std::string_view configIdentifier = root.getChild(0).getSourceRange(source);
+    int index=0;
+    int numNamedChildren=root.getNumNamedChildren();
+    while (index<numNamedChildren&&root.getNamedChild(index).getSymbol()!=SYMBOL::SETUP){
+
+        ts::Extent identifierRange = root.getNamedChild(index).getPreviousSibling().getByteRange();
+        std::string_view identifier = source.substr(identifierRange.start,
+                                                    identifierRange.end - 1 - identifierRange.start);
+        if(root.getNamedChild(index).getSymbol()==SYMBOL::NUMBER_RANGE){
+            ts::Extent dataRange = root.getNamedChild(index).getByteRange();
+            std::string_view data = source.substr(dataRange.start, dataRange.end - dataRange.start);
+            auto rangeValue=convertNumRangeToValue(data);
+            configMap->insert(std::make_pair(identifier, std::move(rangeValue)));
+        }
+        else {
+            int nodeSymbol = root.getNamedChild(index).getSymbol();
+            auto toStore = nodeSymbolToConvert[nodeSymbol]->convertNode(root.getNamedChild(index));
+            configMap->insert(std::make_pair(identifier, std::move(toStore)));
+        }
+        index++;
+    }
+    //setup will add into configMap here later.
+    toStore->value=std::move(configMap);
+    toReturnEnvironment->insert(std::make_pair(configIdentifier, std::move(toStore)));
+    return toReturnEnvironment;
+}
+
+
 
 // Print node by level order
 void GameStateLoader::printByLevelOrder(const ts::Node& node){
