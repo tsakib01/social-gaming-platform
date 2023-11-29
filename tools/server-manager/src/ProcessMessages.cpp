@@ -40,27 +40,29 @@ ServerManager::processJoinGame(const Message& message) {
 		uint16_t code = std::stoi(message.text);
 		std::vector<uint16_t> roomCodes = gameInstanceManager->getRoomCodes();
 
+		// bool canJoin = gameInstanceManager->canJoin(roomCode);
+
 		if (std::find(roomCodes.begin(), roomCodes.end(), code) != roomCodes.end()) {
 			userManager->setUserRole(message.connection, Role::PLAYER);
 			userManager->setUserRoomCode(message.connection, code);
 			userManager->setUserState(message.connection, UserState::GAME_WAIT);
 	
 			User player = userManager->getUserByID(message.connection);
-			User host = userManager->getRoomOwner(code);
+			User owner = userManager->getRoomOwner(code);
 
 			return std::deque<Message>{ 
-				{message.connection, "Joined game. Waiting on host...\n"},
-				{host.userID, "[" + std::string(player.username) + "] joined.\n"}};
+				{message.connection, "Joined game. Waiting on owner...\n"},
+				{owner.userID, "[" + std::string(player.username) + "] joined.\n"}};
 		} 
 		
 		else {
 			return std::deque<Message>{
-				{message.connection, "Room not found, try again.\n"}};
+				{message.connection, "Invalid, try again.\n"}};
 		}
 	} 
 
 	catch (const std::invalid_argument& e) {		
-		if(message.text == "B"){
+		if (message.text == "B") {
 			return processNew(message);
 		}
 		return std::deque<Message>{
@@ -78,9 +80,9 @@ ServerManager::processGameSelect(const Message& message) {
 			uint16_t roomCode = gameInstanceManager->createGameInstance(games[choice-1]);
 			userManager->setUserRole(message.connection, Role::OWNER);
 			userManager->setUserRoomCode(message.connection, roomCode);
-			userManager->setUserState(message.connection, UserState::GAME_WAIT);
+			userManager->setUserState(message.connection, UserState::GAME_CONFIG);
 			return std::deque<Message>{
-				{message.connection, "Room Code: " + std::to_string(roomCode) + "     Type (S) to start.\n"}};
+				{message.connection, "Configuration Start...\n"}};
 		}
 
 		else {
@@ -90,17 +92,36 @@ ServerManager::processGameSelect(const Message& message) {
 	}
 
 	catch (const std::invalid_argument& e) {
-		if(message.text == "B"){
+		if (message.text == "B") {
 			return processNew(message);
 		}
-		return std::deque<Message>{
+		return std::deque<Message> {
 			{message.connection, "Please enter an option.\n"}};
 	}
 }
 
 std::deque<Message>
-ServerManager::processGameConfig(const Message& message) {
-	// Not implemented yet.
+ServerManager::processGameConfig(const Message& message) {	
+	User owner = userManager->getUserByID(message.connection);
+	const auto [prompt, valid, finished] = gameInstanceManager->inputConfig(owner.roomCode, message.text);
+
+	if (finished) {
+		userManager->setUserState(message.connection, UserState::GAME_WAIT);
+		// gameInstanceManager->setCanJoin();
+		return std::deque<Message>{
+			{message.connection, "Room Code: " + std::to_string(owner.roomCode) + "     Type (S) to start.\n"}};
+	}
+
+	else if (!finished && valid) {
+		return std::deque<Message>{
+			{message.connection, prompt}};
+	}
+
+	else {
+		return std::deque<Message>{
+			{message.connection, "Invalid, try again.\n"}};
+	}
+	
 }
 
 std::deque<Message>
@@ -121,7 +142,12 @@ ServerManager::processGameWait(const Message& message) {
 
 std::deque<Message>
 ServerManager::processGameRunning(const Message& message) {
-	// Not implemented yet.
+	// Check if exists in GameCommunicator
+		// If not, then return "Invalid"
+
+	// If exists, check pass it into the GameCommunicator
+		// If valid, return message received
+		// If invalid, return "Invalid"
 
 	return std::deque<Message>{
 		{message.connection, "Inside GAME_RUN state.\n"}};

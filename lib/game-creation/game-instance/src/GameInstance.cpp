@@ -1,10 +1,13 @@
 #include "GameInstance.h"
 #include "GameConfigLoader.h"
 
+#include <iostream> // TODO: delete this
+
 GameInstance::GameInstance(std::unique_ptr<RuleTree> gameRules, 
-std::unique_ptr<GameState> gameState, uint16_t roomCode)
+std::unique_ptr<GameState> gameState, std::unique_ptr<GameSetup> gameSetup, uint16_t roomCode)
     : m_gameRules(std::move(gameRules)), 
       m_gameState(std::move(gameState)),
+      m_gameSetup(std::move(gameSetup)),
       m_roomCode(roomCode),
       m_context(*m_gameState, m_gameRules->getRoot()),
       m_ruleExecutor(m_context)
@@ -16,9 +19,22 @@ std::unique_ptr<GameState> gameState, uint16_t roomCode)
     m_state = GameInstanceState::QUEUED;
 }
 
+ConfigResult
+GameInstance::inputConfig(const std::string& response) {
+    // index
+    // what if there is no set up in the first place?
+
+
+
+    std::cout << "Return config results from room : " << m_roomCode << std::endl;
+
+    // Call GameSetup
+
+    return ConfigResult{"test\n", true, false};
+}
+
 void 
 GameInstance::startGame() {
-    std::cout << "\nGame started." << std::endl;
     m_state = GameInstanceState::RUNNING;
 }
 

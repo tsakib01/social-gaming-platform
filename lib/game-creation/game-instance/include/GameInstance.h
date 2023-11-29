@@ -5,6 +5,7 @@
 #include "GameState.h"
 #include "InGameUserManager.h"
 #include "RuleExecute.h"
+#include "GameSetup.h"
 #include <stack>
 #include <iostream>
 
@@ -14,14 +15,24 @@ enum class GameInstanceState {
     WAITING
 };
 
+struct ConfigResult {
+    std::string prompt;
+    bool valid;
+    bool finished;
+};
+
 class GameInstance {
 public:
-    GameInstance(std::unique_ptr<RuleTree> rules, std::unique_ptr<GameState> state, uint16_t m_roomCode);
-
+    GameInstance(std::unique_ptr<RuleTree> rules, std::unique_ptr<GameState> state, 
+        std::unique_ptr<GameSetup> gameSetup, uint16_t m_roomCode);
     ~GameInstance() {};
+
+    ConfigResult inputConfig(const std::string& response);
+
     void startGame();
     bool gameIsFinished();
-    void executeNextInstruction();
+    void executeNextInstruction(); 
+
     uint16_t getRoomCode();
     GameInstanceState getGameInstanceState();
 
@@ -31,6 +42,7 @@ public:
 private:
     std::unique_ptr<RuleTree> m_gameRules;
     std::unique_ptr<GameState> m_gameState;
+    std::unique_ptr<GameSetup> m_gameSetup;
     std::unique_ptr<InGameUserManager> m_inGameUserManager;
     uint16_t m_roomCode;
     GameInstanceState m_state;
