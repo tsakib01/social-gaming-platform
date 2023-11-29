@@ -16,7 +16,7 @@ private:
 
         GameEnvironment::Value operator()(const std::string_view& left, const std::string_view& right){
             GameEnvironment::Value value;
-            value.value = std::string(left) + std::string(right);
+            // value.value = std::string(left) + std::string(right);
             return value;
         }
 

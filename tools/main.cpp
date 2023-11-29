@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
 
     GameInstanceManager gameInstanceManager = GameInstanceManager();
     auto invCode = gameInstanceManager.createGameInstance(gameFilePath);
-    gameInstanceManager.startGame(invCode);
+    gameInstanceManager.startGame(invCode, {});
     gameInstanceManager.runCycle();
     return EXIT_SUCCESS;  
 

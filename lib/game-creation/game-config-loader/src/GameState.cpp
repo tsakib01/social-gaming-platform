@@ -38,39 +38,39 @@ void GameState::updateState(GameEnvironment::Identifier identifier, std::unique_
     variable->second = std::move(value);
 }
 
-struct PrintVisitor {
-    void operator()(int value) const {
-        std::cout << "Integer: " << value << std::endl;
-    }
+// struct PrintVisitor {
+//     void operator()(int value) const {
+//         std::cout << "Integer: " << value << std::endl;
+//     }
 
-    void operator()(bool value) const {
-        std::cout << "Boolean: " << (value ? "true" : "false") << std::endl;
-    }
+//     void operator()(bool value) const {
+//         std::cout << "Boolean: " << (value ? "true" : "false") << std::endl;
+//     }
 
-    void operator()(const std::string_view& value) const {
-        std::cout << "String: " << value << std::endl;
-    }
+//     void operator()(const std::string_view& value) const {
+//         std::cout << "String: " << value << std::endl;
+//     }
 
-    void operator()(const std::unique_ptr<GameEnvironment::Map>& value) const {
-        std::cout << "Map found..." << std::endl;
-        for (const auto& [key, val] : *value) {
-            std::cout << key << ": ";
-            std::visit(PrintVisitor{}, val->value);
-            std::cout << std::endl;
-        }
-    }
+//     void operator()(const std::unique_ptr<GameEnvironment::Map>& value) const {
+//         std::cout << "Map found..." << std::endl;
+//         for (const auto& [key, val] : *value) {
+//             std::cout << key << ": ";
+//             std::visit(PrintVisitor{}, val->value);
+//             std::cout << std::endl;
+//         }
+//     }
 
-    void operator()(const std::unique_ptr<GameEnvironment::List>& value) const {
-        std::cout << "List found..." << std::endl;
-        for (const auto& item : *value) {
-            std::visit(PrintVisitor{}, item->value);
-        }
-    }
+//     void operator()(const std::unique_ptr<GameEnvironment::List>& value) const {
+//         std::cout << "List found..." << std::endl;
+//         for (const auto& item : *value) {
+//             std::visit(PrintVisitor{}, item->value);
+//         }
+//     }
 
-    void operator()(const GameEnvironment::Value& value) const {
-        std::visit(*this, value.value);
-    }
-};
+//     void operator()(const GameEnvironment::Value& value) const {
+//         std::visit(*this, value.value);
+//     }
+// };
 
 size_t GameState::getValue(Rule* rule) {
     auto variable = ruleEnvironment.find(rule);

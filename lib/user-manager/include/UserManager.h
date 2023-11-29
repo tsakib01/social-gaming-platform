@@ -56,8 +56,8 @@ public:
     User getRoomOwner(uint16_t roomCode) const;
 
 private:
-    std::vector<User> users;
-    std::vector<User>::iterator getUserItrByID(Connection userID);
+    std::vector<User> m_users;
+    User& getUserReferenceByID(Connection userID);
 };
 
 #endif

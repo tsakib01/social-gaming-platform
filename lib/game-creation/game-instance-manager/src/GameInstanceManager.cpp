@@ -35,19 +35,11 @@ GameInstanceManager::createGameInstance(std::string_view gameFilePath) {
 }
 
 void
-GameInstanceManager::startGame(uint16_t roomCode) {
-    auto it = std::find_if(m_gameList.begin(), m_gameList.end(), [roomCode](const std::unique_ptr<GameInstance>& game) {
-        return game->getRoomCode() == roomCode;
-    });
-
-    if (it != m_gameList.end()) {
-        (*it)->startGame();
-    }
-}
-
-void 
-GameInstanceManager::finishGame() {
-    // Should remove the game from both gameList
+GameInstanceManager::startGame(uint16_t roomCode, const std::vector<User>& users) {
+    addUsersToGame(roomCode, users);
+    
+    auto& game = getGameReference(roomCode);
+    game->startGame();
 }
 
 void 
@@ -73,3 +65,28 @@ GameInstanceManager::getRoomCodes() {
         });
     return roomCodes;
 }
+
+void
+GameInstanceManager::addUsersToGame(uint16_t roomCode, const std::vector<User>& users) {
+    auto& game = getGameReference(roomCode);
+    game->addUsers(users);
+}
+
+void 
+GameInstanceManager::deleteUsersFromGame(uint16_t roomCode, const std::vector<User>& users){
+    auto& game = getGameReference(roomCode);
+    game->deleteUsers(users);
+}
+
+std::unique_ptr<GameInstance>& 
+GameInstanceManager::getGameReference(uint16_t roomCode) {
+    auto game = std::find_if(m_gameList.begin(), m_gameList.end(), [roomCode](const std::unique_ptr<GameInstance>& gameInstance) {
+        return gameInstance->getRoomCode() == roomCode;
+    });
+
+    if (game == m_gameList.end()) {
+        throw std::runtime_error("Game was not found.");
+    }
+
+    return *game;
+} 
