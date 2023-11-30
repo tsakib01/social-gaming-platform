@@ -99,10 +99,10 @@ ServerManager::processGameSelect(const Message& message) {
 	}
 
 	catch (const std::invalid_argument& e) {
-		if (message.text == "B") {
+		if(message.text == "B"){
 			return processNew(message);
 		}
-		return std::deque<Message> {
+		return std::deque<Message>{
 			{message.connection, "Please enter an option.\n"}};
 	}
 }
