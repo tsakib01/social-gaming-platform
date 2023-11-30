@@ -1,9 +1,10 @@
 #include <gtest/gtest.h>
 #include "OutgoingMessages.h"
 
-const auto TestMessage = "test";
+const auto TestMessage = "testMsg";
+const auto TestUsers = std::vector<UserId>{{1}, {2}, {3}};
 
-TEST(OutgoingMessagesTests, TestNoUsers) {
+TEST(OutgoingMessagesTests, TestNoTestUsers) {
     auto outgoing = OutgoingMessages{{}};
     auto messages = outgoing.getMessages();
     ASSERT_EQ(messages.size(), 0);
@@ -11,29 +12,27 @@ TEST(OutgoingMessagesTests, TestNoUsers) {
     EXPECT_THROW(outgoing.setMessage({1}, TestMessage), std::runtime_error);
 }
 
-TEST(OutgoingMessagesTests, TestSetMessageAmongMultipleUsers) {
-    auto users = std::vector<UserId>{{1}, {2}, {3}};
-    auto outgoing = OutgoingMessages{users};
+TEST(OutgoingMessagesTests, TestSetMessageAmongMultipleTestUsers) {
+    auto outgoing = OutgoingMessages{TestUsers};
     auto messages = outgoing.getMessages();
 
     ASSERT_EQ(messages.size(), 3);
     for(auto& [user, message] : messages)
         ASSERT_EQ(message, "");
     
-    auto msgUser = UserId{1};
-    outgoing.setMessage(msgUser, TestMessage);
+    auto targetUser = TestUsers.front();
+    outgoing.setMessage(targetUser, TestMessage);
     messages = outgoing.getMessages();
 
     ASSERT_EQ(messages.size(), 3);
-    ASSERT_EQ(messages[msgUser], TestMessage);
-    messages.erase(msgUser);
+    ASSERT_EQ(messages[targetUser], TestMessage);
+    messages.erase(targetUser);
     for(auto& [user, message] : messages)
         ASSERT_EQ(message, "");
 }
 
 TEST(OutgoingMessagesTests, TestSetAllMessages) {
-    auto users = std::vector<UserId>{{1}, {2}, {3}};
-    auto outgoing = OutgoingMessages{users};
+    auto outgoing = OutgoingMessages{TestUsers};
 
     outgoing.setMessageForAll(TestMessage);
     auto messages = outgoing.getMessages();
@@ -44,8 +43,7 @@ TEST(OutgoingMessagesTests, TestSetAllMessages) {
 }
 
 TEST(OutgoingMessagesTests, TestClearMessages) {
-    auto users = std::vector<UserId>{{1}, {2}, {3}};
-    auto outgoing = OutgoingMessages{users};
+    auto outgoing = OutgoingMessages{TestUsers};
 
     outgoing.setMessageForAll(TestMessage);
     outgoing.clear();
