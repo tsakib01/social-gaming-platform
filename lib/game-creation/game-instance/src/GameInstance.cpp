@@ -33,6 +33,7 @@ GameInstance::inputConfig(const std::string& response) {
     }
 
     if (m_gameSetup->isResponseValid(identifiers[m_setupIndex], response)) {
+        m_setupResponses.push_back({std::string(identifiers[m_setupIndex]), response});
         m_setupIndex++;
         if (m_setupIndex == identifiers.size()) {
             m_setupIndex = SETUP_FINISHED;

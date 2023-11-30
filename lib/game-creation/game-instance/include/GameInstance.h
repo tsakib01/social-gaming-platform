@@ -65,6 +65,7 @@ private:
     uint16_t m_roomCode;
     int m_setupIndex = 0;
     bool sentFirstPrompt = false;
+    std::vector<std::pair<std::string, std::string>> m_setupResponses;
 };
 
 #endif
