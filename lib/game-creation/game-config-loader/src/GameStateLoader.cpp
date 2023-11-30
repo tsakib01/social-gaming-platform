@@ -122,7 +122,14 @@ private:
     std::unique_ptr<GameEnvironment::Value> convertNodeImpl(const ts::Node& node) const{
         auto toReturn = std::make_unique<GameEnvironment::Value>();
         auto range = convertToRange(node.getSourceRange(gameStateLoader->getSource()));
-        toReturn->value = std::make_pair(range.first,range.second);
+        auto max = std::make_unique<GameEnvironment::Value>();
+        auto min = std::make_unique<GameEnvironment::Value>();
+        std::unique_ptr<GameEnvironment::Map> rangeMap = std::make_unique<GameEnvironment::Environment>();
+        min->value=range.first;
+        max->value=range.second;
+        rangeMap->insert(std::make_pair("min", std::move(min)));
+        rangeMap->insert(std::make_pair("max", std::move(max)));
+        toReturn->value = std::move(rangeMap);
         return toReturn;
     }
 };

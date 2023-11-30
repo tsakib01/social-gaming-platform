@@ -48,12 +48,6 @@ struct PrintVisitor {
         std::cout << "String: " << value << std::endl;
     }
 
-    void operator()(const std::pair<int, int> value) const {
-        std::cout << "Number Range found... "  << std::endl;
-        std::cout << "Min: "<<value.first<<std::endl;
-        std::cout << "Max: "<<value.second<<std::endl;
-    }
-
     void operator()(const std::unique_ptr<GameEnvironment::Map>& value) const {
         std::cout << "Map found..." << std::endl;
         for (const auto& [key, val] : *value) {
