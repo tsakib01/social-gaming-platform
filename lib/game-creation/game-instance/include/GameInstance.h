@@ -15,10 +15,18 @@ enum class GameInstanceState {
     WAITING
 };
 
+struct ConfigValid {
+    bool valid;
+};
+
+struct ConfigFinished {
+    bool finished;
+};
+
 struct ConfigResult {
     std::string prompt;
-    bool valid;
-    bool finished;
+    ConfigValid valid;
+    ConfigFinished finished;
 };
 
 const int SETUP_FINISHED = -1;
@@ -29,7 +37,7 @@ public:
         std::unique_ptr<GameSetup> gameSetup, uint16_t m_roomCode);
     ~GameInstance() {};
 
-    ConfigResult inputConfig(const std::string& response, const bool firstPrompt);
+    ConfigResult inputConfig(const std::string& response);
 
     void startGame();
     bool gameIsFinished();
@@ -56,6 +64,7 @@ private:
 
     uint16_t m_roomCode;
     int m_setupIndex = 0;
+    bool sentFirstPrompt = false;
 };
 
 #endif

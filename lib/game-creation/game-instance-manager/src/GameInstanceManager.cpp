@@ -36,9 +36,9 @@ GameInstanceManager::createGameInstance(std::string_view gameFilePath) {
 }
 
 ConfigResult
-GameInstanceManager::inputConfig(uint16_t roomCode, const std::string& response, const bool firstPrompt) {
+GameInstanceManager::inputConfig(uint16_t roomCode, const std::string& response) {
     auto& game = getGameInstance(roomCode);
-    return game->inputConfig(response, firstPrompt);
+    return game->inputConfig(response);
 }
 
 void
