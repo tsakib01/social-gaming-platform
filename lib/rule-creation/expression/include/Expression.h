@@ -8,7 +8,7 @@ class LiteralExpression;
 class IdentifierExpression;
 class BinaryExpression;
 class UnaryExpression;
-class QualifiedIdentifier;
+class BuiltinExpression;
 
 class ExpressionVisitor {
 public:
@@ -21,6 +21,8 @@ public:
     operator()(const BinaryExpression& expression) = 0;
     virtual std::unique_ptr<GameEnvironment::Value>
     operator()(const UnaryExpression& expression) = 0;
+    virtual std::unique_ptr<GameEnvironment::Value>
+    operator()(const BuiltinExpression& expression) = 0;
     virtual std::unique_ptr<GameEnvironment::Value>
     operator()(const Expression& expression) = 0;
 };
@@ -154,7 +156,12 @@ public:
     Builtin builtin;
     // A vector of expressions instead of a GameEnvironment::List since 
     // GameEnvironment::Value is incompatible with dot expressions
-    std::vector<std::unique_ptr<Expression>> arguments; 
+    std::vector<std::unique_ptr<Expression>> arguments;
+
+    std::unique_ptr<GameEnvironment::Value>
+    accept(ExpressionVisitor& visitor) override {
+        return visitor(*this);
+    }
 };
 
 #endif
