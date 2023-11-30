@@ -31,7 +31,7 @@ GameCommunicator::storeCurrentUserInput(const Message& message) {
 }
 
 void 
-GameCommunicator::setGameMessage(const std::vector<Connection> users, std::string_view message) {
+GameCommunicator::setGameMessage(const std::vector<UserId> users, std::string_view message) {
 
     for (const auto& user : users) {
         Message g_message;
@@ -58,7 +58,7 @@ GameCommunicator::getChoicesForUser(uint16_t roomCode) const {
 
 // returns the valid current user input, which will be sent to the game instance in server manager
 std::string_view
-GameCommunicator::getCurrentUserInput(Connection userID) const {
+GameCommunicator::getCurrentUserInput(UserId userID) const {
     
     auto it = std::find_if(userInputs.begin(), userInputs.end(), [userID](const UserInput& userInput) {
         return userInput.userID == userID;

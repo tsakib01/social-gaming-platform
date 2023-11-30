@@ -3,7 +3,7 @@
 #include "UserManager.h"
 
 TEST(UserManagerTests, AddUser) {
-    Connection code1{1};
+    UserId code1{1};
     UserManager userMgr;
     userMgr.addUser(code1);
 
@@ -12,8 +12,8 @@ TEST(UserManagerTests, AddUser) {
 }
 
 TEST(UserManagerTests, AddTwoUsers) {
-    Connection code1{1};
-    Connection code2{2};
+    UserId code1{1};
+    UserId code2{2};
 
     UserManager userMgr;
     userMgr.addUser(code1);
@@ -24,7 +24,7 @@ TEST(UserManagerTests, AddTwoUsers) {
 }
 
 TEST(UserManagerTests, AddUserName) {
-    Connection code1{1};
+    UserId code1{1};
     UserManager userMgr;
     userMgr.addUser(code1);
     userMgr.setUserName(code1, "Nick");
@@ -39,10 +39,10 @@ TEST(UserManagerTests, AddUserName) {
 }
 
 TEST(UserManagerTests, AddUserRole) {
-    Connection code1{1};
-    Connection code2{2};
-    Connection code3{3};
-    Connection code4{4};
+    UserId code1{1};
+    UserId code2{2};
+    UserId code3{3};
+    UserId code4{4};
     UserManager userMgr;
 
     userMgr.addUser(code1);
@@ -72,7 +72,7 @@ TEST(UserManagerTests, AddUserRole) {
 }
 
 TEST(UserManagerTests, AddUserRoomCode) {
-    Connection code1{1};
+    UserId code1{1};
     UserManager userMgr;
     userMgr.addUser(code1);
     userMgr.setUserRoomCode(code1, (uint8_t)123);
@@ -87,8 +87,8 @@ TEST(UserManagerTests, AddUserRoomCode) {
 }
 
 TEST(UserManagerTests, CheckCollectionOfUsers) {
-    Connection code1{1};
-    Connection code2{2};
+    UserId code1{1};
+    UserId code2{2};
     UserManager userMgr;
 
     userMgr.addUser(code1);
@@ -102,7 +102,7 @@ TEST(UserManagerTests, CheckCollectionOfUsers) {
 }
 
 TEST(UserManagerTests, RemoveUser) {
-    Connection code1{1};
+    UserId code1{1};
     UserManager userMgr;
     userMgr.addUser(code1);
     userMgr.setUserRoomCode(code1, (uint8_t)123);
