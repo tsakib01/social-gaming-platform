@@ -40,9 +40,7 @@ ServerManager::processJoinGame(const Message& message) {
 		uint16_t code = std::stoi(message.text);
 		std::vector<uint16_t> roomCodes = gameInstanceManager->getRoomCodes();
 
-		// bool canJoin = gameInstanceManager->canJoin(roomCode);
-
-		if (std::find(roomCodes.begin(), roomCodes.end(), code) != roomCodes.end()) {
+		if (std::find(roomCodes.begin(), roomCodes.end(), code) != roomCodes.end() && gameInstanceManager->gameIsJoinable(code)) {
 			userManager->setUserRole(message.connection, Role::PLAYER);
 			userManager->setUserRoomCode(message.connection, code);
 			userManager->setUserState(message.connection, UserState::GAME_WAIT);
@@ -116,7 +114,6 @@ ServerManager::processGameConfig(const Message& message) {
 
 	if (finished) {
 		userManager->setUserState(message.connection, UserState::GAME_WAIT);
-		// gameInstanceManager->setCanJoin();
 		return std::deque<Message>{
 			{message.connection, "Room Code: " + std::to_string(owner.roomCode) + "     Type (S) to start.\n"}};
 	}
