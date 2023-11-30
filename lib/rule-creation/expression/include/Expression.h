@@ -3,6 +3,28 @@
 
 #include "GameEnvironment.h"
 
+class Expression;
+class LiteralExpression;
+class IdentifierExpression;
+class BinaryExpression;
+class UnaryExpression;
+class QualifiedIdentifier;
+
+class ExpressionVisitor {
+public:
+    virtual ~ExpressionVisitor() = default;
+    virtual std::unique_ptr<GameEnvironment::Value>
+    operator()(const LiteralExpression& expression) = 0;
+    virtual std::unique_ptr<GameEnvironment::Value>
+    operator()(const IdentifierExpression& expression) = 0;
+    virtual std::unique_ptr<GameEnvironment::Value>
+    operator()(const BinaryExpression& expression) = 0;
+    virtual std::unique_ptr<GameEnvironment::Value>
+    operator()(const UnaryExpression& expression) = 0;
+    virtual std::unique_ptr<GameEnvironment::Value>
+    operator()(const Expression& expression) = 0;
+};
+
 /// Operations that can be applied to expression(s).
 enum class Operator{
     OR,
@@ -33,6 +55,8 @@ enum class Builtin{
 class Expression {
 public:
     virtual ~Expression() = default;
+    virtual std::unique_ptr<GameEnvironment::Value>
+    accept(ExpressionVisitor& visitor) = 0;
 };
 
 /// A constant expression that is just a literal value
@@ -42,6 +66,11 @@ public:
     LiteralExpression(std::unique_ptr<GameEnvironment::Value> value)
         : value(std::move(value)) {}
 
+    std::unique_ptr<GameEnvironment::Value>
+    accept(ExpressionVisitor& visitor) {
+        return visitor(*this);
+    }
+    
     std::unique_ptr<GameEnvironment::Value> value;
 };
 
@@ -52,6 +81,12 @@ class IdentifierExpression : public Expression {
 public:
     IdentifierExpression() = default;
     IdentifierExpression(GameEnvironment::Identifier identifier) : identifier(identifier){}
+
+    std::unique_ptr<GameEnvironment::Value>
+    accept(ExpressionVisitor& visitor) override {
+        return visitor(*this);
+    }
+
     GameEnvironment::Identifier identifier;
 };
 
@@ -62,6 +97,11 @@ public:
     BinaryExpression(std::unique_ptr<Expression> leftOperand, std::unique_ptr<Expression> rightOperand, Operator op)
     : leftOperand(std::move(leftOperand)), rightOperand(std::move(rightOperand)), op(op)
     {}
+
+    std::unique_ptr<GameEnvironment::Value>
+    accept(ExpressionVisitor& visitor) override {
+        return visitor(*this);
+    }
 
     std::unique_ptr<Expression> leftOperand;
     std::unique_ptr<Expression> rightOperand;
@@ -75,6 +115,11 @@ public:
     UnaryExpression(std::unique_ptr<Expression> operand, Operator op)
     : operand(std::move(operand)), op(op)
     {}
+
+    std::unique_ptr<GameEnvironment::Value>
+    accept(ExpressionVisitor& visitor) override {
+        return visitor(*this);
+    }
 
     std::unique_ptr<Expression> operand;
     Operator op;
@@ -97,6 +142,7 @@ public:
 
         identifiers.push_back(qualifiedIdentifier);
     }
+    
     std::vector<GameEnvironment::Identifier> identifiers;
 };
 
