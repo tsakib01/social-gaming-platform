@@ -148,12 +148,7 @@ ServerManager::processGameWait(const Message& message) {
 
 std::deque<Message>
 ServerManager::processGameRunning(const Message& message) {
-	// Check if exists in GameCommunicator
-		// If not, then return "Invalid"
-
-	// If exists, check pass it into the GameCommunicator
-		// If valid, return message received
-		// If invalid, return "Invalid"
+	// Not implemented yet.
 
 	return std::deque<Message>{
 		{message.connection, "Inside GAME_RUN state.\n"}};

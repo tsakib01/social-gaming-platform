@@ -30,7 +30,7 @@ GameInstanceManager::createGameInstance(std::string_view gameFilePath) {
     auto setup = gameConfigLoader.createGameSetup();
     uint16_t inviteCode = generateRoomCode();
 
-    m_gameList.emplace_back(std::make_unique<GameInstance>(std::move(rules), std::move(state), std::move(setup), inviteCode));
+    m_gameList.push_back(std::make_unique<GameInstance>(std::move(rules), std::move(state), std::move(setup), inviteCode));
 
     return inviteCode;
 }
