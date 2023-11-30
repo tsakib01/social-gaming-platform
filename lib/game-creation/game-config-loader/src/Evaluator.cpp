@@ -382,9 +382,7 @@ private:
 
     bool getSpecificationImpl(std::vector<GameEnvironment::Value*> values) const override {
         // Ensure there are exactly two arguments and both are lists
-        return values.size() == 2 &&
-               std::holds_alternative<std::unique_ptr<GameEnvironment::List>>(values[0]->value) &&
-               std::holds_alternative<std::unique_ptr<GameEnvironment::List>>(values[1]->value);
+        return values.size() == 2;
     }
 
     void evaluateImpl(std::vector<GameEnvironment::Value*> values) override {
