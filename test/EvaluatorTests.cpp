@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "Evaluator.h"
+#include <iostream>
 
 class EvaluatorTest : public ::testing::Test {
 protected:
@@ -701,3 +702,124 @@ TEST_F(EvaluatorTest, TestEqualMapOfMap) {
     EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&mapOfMapValue1, &mapOfMapValue2}).value));
     EXPECT_FALSE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&mapOfMapValue1, &mapOfMapValue3}).value));
 }
+
+
+// -------------------------------------- LIST MODIFYING TESTS ----------------------------------------------------
+
+// Test case for REVERSE list operation - List of integers
+TEST_F(EvaluatorTest, TestReverseIntList){
+    // List of integers
+    std::unique_ptr<GameEnvironment::List> originalIntList = std::make_unique<GameEnvironment::List>();
+    std::unique_ptr<GameEnvironment::List> expectedIntList = std::make_unique<GameEnvironment::List>();
+
+    // Populating lists with 5 elements
+    for (int i = 0; i < 5; i++) {
+        originalIntList->push_back(std::make_unique<GameEnvironment::Value>(i));
+        expectedIntList->push_back(std::make_unique<GameEnvironment::Value>(5-i-1));
+    }
+
+    GameEnvironment::Value originalIntListValue(std::move(originalIntList));
+    evaluator.evaluate(LISTMODIFIER::REVERSE, {&originalIntListValue});
+
+    GameEnvironment::Value expectedIntListValue(std::move(expectedIntList));
+    GameEnvironment::Value reversedIntListValue(std::move(originalIntListValue));
+
+    EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&expectedIntListValue, &reversedIntListValue}).value));
+}
+
+// Test case for REVERSE list operation - List of strings
+TEST_F(EvaluatorTest, TestReverseStringList){
+    // List of strings
+    std::unique_ptr<GameEnvironment::List> originalStringList = std::make_unique<GameEnvironment::List>();
+    std::unique_ptr<GameEnvironment::List> expectedStringList = std::make_unique<GameEnvironment::List>();
+
+    // Populating lists with 5 string elements
+    std::vector<std::string> stringValues = {"one", "two", "three", "four", "five"};
+    for (int i = 0; i < 5; i++) {
+        originalStringList->push_back(std::make_unique<GameEnvironment::Value>(stringValues[i]));
+        expectedStringList->push_back(std::make_unique<GameEnvironment::Value>(stringValues[4 - i]));
+    }
+
+    GameEnvironment::Value originalStringListValue(std::move(originalStringList));
+    evaluator.evaluate(LISTMODIFIER::REVERSE, {&originalStringListValue});
+
+    GameEnvironment::Value expectedStringListValue(std::move(expectedStringList));
+    GameEnvironment::Value reversedStringListValue(std::move(originalStringListValue));
+
+    EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&expectedStringListValue, &reversedStringListValue}).value));
+}
+
+// Test case for REVERSE list operation - List of booleans
+TEST_F(EvaluatorTest, TestReverseListOfBooleans) {
+    std::unique_ptr<GameEnvironment::List> originalList = std::make_unique<GameEnvironment::List>();
+    std::unique_ptr<GameEnvironment::List> expectedList = std::make_unique<GameEnvironment::List>();
+
+    // Populating the list with booleans
+    std::vector<bool> boolValues = {true, false, true, false, true};
+    for (bool val : boolValues) {
+        originalList->push_back(std::make_unique<GameEnvironment::Value>(val));
+        expectedList->insert(expectedList->begin(), std::make_unique<GameEnvironment::Value>(val));
+    }
+
+    GameEnvironment::Value originalListValue(std::move(originalList));
+    evaluator.evaluate(LISTMODIFIER::REVERSE, {&originalListValue});
+
+    GameEnvironment::Value expectedListValue(std::move(expectedList));
+
+    // Verify that the reversed list matches the expected list
+    EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&expectedListValue, &originalListValue}).value));
+}
+
+// Test case for REVERSE list operation - List of lists of integers
+TEST_F(EvaluatorTest, TestReverseListOfListOfIntegers) {
+    // List of list of integers
+    std::unique_ptr<GameEnvironment::List> originalListOfLists = std::make_unique<GameEnvironment::List>();
+    std::unique_ptr<GameEnvironment::List> expectedListOfLists = std::make_unique<GameEnvironment::List>();
+
+    // Populating the list with lists of integers
+    for (int i = 0; i < 5; i++) {
+        std::unique_ptr<GameEnvironment::List> innerListOriginal = std::make_unique<GameEnvironment::List>();
+        std::unique_ptr<GameEnvironment::List> innerListExpected = std::make_unique<GameEnvironment::List>();
+        for (int j = 0; j < 1; j++) {
+            innerListOriginal->push_back(std::make_unique<GameEnvironment::Value>(i));
+            innerListExpected->push_back(std::make_unique<GameEnvironment::Value>(4-i));
+        }
+        originalListOfLists->push_back(std::make_unique<GameEnvironment::Value>(std::move(innerListOriginal)));
+        expectedListOfLists->push_back(std::make_unique<GameEnvironment::Value>(std::move(innerListExpected)));
+    }
+
+    GameEnvironment::Value originalListValue(std::move(originalListOfLists));
+    evaluator.evaluate(LISTMODIFIER::REVERSE, {&originalListValue});
+    GameEnvironment::Value expectedListValue(std::move(expectedListOfLists));
+
+    // Verify that the reversed list of lists matches the expected list of lists
+    EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&expectedListValue, &originalListValue}).value));
+}
+
+TEST_F(EvaluatorTest, TestReverseListOfMaps) {
+    // List of maps
+    std::unique_ptr<GameEnvironment::List> originalListOfMaps = std::make_unique<GameEnvironment::List>();
+    std::unique_ptr<GameEnvironment::List> expectedListOfMaps = std::make_unique<GameEnvironment::List>();
+
+    // Populating the list with maps
+    for (int i = 0; i < 5; i++) {
+        std::unique_ptr<GameEnvironment::Map> map = std::make_unique<GameEnvironment::Map>();
+        (*map)["key"] = std::make_unique<GameEnvironment::Value>(i);
+        originalListOfMaps->push_back(std::make_unique<GameEnvironment::Value>(std::move(map)));
+
+        // For expected list, we insert at the beginning to reverse the order
+        std::unique_ptr<GameEnvironment::Map> expectedMap = std::make_unique<GameEnvironment::Map>();
+        (*expectedMap)["key"] = std::make_unique<GameEnvironment::Value>(i);
+        expectedListOfMaps->insert(expectedListOfMaps->begin(), std::make_unique<GameEnvironment::Value>(std::move(expectedMap)));
+    }
+
+    GameEnvironment::Value originalListValue(std::move(originalListOfMaps));
+    evaluator.evaluate(LISTMODIFIER::REVERSE, {&originalListValue});
+    GameEnvironment::Value expectedListValue(std::move(expectedListOfMaps));
+
+    // Verify that the reversed list of maps matches the expected list of maps
+    EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&expectedListValue, &originalListValue}).value));
+}
+
+
+

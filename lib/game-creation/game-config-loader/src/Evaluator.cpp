@@ -1,6 +1,9 @@
 #include "Evaluator.h"
 #include <stdexcept>
 #include <iostream>
+#include <algorithm>
+
+//--------------------------------------------------------------- OPERATION CLASS IMPLEMENTATIONS --------------------------------- 
 
 // Add operation supports
 // 1. Addition of two integers
@@ -303,6 +306,56 @@ GameEnvironment::Value Evaluator::evaluate(OPERATOR operationEnum, std::vector<c
     return operationItr->second->evaluate(values);
 }
 
+//--------------------------------------------------------------- LIST MODDIFY OPERATION CLASS IMPLEMENTATIONS --------------------------------- 
+
+class ReverseListOperation final : public ListModifyOperation {
+private:
+    struct ReverseListVisitor {
+
+        void operator()([[maybe_unused]] std::unique_ptr<GameEnvironment::List>& list){
+            std::reverse(list->begin(), list->end());
+        }
+
+        template <typename T>
+        void operator()([[maybe_unused]] T& list){
+            throw std::runtime_error("Unsupported types for reverse");
+        }
+    };
+
+    // Add operation requires 1 arguments
+    bool getSpecificationImpl(std::vector<GameEnvironment::Value*> values) const override {
+        return values.size() == 1;
+    };
+
+    void evaluateImpl(std::vector<GameEnvironment::Value*> values) override{
+        std::visit(ReverseListVisitor{}, values[0]->value);
+    }; 
+};
+
+// Register modifying list operations to the map
+void 
+Evaluator::registerOperation(LISTMODIFIER listModifierEnum, std::unique_ptr<ListModifyOperation> listModifyOperation){
+    auto [it, succeeded] = listModifierToListModifyOperation.try_emplace(listModifierEnum, std::move(listModifyOperation));
+    
+    // When the given operation is already registered
+    if (!succeeded){
+        std::runtime_error("A similar list modifying operation already exists.");
+    }
+}
+
+void
+Evaluator::evaluate(LISTMODIFIER listModifierEnum, std::vector<GameEnvironment::Value*> values){
+    auto operationItr = listModifierToListModifyOperation.find(listModifierEnum);
+    // No operation registered
+    if (operationItr == listModifierToListModifyOperation.end()){
+        std::runtime_error("The list modifying operator is not registered");
+    }
+    operationItr->second->evaluate(values);
+}
+
+
+
+//--------------------------------------------------------------- DEFAULT FACTORY IMPLEMENTATIONS --------------------------------- 
 // Make a default evaluator
 Evaluator Evaluator::defaultEvaluatorFactory(){
     Evaluator evaluator;
@@ -314,5 +367,6 @@ Evaluator Evaluator::defaultEvaluatorFactory(){
     evaluator.registerOperation(OPERATOR::AND, std::make_unique<AndOperation>());
     evaluator.registerOperation(OPERATOR::NOT, std::make_unique<NotOperation>());
     evaluator.registerOperation(OPERATOR::EQUAL, std::make_unique<EqualOperation>());
+    evaluator.registerOperation(LISTMODIFIER::REVERSE, std::make_unique<ReverseListOperation>());
     return evaluator;
 }
