@@ -17,6 +17,9 @@ std::unique_ptr<GameState> gameState, std::unique_ptr<GameSetup> gameSetup, uint
     // instructionStack.push(rulesRoot);
 
     m_state = GameInstanceState::QUEUED;
+    if (!m_gameSetup->hasSetup()) {
+        m_setupIndex = SETUP_FINISHED;
+    }
 }
 
 ConfigResult
@@ -24,13 +27,22 @@ GameInstance::inputConfig(const std::string& response) {
     // index
     // what if there is no set up in the first place?
 
-
-
     std::cout << "Return config results from room : " << m_roomCode << std::endl;
 
-    // Call GameSetup
+    std::vector<std::string_view> vec = m_gameSetup->getIdentifiers();
 
-    return ConfigResult{"test\n", true, false};
+    // if () {
+
+    //     m_setupIndex++;
+    // }
+
+
+    if (m_setupIndex == vec.size()) {
+        m_setupIndex = SETUP_FINISHED;
+        return ConfigResult{"Finished setup.\n", true, true};
+    }
+
+    return ConfigResult{"Invalid.\n", false, false};
 }
 
 void 
@@ -94,4 +106,9 @@ GameInstance::deleteUsers(const std::vector<User>& users) {
 GameInstanceState
 GameInstance::getGameInstanceState() {
     return m_state;
+}
+
+bool 
+GameInstance::gameIsJoinable() {
+    return m_setupIndex == SETUP_FINISHED;
 }
