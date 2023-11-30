@@ -37,6 +37,7 @@ GameInstance::inputConfig(const std::string& response) {
         m_setupIndex++;
         if (m_setupIndex == identifiers.size()) {
             m_setupIndex = SETUP_FINISHED;
+            // TODO: Can insert setupResponses into gameState here. 
             return ConfigResult{
                 "Finished setup.\n", ValidResponse{true}, Finished{true}};
         }
