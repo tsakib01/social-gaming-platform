@@ -14,7 +14,7 @@ public:
     uint16_t createGameInstance(std::string_view gameFilePath);
     
     void startGame(uint16_t roomCode, const std::vector<User>& users);
-    ConfigResult inputConfig(uint16_t roomCode, const std::string& response);
+    ConfigResult inputConfig(uint16_t roomCode, const std::string& response, const bool firstPrompt);
     void runCycle();
     
     std::vector<uint16_t> getRoomCodes();

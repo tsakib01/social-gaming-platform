@@ -1,8 +1,6 @@
 #include "GameInstance.h"
 #include "GameConfigLoader.h"
 
-#include <iostream> // TODO: delete this
-
 GameInstance::GameInstance(std::unique_ptr<RuleTree> gameRules, 
 std::unique_ptr<GameState> gameState, std::unique_ptr<GameSetup> gameSetup, uint16_t roomCode)
     : m_gameRules(std::move(gameRules)), 
@@ -17,24 +15,34 @@ std::unique_ptr<GameState> gameState, std::unique_ptr<GameSetup> gameSetup, uint
     // instructionStack.push(rulesRoot);
 
     m_state = GameInstanceState::QUEUED;
-    if (!m_gameSetup->hasSetup()) {
+    if (!gameHasSetup()) {
         m_setupIndex = SETUP_FINISHED;
     }
 }
 
 ConfigResult
-GameInstance::inputConfig(const std::string& response) {
+GameInstance::inputConfig(const std::string& response, const bool firstPrompt) {
     std::vector<std::string_view> identifiers = m_gameSetup->getIdentifiers();
     std::vector<std::string_view> prompts = m_gameSetup->getPrompts();
+    std::vector<std::string_view> restInfos = m_gameSetup->getRestInfos();
 
-    
-
-    if (m_setupIndex == identifiers.size()) {
-        m_setupIndex = SETUP_FINISHED;
-        return ConfigResult{"Finished setup.\n", true, true};
+    if (firstPrompt) {
+        return ConfigResult{std::string(prompts[0]), false, false};
     }
 
-    return ConfigResult{"Invalid.\n", false, false};
+    else if (m_setupIndex < identifiers.size()) {
+        bool valid = m_gameSetup->isResponseValid(identifiers[m_setupIndex], response);
+        if (valid) {
+            m_setupIndex++;
+            if (m_setupIndex == identifiers.size()) {
+                m_setupIndex = SETUP_FINISHED;
+                return ConfigResult{"Finished setup.\n", true, true};
+            }
+            return ConfigResult{std::string(prompts[m_setupIndex]), true, false};
+        }
+    }
+
+    return ConfigResult{"This should not call.\n", false, false};
 }
 
 void 

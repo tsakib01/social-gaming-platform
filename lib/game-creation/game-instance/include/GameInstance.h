@@ -29,7 +29,7 @@ public:
         std::unique_ptr<GameSetup> gameSetup, uint16_t m_roomCode);
     ~GameInstance() {};
 
-    ConfigResult inputConfig(const std::string& response);
+    ConfigResult inputConfig(const std::string& response, const bool firstPrompt);
 
     void startGame();
     bool gameIsFinished();
