@@ -3,7 +3,7 @@ GameSetup::GameSetup (std::shared_ptr<GameSetupLoader> SetupLoader):setups(std::
 
 void GameSetup::addSetups(ts::Node node){
     setups=std::move(SetupLoader->getGameSetup(node));
-
+    
 }
 void GameSetup::processGameSetups(){
     for(auto const& setup : setups){
@@ -38,4 +38,7 @@ bool GameSetup::isResponseValid(std::string_view identifier,std::string_view res
         }
     }
     return false;
+}
+bool GameSetup::hasSetup() { 
+    return setups.size() > 0;
 }

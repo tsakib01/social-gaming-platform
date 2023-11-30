@@ -66,7 +66,7 @@ GameConfigLoader::createGameState() {
 
 std::unique_ptr<GameSetup>
 GameConfigLoader::createGameSetup(){
-
+    
     auto gameSetupLoader = std::make_shared<GameSetupLoader>(m_source);
     auto gameSetup = std::make_unique<GameSetup>(gameSetupLoader);
     ts::Language language = tree_sitter_socialgaming();
