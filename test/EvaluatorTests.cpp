@@ -940,5 +940,162 @@ TEST_F(EvaluatorTest, TestShuffleListOfMaps) {
 }
 
 
+// ------------------------------------------------------------------------------------------------------------------------------------------------
+
+// Test case for EXTEND list operation - Two List of integers
+TEST_F(EvaluatorTest, TestExtendListOfIntegers) {
+    std::unique_ptr<GameEnvironment::List> list1 = std::make_unique<GameEnvironment::List>();
+    for (int i = 0; i < 5; i++) {
+        list1->push_back(std::make_unique<GameEnvironment::Value>(i));
+    }
+
+    std::unique_ptr<GameEnvironment::List> list2 = std::make_unique<GameEnvironment::List>();
+    for (int i = 5; i < 10; i++) {
+        list2->push_back(std::make_unique<GameEnvironment::Value>(i));
+    }
+
+    std::unique_ptr<GameEnvironment::List> expectedList = std::make_unique<GameEnvironment::List>();
+    for (int i = 0; i < 10; i++) {
+        expectedList->push_back(std::make_unique<GameEnvironment::Value>(i));
+    }
+
+    GameEnvironment::Value list1Value(std::move(list1));
+    GameEnvironment::Value list2Value(std::move(list2));
+    GameEnvironment::Value expectedListValue(std::move(expectedList));
+    evaluator.evaluate(LISTMODIFIER::EXTEND, {&list1Value, &list2Value});
+
+    EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&list1Value, &expectedListValue}).value));
+}
+
+// Test case for EXTEND list operation - Two List of strings
+TEST_F(EvaluatorTest, TestExtendListOfStrings) {
+    std::unique_ptr<GameEnvironment::List> list1 = std::make_unique<GameEnvironment::List>();
+    std::vector<std::string> strings1 = {"apple", "banana", "cherry"};
+    for (const auto& str : strings1) {
+        list1->push_back(std::make_unique<GameEnvironment::Value>(str));
+    }
+
+    std::unique_ptr<GameEnvironment::List> list2 = std::make_unique<GameEnvironment::List>();
+    std::vector<std::string> strings2 = {"date", "elderberry", "fig"};
+    for (const auto& str : strings2) {
+        list2->push_back(std::make_unique<GameEnvironment::Value>(str));
+    }
+
+    std::unique_ptr<GameEnvironment::List> expectedList = std::make_unique<GameEnvironment::List>();
+    for (const auto& str : strings1) {
+        expectedList->push_back(std::make_unique<GameEnvironment::Value>(str));
+    }
+    for (const auto& str : strings2) {
+        expectedList->push_back(std::make_unique<GameEnvironment::Value>(str));
+    }
+
+    GameEnvironment::Value list1Value(std::move(list1));
+    GameEnvironment::Value list2Value(std::move(list2));
+    GameEnvironment::Value expectedListValue(std::move(expectedList));
+    evaluator.evaluate(LISTMODIFIER::EXTEND, {&list1Value, &list2Value});
+
+    // Verify that list1 has been extended correctly
+    EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&list1Value, &expectedListValue}).value));
+}
+
+// Test case for EXTEND list operation - Two List of boolean
+TEST_F(EvaluatorTest, TestExtendListOfBooleans) {
+    std::unique_ptr<GameEnvironment::List> list1 = std::make_unique<GameEnvironment::List>();
+    std::vector<bool> bools1 = {true, false, true};
+    for (bool val : bools1) {
+        list1->push_back(std::make_unique<GameEnvironment::Value>(val));
+    }
+
+    std::unique_ptr<GameEnvironment::List> list2 = std::make_unique<GameEnvironment::List>();
+    std::vector<bool> bools2 = {false, true, false};
+    for (bool val : bools2) {
+        list2->push_back(std::make_unique<GameEnvironment::Value>(val));
+    }
+
+    std::unique_ptr<GameEnvironment::List> expectedList = std::make_unique<GameEnvironment::List>();
+    for (bool val : bools1) {
+        expectedList->push_back(std::make_unique<GameEnvironment::Value>(val));
+    }
+    for (bool val : bools2) {
+        expectedList->push_back(std::make_unique<GameEnvironment::Value>(val));
+    }
+
+    GameEnvironment::Value list1Value(std::move(list1));
+    GameEnvironment::Value list2Value(std::move(list2));
+    GameEnvironment::Value expectedListValue(std::move(expectedList));
+    evaluator.evaluate(LISTMODIFIER::EXTEND, {&list1Value, &list2Value});
+
+    EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&list1Value, &expectedListValue}).value));
+}
+
+// Test case for EXTEND list operation - Two List of List of Integers
+TEST_F(EvaluatorTest, TestExtendListOfListOfIntegers) {
+    std::unique_ptr<GameEnvironment::List> list1 = std::make_unique<GameEnvironment::List>();
+    for (int i = 0; i < 3; i++) {
+        std::unique_ptr<GameEnvironment::List> innerList = std::make_unique<GameEnvironment::List>();
+        for (int j = 0; j < 3; j++) {
+            innerList->push_back(std::make_unique<GameEnvironment::Value>(i * 3 + j));
+        }
+        list1->push_back(std::make_unique<GameEnvironment::Value>(std::move(innerList)));
+    }
+
+    std::unique_ptr<GameEnvironment::List> list2 = std::make_unique<GameEnvironment::List>();
+    for (int i = 3; i < 5; i++) {
+        std::unique_ptr<GameEnvironment::List> innerList = std::make_unique<GameEnvironment::List>();
+        for (int j = 0; j < 3; j++) {
+            innerList->push_back(std::make_unique<GameEnvironment::Value>(i * 3 + j));
+        }
+        list2->push_back(std::make_unique<GameEnvironment::Value>(std::move(innerList)));
+    }
+
+    std::unique_ptr<GameEnvironment::List> expectedList = std::make_unique<GameEnvironment::List>();
+    for (int i = 0; i < 5; i++) {
+        std::unique_ptr<GameEnvironment::List> innerList = std::make_unique<GameEnvironment::List>();
+        for (int j = 0; j < 3; j++) {
+            innerList->push_back(std::make_unique<GameEnvironment::Value>(i * 3 + j));
+        }
+        expectedList->push_back(std::make_unique<GameEnvironment::Value>(std::move(innerList)));
+    }
+
+    GameEnvironment::Value list1Value(std::move(list1));
+    GameEnvironment::Value list2Value(std::move(list2));
+    GameEnvironment::Value expectedListValue(std::move(expectedList));
+    evaluator.evaluate(LISTMODIFIER::EXTEND, {&list1Value, &list2Value});
+
+    EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&list1Value, &expectedListValue}).value));
+}
+
+// Test case for EXTEND list operation - Two List of Maps
+TEST_F(EvaluatorTest, TestExtendListOfMaps) {
+    std::unique_ptr<GameEnvironment::List> list1 = std::make_unique<GameEnvironment::List>();
+    for (int i = 0; i < 2; i++) {
+        std::unique_ptr<GameEnvironment::Map> map = std::make_unique<GameEnvironment::Map>();
+        (*map)["key"] = std::make_unique<GameEnvironment::Value>(i);
+        list1->push_back(std::make_unique<GameEnvironment::Value>(std::move(map)));
+    }
+
+    std::unique_ptr<GameEnvironment::List> list2 = std::make_unique<GameEnvironment::List>();
+    for (int i = 2; i < 4; i++) {
+        std::unique_ptr<GameEnvironment::Map> map = std::make_unique<GameEnvironment::Map>();
+        (*map)["key"] = std::make_unique<GameEnvironment::Value>(i);
+        list2->push_back(std::make_unique<GameEnvironment::Value>(std::move(map)));
+    }
+
+    std::unique_ptr<GameEnvironment::List> expectedList = std::make_unique<GameEnvironment::List>();
+    for (int i = 0; i < 4; i++) {
+        std::unique_ptr<GameEnvironment::Map> map = std::make_unique<GameEnvironment::Map>();
+        (*map)["key"] = std::make_unique<GameEnvironment::Value>(i);
+        expectedList->push_back(std::make_unique<GameEnvironment::Value>(std::move(map)));
+    }
+
+    GameEnvironment::Value list1Value(std::move(list1));
+    GameEnvironment::Value list2Value(std::move(list2));
+    GameEnvironment::Value expectedListValue(std::move(expectedList));
+    evaluator.evaluate(LISTMODIFIER::EXTEND, {&list1Value, &list2Value});
+
+    EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&list1Value, &expectedListValue}).value));
+}
+
+
 
 

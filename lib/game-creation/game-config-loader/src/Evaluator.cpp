@@ -362,6 +362,36 @@ private:
     }
 };
 
+// Extends the list by appending items from the second list to the first one
+class ExtendListOperation final : public ListModifyOperation {
+private:
+    struct ExtendListVisitor {
+        void operator()(std::unique_ptr<GameEnvironment::List>& targetList, 
+                        const std::unique_ptr<GameEnvironment::List>& extendList) {
+            // Append the contents of extendList to targetList
+            targetList->insert(targetList->end(), 
+                               std::make_move_iterator(extendList->begin()), 
+                               std::make_move_iterator(extendList->end()));
+        }
+
+        template <typename T, typename U>
+        void operator()([[maybe_unused]] T& targetList, [[maybe_unused]] const U& extendList) {
+            throw std::runtime_error("Unsupported types for extend");
+        }
+    };
+
+    bool getSpecificationImpl(std::vector<GameEnvironment::Value*> values) const override {
+        // Ensure there are exactly two arguments and both are lists
+        return values.size() == 2 &&
+               std::holds_alternative<std::unique_ptr<GameEnvironment::List>>(values[0]->value) &&
+               std::holds_alternative<std::unique_ptr<GameEnvironment::List>>(values[1]->value);
+    }
+
+    void evaluateImpl(std::vector<GameEnvironment::Value*> values) override {
+        std::visit(ExtendListVisitor{}, values[0]->value, values[1]->value);
+    }
+};
+
 // Register modifying list operations to the map
 void 
 Evaluator::registerOperation(LISTMODIFIER listModifierEnum, std::unique_ptr<ListModifyOperation> listModifyOperation){
@@ -389,16 +419,17 @@ Evaluator::evaluate(LISTMODIFIER listModifierEnum, std::vector<GameEnvironment::
 // Make a default evaluator
 Evaluator Evaluator::defaultEvaluatorFactory(){
     Evaluator evaluator;
-    evaluator.registerOperation(OPERATOR::ADD, std::make_unique<AddOperation>());
-    evaluator.registerOperation(OPERATOR::SUBTRACT, std::make_unique<SubtractOperation>());
-    evaluator.registerOperation(OPERATOR::MULTIPLY, std::make_unique<MultiplyOperation>());
-    evaluator.registerOperation(OPERATOR::DIVIDE, std::make_unique<DivideOperation>());
-    evaluator.registerOperation(OPERATOR::OR, std::make_unique<OrOperation>());
-    evaluator.registerOperation(OPERATOR::AND, std::make_unique<AndOperation>());
-    evaluator.registerOperation(OPERATOR::NOT, std::make_unique<NotOperation>());
-    evaluator.registerOperation(OPERATOR::EQUAL, std::make_unique<EqualOperation>());
-    evaluator.registerOperation(LISTMODIFIER::REVERSE, std::make_unique<ReverseListOperation>());
-    evaluator.registerOperation(LISTMODIFIER::SHUFFLE, std::make_unique<ShuffleListOperation>());
+    evaluator.registerOperation(OPERATOR::ADD,          std::make_unique<AddOperation>());
+    evaluator.registerOperation(OPERATOR::SUBTRACT,     std::make_unique<SubtractOperation>());
+    evaluator.registerOperation(OPERATOR::MULTIPLY,     std::make_unique<MultiplyOperation>());
+    evaluator.registerOperation(OPERATOR::DIVIDE,       std::make_unique<DivideOperation>());
+    evaluator.registerOperation(OPERATOR::OR,           std::make_unique<OrOperation>());
+    evaluator.registerOperation(OPERATOR::AND,          std::make_unique<AndOperation>());
+    evaluator.registerOperation(OPERATOR::NOT,          std::make_unique<NotOperation>());
+    evaluator.registerOperation(OPERATOR::EQUAL,        std::make_unique<EqualOperation>());
+    evaluator.registerOperation(LISTMODIFIER::REVERSE,  std::make_unique<ReverseListOperation>());
+    evaluator.registerOperation(LISTMODIFIER::SHUFFLE,  std::make_unique<ShuffleListOperation>());
+    evaluator.registerOperation(LISTMODIFIER::EXTEND,   std::make_unique<ExtendListOperation>());
     return evaluator;
 }
 
