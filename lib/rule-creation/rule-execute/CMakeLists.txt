@@ -1,5 +1,6 @@
 add_library(ruleExecute
     src/RuleExecute.cpp
+    src/OutgoingMessages.cpp
 )
 
 target_include_directories(ruleExecute
@@ -13,6 +14,7 @@ target_include_directories(ruleExecute
 target_link_libraries(ruleExecute
     expression
     gameConfigLoader
+    userManager
 )
 
 install(TARGETS ruleExecute
