@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <algorithm>
+#include <random>
 
 //--------------------------------------------------------------- OPERATION CLASS IMPLEMENTATIONS --------------------------------- 
 
@@ -308,6 +309,7 @@ GameEnvironment::Value Evaluator::evaluate(OPERATOR operationEnum, std::vector<c
 
 //--------------------------------------------------------------- LIST MODDIFY OPERATION CLASS IMPLEMENTATIONS --------------------------------- 
 
+// Reverses items of the list, which can hold any type  
 class ReverseListOperation final : public ListModifyOperation {
 private:
     struct ReverseListVisitor {
@@ -330,6 +332,34 @@ private:
     void evaluateImpl(std::vector<GameEnvironment::Value*> values) override{
         std::visit(ReverseListVisitor{}, values[0]->value);
     }; 
+};
+
+// Shuffles items of the list, which can hold any type
+class ShuffleListOperation final : public ListModifyOperation {
+private:
+    struct ShuffleListVisitor {
+        void operator()(std::unique_ptr<GameEnvironment::List>& list) {
+            // Create a random number generator
+            std::random_device rd;
+            std::mt19937 g(rd());
+
+            // Shuffle the list
+            std::shuffle(list->begin(), list->end(), g);
+        }
+
+        template <typename T>
+        void operator()([[maybe_unused]] T& list) {
+            throw std::runtime_error("Unsupported types for shuffle");
+        }
+    };
+
+    bool getSpecificationImpl(std::vector<GameEnvironment::Value*> values) const override {
+        return values.size() == 1;
+    }
+
+    void evaluateImpl(std::vector<GameEnvironment::Value*> values) override {
+        std::visit(ShuffleListVisitor{}, values[0]->value);
+    }
 };
 
 // Register modifying list operations to the map
@@ -368,5 +398,7 @@ Evaluator Evaluator::defaultEvaluatorFactory(){
     evaluator.registerOperation(OPERATOR::NOT, std::make_unique<NotOperation>());
     evaluator.registerOperation(OPERATOR::EQUAL, std::make_unique<EqualOperation>());
     evaluator.registerOperation(LISTMODIFIER::REVERSE, std::make_unique<ReverseListOperation>());
+    evaluator.registerOperation(LISTMODIFIER::SHUFFLE, std::make_unique<ShuffleListOperation>());
     return evaluator;
 }
+

@@ -821,5 +821,124 @@ TEST_F(EvaluatorTest, TestReverseListOfMaps) {
     EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&expectedListValue, &originalListValue}).value));
 }
 
+// ------------------------------------------------------------------------------------------------------------------------------------------------
+
+// Test case for SHUFFLE list operation - List of integers
+TEST_F(EvaluatorTest, TestShuffleIntList) {
+    // List of integers
+    std::unique_ptr<GameEnvironment::List> originalIntList1 = std::make_unique<GameEnvironment::List>();
+    std::unique_ptr<GameEnvironment::List> originalIntList2 = std::make_unique<GameEnvironment::List>();
+
+    // Populating lists with 5 elements
+    for (int i = 0; i < 5; i++) {
+        originalIntList1->push_back(std::make_unique<GameEnvironment::Value>(i));
+        originalIntList2->push_back(std::make_unique<GameEnvironment::Value>(i));
+    }
+
+    GameEnvironment::Value originalIntList1Value(std::move(originalIntList1));
+    evaluator.evaluate(LISTMODIFIER::SHUFFLE, {&originalIntList1Value});
+
+    GameEnvironment::Value originalIntListValue(std::move(originalIntList2));
+    GameEnvironment::Value shuffledIntListValue(std::move(originalIntList1Value));
+
+    EXPECT_FALSE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&originalIntListValue, &shuffledIntListValue}).value));
+}
+
+// Test case for SHUFFLE list operation - List of strings
+TEST_F(EvaluatorTest, TestShuffleStringList) {
+    // List of strings
+    std::unique_ptr<GameEnvironment::List> originalStringList1 = std::make_unique<GameEnvironment::List>();
+    std::unique_ptr<GameEnvironment::List> originalStringList2 = std::make_unique<GameEnvironment::List>();
+
+    // Populating lists with 5 string elements
+    std::vector<std::string> stringValues = {"one", "two", "three", "four", "five"};
+    for (int i = 0; i < 5; i++) {
+        originalStringList1->push_back(std::make_unique<GameEnvironment::Value>(stringValues[i]));
+        originalStringList2->push_back(std::make_unique<GameEnvironment::Value>(stringValues[i]));
+    }
+
+    GameEnvironment::Value originalIntList1Value(std::move(originalStringList1));
+    evaluator.evaluate(LISTMODIFIER::SHUFFLE, {&originalIntList1Value});
+
+    GameEnvironment::Value originalStringListValue(std::move(originalStringList2));
+    GameEnvironment::Value shuffledStringListValue(std::move(originalIntList1Value));
+
+    EXPECT_FALSE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&originalStringListValue, &shuffledStringListValue}).value));
+}
+
+// Test case for SHUFFLE list operation - List of booleans
+TEST_F(EvaluatorTest, TestShuffleBooleanList) {
+    std::unique_ptr<GameEnvironment::List> originalBoolList1 = std::make_unique<GameEnvironment::List>();
+    std::unique_ptr<GameEnvironment::List> originalBoolList2 = std::make_unique<GameEnvironment::List>();
+
+    // Populating the list with booleans
+    std::vector<bool> boolValues = {true, false, true, false, true};
+    for (bool value : boolValues) {
+        originalBoolList1->push_back(std::make_unique<GameEnvironment::Value>(value));
+        originalBoolList2->push_back(std::make_unique<GameEnvironment::Value>(value));
+    }
+
+    GameEnvironment::Value originalIntList1Value(std::move(originalBoolList1));
+    evaluator.evaluate(LISTMODIFIER::SHUFFLE, {&originalIntList1Value});
+
+    GameEnvironment::Value originalBoolListValue(std::move(originalBoolList2));
+    GameEnvironment::Value shuffledBoolListValue(std::move(originalIntList1Value));
+
+    EXPECT_FALSE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&originalBoolListValue, &shuffledBoolListValue}).value));
+}
+
+// Test case for SHUFFLE list operation - List of lists of integers
+TEST_F(EvaluatorTest, TestShuffleListOfListOfIntegers) {
+    // List of list of integers
+    std::unique_ptr<GameEnvironment::List> originalListOfListOfIntList1 = std::make_unique<GameEnvironment::List>();
+    std::unique_ptr<GameEnvironment::List> originalListOfListOfIntList2 = std::make_unique<GameEnvironment::List>();
+
+    // Populating the list with lists of integers
+    for (int i = 0; i < 5; i++) {
+        std::unique_ptr<GameEnvironment::List> innerListOriginal1 = std::make_unique<GameEnvironment::List>();
+        std::unique_ptr<GameEnvironment::List> innerListOriginal2 = std::make_unique<GameEnvironment::List>();
+        for (int j = 0; j < 1; j++) {
+            innerListOriginal1->push_back(std::make_unique<GameEnvironment::Value>(i));
+            innerListOriginal2->push_back(std::make_unique<GameEnvironment::Value>(i));
+        }
+        originalListOfListOfIntList1->push_back(std::make_unique<GameEnvironment::Value>(std::move(innerListOriginal1)));
+        originalListOfListOfIntList2->push_back(std::make_unique<GameEnvironment::Value>(std::move(innerListOriginal2)));
+    }
+
+    GameEnvironment::Value shuffledListOfListOfIntValue(std::move(originalListOfListOfIntList1));
+    evaluator.evaluate(LISTMODIFIER::REVERSE, {&shuffledListOfListOfIntValue});
+    GameEnvironment::Value originalListOfListOfIntValue(std::move(originalListOfListOfIntList2));
+
+    // Verify that the reversed list of lists matches the expected list of lists
+    EXPECT_FALSE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&originalListOfListOfIntValue, &shuffledListOfListOfIntValue}).value));
+}
+
+// Test case for SHUFFLE list operation - List of maps
+TEST_F(EvaluatorTest, TestShuffleListOfMaps) {
+    // List of maps
+    std::unique_ptr<GameEnvironment::List> originalListOfMap1 = std::make_unique<GameEnvironment::List>();
+    std::unique_ptr<GameEnvironment::List> originalListOfMap2 = std::make_unique<GameEnvironment::List>();
+
+    // Populating the list with maps
+    for (int i = 0; i < 5; i++) {
+        std::unique_ptr<GameEnvironment::Map> map1 = std::make_unique<GameEnvironment::Map>();
+        (*map1)["key"] = std::make_unique<GameEnvironment::Value>(i);
+        originalListOfMap1->push_back(std::make_unique<GameEnvironment::Value>(std::move(map1)));
+
+        std::unique_ptr<GameEnvironment::Map> map2 = std::make_unique<GameEnvironment::Map>();
+        (*map2)["key"] = std::make_unique<GameEnvironment::Value>(i);
+        originalListOfMap2->push_back(std::make_unique<GameEnvironment::Value>(std::move(map2)));
+    }
+
+    GameEnvironment::Value shuffledListOfMapValue(std::move(originalListOfMap1));
+    evaluator.evaluate(LISTMODIFIER::SHUFFLE, {&shuffledListOfMapValue});
+    GameEnvironment::Value originalListOfMapValue(std::move(originalListOfMap2));
+
+
+    // Verify that the shuffled list of maps is different from the original list of maps
+    EXPECT_FALSE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&shuffledListOfMapValue, &originalListOfMapValue}).value));
+}
+
+
 
 
