@@ -719,7 +719,7 @@ TEST_F(EvaluatorTest, TestReverseIntList){
     }
 
     GameEnvironment::Value originalIntListValue(std::move(originalIntList));
-    evaluator.evaluate(LISTMODIFIER::REVERSE, {&originalIntListValue});
+    evaluator.evaluate(MODIFIER::REVERSE, {&originalIntListValue});
 
     GameEnvironment::Value expectedIntListValue(std::move(expectedIntList));
     GameEnvironment::Value reversedIntListValue(std::move(originalIntListValue));
@@ -741,7 +741,7 @@ TEST_F(EvaluatorTest, TestReverseStringList){
     }
 
     GameEnvironment::Value originalStringListValue(std::move(originalStringList));
-    evaluator.evaluate(LISTMODIFIER::REVERSE, {&originalStringListValue});
+    evaluator.evaluate(MODIFIER::REVERSE, {&originalStringListValue});
 
     GameEnvironment::Value expectedStringListValue(std::move(expectedStringList));
     GameEnvironment::Value reversedStringListValue(std::move(originalStringListValue));
@@ -762,7 +762,7 @@ TEST_F(EvaluatorTest, TestReverseListOfBooleans) {
     }
 
     GameEnvironment::Value originalListValue(std::move(originalList));
-    evaluator.evaluate(LISTMODIFIER::REVERSE, {&originalListValue});
+    evaluator.evaluate(MODIFIER::REVERSE, {&originalListValue});
 
     GameEnvironment::Value expectedListValue(std::move(expectedList));
 
@@ -789,7 +789,7 @@ TEST_F(EvaluatorTest, TestReverseListOfListOfIntegers) {
     }
 
     GameEnvironment::Value originalListValue(std::move(originalListOfLists));
-    evaluator.evaluate(LISTMODIFIER::REVERSE, {&originalListValue});
+    evaluator.evaluate(MODIFIER::REVERSE, {&originalListValue});
     GameEnvironment::Value expectedListValue(std::move(expectedListOfLists));
 
     // Verify that the reversed list of lists matches the expected list of lists
@@ -814,7 +814,7 @@ TEST_F(EvaluatorTest, TestReverseListOfMaps) {
     }
 
     GameEnvironment::Value originalListValue(std::move(originalListOfMaps));
-    evaluator.evaluate(LISTMODIFIER::REVERSE, {&originalListValue});
+    evaluator.evaluate(MODIFIER::REVERSE, {&originalListValue});
     GameEnvironment::Value expectedListValue(std::move(expectedListOfMaps));
 
     // Verify that the reversed list of maps matches the expected list of maps
@@ -836,7 +836,7 @@ TEST_F(EvaluatorTest, TestShuffleIntList) {
     }
 
     GameEnvironment::Value originalIntList1Value(std::move(originalIntList1));
-    evaluator.evaluate(LISTMODIFIER::SHUFFLE, {&originalIntList1Value});
+    evaluator.evaluate(MODIFIER::SHUFFLE, {&originalIntList1Value});
 
     GameEnvironment::Value originalIntListValue(std::move(originalIntList2));
     GameEnvironment::Value shuffledIntListValue(std::move(originalIntList1Value));
@@ -858,7 +858,7 @@ TEST_F(EvaluatorTest, TestShuffleStringList) {
     }
 
     GameEnvironment::Value originalIntList1Value(std::move(originalStringList1));
-    evaluator.evaluate(LISTMODIFIER::SHUFFLE, {&originalIntList1Value});
+    evaluator.evaluate(MODIFIER::SHUFFLE, {&originalIntList1Value});
 
     GameEnvironment::Value originalStringListValue(std::move(originalStringList2));
     GameEnvironment::Value shuffledStringListValue(std::move(originalIntList1Value));
@@ -879,7 +879,7 @@ TEST_F(EvaluatorTest, TestShuffleBooleanList) {
     }
 
     GameEnvironment::Value originalIntList1Value(std::move(originalBoolList1));
-    evaluator.evaluate(LISTMODIFIER::SHUFFLE, {&originalIntList1Value});
+    evaluator.evaluate(MODIFIER::SHUFFLE, {&originalIntList1Value});
 
     GameEnvironment::Value originalBoolListValue(std::move(originalBoolList2));
     GameEnvironment::Value shuffledBoolListValue(std::move(originalIntList1Value));
@@ -906,7 +906,7 @@ TEST_F(EvaluatorTest, TestShuffleListOfListOfIntegers) {
     }
 
     GameEnvironment::Value shuffledListOfListOfIntValue(std::move(originalListOfListOfIntList1));
-    evaluator.evaluate(LISTMODIFIER::REVERSE, {&shuffledListOfListOfIntValue});
+    evaluator.evaluate(MODIFIER::REVERSE, {&shuffledListOfListOfIntValue});
     GameEnvironment::Value originalListOfListOfIntValue(std::move(originalListOfListOfIntList2));
 
     // Verify that the reversed list of lists matches the expected list of lists
@@ -931,7 +931,7 @@ TEST_F(EvaluatorTest, TestShuffleListOfMaps) {
     }
 
     GameEnvironment::Value shuffledListOfMapValue(std::move(originalListOfMap1));
-    evaluator.evaluate(LISTMODIFIER::SHUFFLE, {&shuffledListOfMapValue});
+    evaluator.evaluate(MODIFIER::SHUFFLE, {&shuffledListOfMapValue});
     GameEnvironment::Value originalListOfMapValue(std::move(originalListOfMap2));
 
 
@@ -962,7 +962,7 @@ TEST_F(EvaluatorTest, TestExtendListOfIntegers) {
     GameEnvironment::Value list1Value(std::move(list1));
     GameEnvironment::Value list2Value(std::move(list2));
     GameEnvironment::Value expectedListValue(std::move(expectedList));
-    evaluator.evaluate(LISTMODIFIER::EXTEND, {&list1Value, &list2Value});
+    evaluator.evaluate(MODIFIER::EXTEND, {&list1Value, &list2Value});
 
     EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&list1Value, &expectedListValue}).value));
 }
@@ -992,7 +992,7 @@ TEST_F(EvaluatorTest, TestExtendListOfStrings) {
     GameEnvironment::Value list1Value(std::move(list1));
     GameEnvironment::Value list2Value(std::move(list2));
     GameEnvironment::Value expectedListValue(std::move(expectedList));
-    evaluator.evaluate(LISTMODIFIER::EXTEND, {&list1Value, &list2Value});
+    evaluator.evaluate(MODIFIER::EXTEND, {&list1Value, &list2Value});
 
     // Verify that list1 has been extended correctly
     EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&list1Value, &expectedListValue}).value));
@@ -1023,7 +1023,7 @@ TEST_F(EvaluatorTest, TestExtendListOfBooleans) {
     GameEnvironment::Value list1Value(std::move(list1));
     GameEnvironment::Value list2Value(std::move(list2));
     GameEnvironment::Value expectedListValue(std::move(expectedList));
-    evaluator.evaluate(LISTMODIFIER::EXTEND, {&list1Value, &list2Value});
+    evaluator.evaluate(MODIFIER::EXTEND, {&list1Value, &list2Value});
 
     EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&list1Value, &expectedListValue}).value));
 }
@@ -1060,7 +1060,7 @@ TEST_F(EvaluatorTest, TestExtendListOfListOfIntegers) {
     GameEnvironment::Value list1Value(std::move(list1));
     GameEnvironment::Value list2Value(std::move(list2));
     GameEnvironment::Value expectedListValue(std::move(expectedList));
-    evaluator.evaluate(LISTMODIFIER::EXTEND, {&list1Value, &list2Value});
+    evaluator.evaluate(MODIFIER::EXTEND, {&list1Value, &list2Value});
 
     EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&list1Value, &expectedListValue}).value));
 }
@@ -1091,7 +1091,7 @@ TEST_F(EvaluatorTest, TestExtendListOfMaps) {
     GameEnvironment::Value list1Value(std::move(list1));
     GameEnvironment::Value list2Value(std::move(list2));
     GameEnvironment::Value expectedListValue(std::move(expectedList));
-    evaluator.evaluate(LISTMODIFIER::EXTEND, {&list1Value, &list2Value});
+    evaluator.evaluate(MODIFIER::EXTEND, {&list1Value, &list2Value});
 
     EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&list1Value, &expectedListValue}).value));
 }

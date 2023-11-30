@@ -310,7 +310,7 @@ GameEnvironment::Value Evaluator::evaluate(OPERATOR operationEnum, std::vector<c
 //--------------------------------------------------------------- LIST MODDIFY OPERATION CLASS IMPLEMENTATIONS --------------------------------- 
 
 // Reverses items of the list, which can hold any type  
-class ReverseListOperation final : public ListModifyOperation {
+class ReverseListOperation final : public ModifyOperation {
 private:
     struct ReverseListVisitor {
 
@@ -335,7 +335,7 @@ private:
 };
 
 // Shuffles items of the list, which can hold any type
-class ShuffleListOperation final : public ListModifyOperation {
+class ShuffleListOperation final : public ModifyOperation {
 private:
     struct ShuffleListVisitor {
         void operator()(std::unique_ptr<GameEnvironment::List>& list) {
@@ -363,7 +363,7 @@ private:
 };
 
 // Extends the list by appending items from the second list to the first one
-class ExtendListOperation final : public ListModifyOperation {
+class ExtendListOperation final : public ModifyOperation {
 private:
     struct ExtendListVisitor {
         void operator()(std::unique_ptr<GameEnvironment::List>& targetList, 
@@ -394,8 +394,8 @@ private:
 
 // Register modifying list operations to the map
 void 
-Evaluator::registerOperation(LISTMODIFIER listModifierEnum, std::unique_ptr<ListModifyOperation> listModifyOperation){
-    auto [it, succeeded] = listModifierToListModifyOperation.try_emplace(listModifierEnum, std::move(listModifyOperation));
+Evaluator::registerOperation(MODIFIER MODIFIEREnum, std::unique_ptr<ModifyOperation> ModifyOperation){
+    auto [it, succeeded] = MODIFIERToModifyOperation.try_emplace(MODIFIEREnum, std::move(ModifyOperation));
     
     // When the given operation is already registered
     if (!succeeded){
@@ -404,10 +404,10 @@ Evaluator::registerOperation(LISTMODIFIER listModifierEnum, std::unique_ptr<List
 }
 
 void
-Evaluator::evaluate(LISTMODIFIER listModifierEnum, std::vector<GameEnvironment::Value*> values){
-    auto operationItr = listModifierToListModifyOperation.find(listModifierEnum);
+Evaluator::evaluate(MODIFIER MODIFIEREnum, std::vector<GameEnvironment::Value*> values){
+    auto operationItr = MODIFIERToModifyOperation.find(MODIFIEREnum);
     // No operation registered
-    if (operationItr == listModifierToListModifyOperation.end()){
+    if (operationItr == MODIFIERToModifyOperation.end()){
         std::runtime_error("The list modifying operator is not registered");
     }
     operationItr->second->evaluate(values);
@@ -427,9 +427,9 @@ Evaluator Evaluator::defaultEvaluatorFactory(){
     evaluator.registerOperation(OPERATOR::AND,          std::make_unique<AndOperation>());
     evaluator.registerOperation(OPERATOR::NOT,          std::make_unique<NotOperation>());
     evaluator.registerOperation(OPERATOR::EQUAL,        std::make_unique<EqualOperation>());
-    evaluator.registerOperation(LISTMODIFIER::REVERSE,  std::make_unique<ReverseListOperation>());
-    evaluator.registerOperation(LISTMODIFIER::SHUFFLE,  std::make_unique<ShuffleListOperation>());
-    evaluator.registerOperation(LISTMODIFIER::EXTEND,   std::make_unique<ExtendListOperation>());
+    evaluator.registerOperation(MODIFIER::REVERSE,  std::make_unique<ReverseListOperation>());
+    evaluator.registerOperation(MODIFIER::SHUFFLE,  std::make_unique<ShuffleListOperation>());
+    evaluator.registerOperation(MODIFIER::EXTEND,   std::make_unique<ExtendListOperation>());
     return evaluator;
 }
 

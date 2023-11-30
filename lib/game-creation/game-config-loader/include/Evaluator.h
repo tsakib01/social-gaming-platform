@@ -12,7 +12,7 @@ enum class OPERATOR {
 };
 
 // Allowed operations for modifying lists by evaluator
-enum class LISTMODIFIER {
+enum class MODIFIER {
     EXTEND, REVERSE, SHUFFLE
 };
 
@@ -37,7 +37,7 @@ private:
 };
 
 // An interface of Operation
-class ListModifyOperation {
+class ModifyOperation {
 public:
     // Evaluates given arguments to GameEnvironment::Value
     void evaluate(std::vector<GameEnvironment::Value*> values) {
@@ -61,16 +61,16 @@ public:
     // Evaluate given arguments with given operator
     GameEnvironment::Value evaluate(OPERATOR operationEnum, std::vector<const GameEnvironment::Value*> values);
     // Modify lists based on given action
-    void evaluate(LISTMODIFIER listModifierEnum, std::vector<GameEnvironment::Value*> values);
+    void evaluate(MODIFIER MODIFIEREnum, std::vector<GameEnvironment::Value*> values);
     // Add an associate from operator to operation
     void registerOperation(OPERATOR operatorEnum, std::unique_ptr<Operation> operation);
-    void registerOperation(LISTMODIFIER listModifierEnum, std::unique_ptr<ListModifyOperation> listModifyOperation);
+    void registerOperation(MODIFIER MODIFIEREnum, std::unique_ptr<ModifyOperation> ModifyOperation);
     // Default factory method
     static Evaluator defaultEvaluatorFactory();
 private:
     // Map that can associate from operator to operation 
     std::map<OPERATOR, std::unique_ptr<Operation>> operatorToOperation; 
-    std::map<LISTMODIFIER, std::unique_ptr<ListModifyOperation>> listModifierToListModifyOperation;
+    std::map<MODIFIER, std::unique_ptr<ModifyOperation>> MODIFIERToModifyOperation;
 };
 
 #endif
