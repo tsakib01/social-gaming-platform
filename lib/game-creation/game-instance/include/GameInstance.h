@@ -15,18 +15,18 @@ enum class GameInstanceState {
     WAITING
 };
 
-struct ConfigValid {
-    bool valid;
+struct ValidResponse {
+    bool status;
 };
 
-struct ConfigFinished {
-    bool finished;
+struct Finished {
+    bool status;
 };
 
 struct ConfigResult {
     std::string prompt;
-    ConfigValid valid;
-    ConfigFinished finished;
+    ValidResponse validResponse;
+    Finished finished;
 };
 
 const int SETUP_FINISHED = -1;

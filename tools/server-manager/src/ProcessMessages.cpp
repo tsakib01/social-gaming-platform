@@ -110,15 +110,15 @@ ServerManager::processGameSelect(const Message& message) {
 std::deque<Message>
 ServerManager::processGameConfig(const Message& message) {	
 	User owner = userManager->getUserByID(message.connection);
-	const auto [prompt, valid, finished] = gameInstanceManager->inputConfig(owner.roomCode, message.text);
+	const auto [prompt, validResponse, finished] = gameInstanceManager->inputConfig(owner.roomCode, message.text);
 
-	if (finished.finished) {
+	if (finished.status) {
 		userManager->setUserState(message.connection, UserState::GAME_WAIT);
 		return std::deque<Message>{
 			{message.connection, "Room Code: " + std::to_string(owner.roomCode) + "     Type (S) to start.\n"}};
 	}
 
-	else if (!finished.finished && valid.valid) {
+	else if (!finished.status && validResponse.status) {
 		return std::deque<Message>{
 			{message.connection, prompt + "\n"}};
 	}
@@ -127,7 +127,6 @@ ServerManager::processGameConfig(const Message& message) {
 		return std::deque<Message>{
 			{message.connection, "Invalid, try again.\n"}};
 	}
-	
 }
 
 std::deque<Message>

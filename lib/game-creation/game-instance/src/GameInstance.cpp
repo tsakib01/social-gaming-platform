@@ -28,22 +28,23 @@ GameInstance::inputConfig(const std::string& response) {
 
     if (!sentFirstPrompt) {
         sentFirstPrompt = true;
-        return ConfigResult{std::string(prompts[0]), ConfigValid{false}, ConfigFinished{false}};
+        return ConfigResult{
+            std::string(prompts[m_setupIndex]), ValidResponse{false}, Finished{false}};
     }
 
-    else if (m_setupIndex < identifiers.size()) {
-        bool valid = m_gameSetup->isResponseValid(identifiers[m_setupIndex], response);
-        if (valid) {
-            m_setupIndex++;
-            if (m_setupIndex == identifiers.size()) {
-                m_setupIndex = SETUP_FINISHED;
-                return ConfigResult{"Finished setup.\n", ConfigValid{true}, ConfigFinished{true}};
-            }
-            return ConfigResult{std::string(prompts[m_setupIndex]), ConfigValid{true}, ConfigFinished{false}};
+    if (m_gameSetup->isResponseValid(identifiers[m_setupIndex], response)) {
+        m_setupIndex++;
+        if (m_setupIndex == identifiers.size()) {
+            m_setupIndex = SETUP_FINISHED;
+            return ConfigResult{
+                "Finished setup.\n", ValidResponse{true}, Finished{true}};
         }
-    }
-
-    return ConfigResult{"Invalid.\n", ConfigValid{false}, ConfigFinished{false}};
+        return ConfigResult{
+            std::string(prompts[m_setupIndex]), ValidResponse{true}, Finished{false}};
+    } 
+    
+    return ConfigResult{
+        "Invalid.\n", ValidResponse{false}, Finished{false}};
 }
 
 void 
