@@ -21,8 +21,8 @@ public:
     
     void addUsersToGame(uint16_t roomCode, const std::vector<User>& users);
     void deleteUsersFromGame(uint16_t roomCode, const std::vector<User>& users);
-
     bool gameIsJoinable(uint16_t roomCode);
+    bool gameHasSetup(uint16_t roomCode);
 
 private:
     std::vector<std::unique_ptr<GameInstance>> m_gameList;

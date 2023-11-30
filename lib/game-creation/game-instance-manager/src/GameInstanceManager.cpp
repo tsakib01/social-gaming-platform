@@ -30,13 +30,6 @@ GameInstanceManager::createGameInstance(std::string_view gameFilePath) {
     auto setup = gameConfigLoader.createGameSetup();
     uint16_t inviteCode = generateRoomCode();
 
-    std::vector<std::string_view> vec = setup->getIdentifiers();
-    if (vec.size() == 0) {
-        std::cout << "empty vector!\n";
-    } else {
-        std::cout << vec[0] << std::endl;
-    }
-
     m_gameList.emplace_back(std::make_unique<GameInstance>(std::move(rules), std::move(state), std::move(setup), inviteCode));
 
     return inviteCode;
@@ -94,6 +87,12 @@ bool
 GameInstanceManager::gameIsJoinable(uint16_t roomCode) {
     auto& game = getGameInstance(roomCode);
     return game->gameIsJoinable();
+}
+
+bool
+GameInstanceManager::gameHasSetup(uint16_t roomCode) {
+    auto& game = getGameInstance(roomCode);
+    return game->gameHasSetup();
 }
 
 std::unique_ptr<GameInstance>& 

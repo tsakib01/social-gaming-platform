@@ -79,13 +79,12 @@ ServerManager::processGameSelect(const Message& message) {
 			userManager->setUserRole(message.connection, Role::OWNER);
 			userManager->setUserRoomCode(message.connection, roomCode);
 
-			bool gameHasSetup = false;
-
-			if (gameHasSetup) {
+			if (gameInstanceManager->gameHasSetup(roomCode)) {
 				userManager->setUserState(message.connection, UserState::GAME_CONFIG);
 				return std::deque<Message>{
 					{message.connection, "Configuration Start...\n"}};
-			} else {
+			} 
+			else {
 				userManager->setUserState(message.connection, UserState::GAME_WAIT);
 				return std::deque<Message>{
 					{message.connection, "Room Code: " + std::to_string(roomCode) + "     Type (S) to start.\n"}};

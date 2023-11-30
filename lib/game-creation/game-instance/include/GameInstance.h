@@ -21,8 +21,7 @@ struct ConfigResult {
     bool finished;
 };
 
-const int SETUP_TODO = -1;
-const int SETUP_FINISHED = -2;
+const int SETUP_FINISHED = -1;
 
 class GameInstance {
 public:
@@ -43,6 +42,7 @@ public:
     void deleteUsers(const std::vector<User>& users);
 
     bool gameIsJoinable();
+    bool gameHasSetup();
 
 private:
     std::unique_ptr<RuleTree> m_gameRules;
@@ -55,7 +55,7 @@ private:
     RuleExecuteVisitor m_ruleExecutor;
 
     uint16_t m_roomCode;
-    int m_setupIndex = SETUP_TODO;
+    int m_setupIndex = 0;
 };
 
 #endif

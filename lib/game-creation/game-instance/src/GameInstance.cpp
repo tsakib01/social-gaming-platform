@@ -24,20 +24,12 @@ std::unique_ptr<GameState> gameState, std::unique_ptr<GameSetup> gameSetup, uint
 
 ConfigResult
 GameInstance::inputConfig(const std::string& response) {
-    // index
-    // what if there is no set up in the first place?
+    std::vector<std::string_view> identifiers = m_gameSetup->getIdentifiers();
+    std::vector<std::string_view> prompts = m_gameSetup->getPrompts();
 
-    std::cout << "Return config results from room : " << m_roomCode << std::endl;
+    
 
-    std::vector<std::string_view> vec = m_gameSetup->getIdentifiers();
-
-    // if () {
-
-    //     m_setupIndex++;
-    // }
-
-
-    if (m_setupIndex == vec.size()) {
+    if (m_setupIndex == identifiers.size()) {
         m_setupIndex = SETUP_FINISHED;
         return ConfigResult{"Finished setup.\n", true, true};
     }
@@ -111,4 +103,9 @@ GameInstance::getGameInstanceState() {
 bool 
 GameInstance::gameIsJoinable() {
     return m_setupIndex == SETUP_FINISHED;
+}
+
+bool
+GameInstance::gameHasSetup() {
+    return m_gameSetup->hasSetup();
 }
