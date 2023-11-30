@@ -42,7 +42,7 @@ GameInstance::inputConfig(const std::string& response, const bool firstPrompt) {
         }
     }
 
-    return ConfigResult{"This should not call.\n", false, false};
+    return ConfigResult{"Invalid.\n", false, false};
 }
 
 void 
