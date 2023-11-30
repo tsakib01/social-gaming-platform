@@ -48,5 +48,4 @@ public:
     std::unique_ptr<GameEnvironment::Environment> getConfigEnvironment(const ts::Node& root);
     static std::unique_ptr<GameStateLoader> createDefaultGameStateLoader(std::string_view source);
 };
-std::unique_ptr<GameEnvironment::Value> convertNumRangeToValue(std::string_view input);
 #endif

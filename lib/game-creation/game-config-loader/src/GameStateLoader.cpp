@@ -113,7 +113,19 @@ private:
         return toReturn;
     }
 };
-
+class ConvertNodeToNumRange final : public ConvertInterface {
+public:
+    ConvertNodeToNumRange(const GameStateLoader* gameStateLoader)
+            : ConvertInterface(gameStateLoader)
+    {}
+private:
+    std::unique_ptr<GameEnvironment::Value> convertNodeImpl(const ts::Node& node) const{
+        auto toReturn = std::make_unique<GameEnvironment::Value>();
+        auto range = convertToRange(node.getSourceRange(gameStateLoader->getSource()));
+        toReturn->value = std::make_pair(range.first,range.second);
+        return toReturn;
+    }
+};
 GameStateLoader::GameStateLoader(std::string_view source)
 : source(source)
 {}
@@ -138,19 +150,6 @@ std::unique_ptr<GameEnvironment::Environment> GameStateLoader::getEnvironment(co
     return environment;
 }
 
-std::unique_ptr<GameEnvironment::Value> convertNumRangeToValue(std::string_view input){
-    auto range =  convertToRange(input);
-    auto max = std::make_unique<GameEnvironment::Value>();
-    auto min = std::make_unique<GameEnvironment::Value>();
-    auto rangeValue = std::make_unique<GameEnvironment::Value>();
-    std::unique_ptr<GameEnvironment::Map> rangeMap = std::make_unique<GameEnvironment::Environment>();
-    min->value=range.first;
-    max->value=range.second;
-    rangeMap->insert(std::make_pair("min", std::move(min)));
-    rangeMap->insert(std::make_pair("max", std::move(max)));
-    rangeValue->value = std::move(rangeMap);
-    return rangeValue;
-}
 
 std::unique_ptr<GameEnvironment::Environment>  GameStateLoader::getConfigEnvironment(const ts::Node& root){
     std::unique_ptr<GameEnvironment::Map> configMap = std::make_unique<GameEnvironment::Environment>();
@@ -164,17 +163,9 @@ std::unique_ptr<GameEnvironment::Environment>  GameStateLoader::getConfigEnviron
         ts::Extent identifierRange = root.getNamedChild(index).getPreviousSibling().getByteRange();
         std::string_view identifier = source.substr(identifierRange.start,
                                                     identifierRange.end - 1 - identifierRange.start);
-        if(root.getNamedChild(index).getSymbol()==SYMBOL::NUMBER_RANGE){
-            ts::Extent dataRange = root.getNamedChild(index).getByteRange();
-            std::string_view data = source.substr(dataRange.start, dataRange.end - dataRange.start);
-            auto rangeValue=convertNumRangeToValue(data);
-            configMap->insert(std::make_pair(identifier, std::move(rangeValue)));
-        }
-        else {
-            int nodeSymbol = root.getNamedChild(index).getSymbol();
-            auto toStore = nodeSymbolToConvert[nodeSymbol]->convertNode(root.getNamedChild(index));
-            configMap->insert(std::make_pair(identifier, std::move(toStore)));
-        }
+        int nodeSymbol = root.getNamedChild(index).getSymbol();
+        auto toStore = nodeSymbolToConvert[nodeSymbol]->convertNode(root.getNamedChild(index));
+        configMap->insert(std::make_pair(identifier, std::move(toStore)));
         index++;
     }
     //setup will add into configMap here later.
@@ -227,6 +218,7 @@ std::unique_ptr<GameStateLoader> GameStateLoader::createDefaultGameStateLoader(s
     gameStateLoader->registerConversion(SYMBOL::STRING, std::make_unique<ConvertNodeToString>(gameStateLoader.get()));
     gameStateLoader->registerConversion(SYMBOL::LIST, std::make_unique<ConvertNodeToList>(gameStateLoader.get()));
     gameStateLoader->registerConversion(SYMBOL::MAP, std::make_unique<ConvertNodeToMap>(gameStateLoader.get()));
+    gameStateLoader->registerConversion(SYMBOL::NUMBER_RANGE, std::make_unique<ConvertNodeToNumRange>(gameStateLoader.get()));
     return gameStateLoader;
 }
 
