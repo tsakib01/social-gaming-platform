@@ -120,16 +120,14 @@ public:
     {}
 private:
     std::unique_ptr<GameEnvironment::Value> convertNodeImpl(const ts::Node& node) const{
-        auto toReturn = std::make_unique<GameEnvironment::Value>();
+
         auto range = convertToRange(node.getSourceRange(gameStateLoader->getSource()));
-        auto max = std::make_unique<GameEnvironment::Value>();
-        auto min = std::make_unique<GameEnvironment::Value>();
+
         std::unique_ptr<GameEnvironment::Map> rangeMap = std::make_unique<GameEnvironment::Environment>();
-        min->value=range.first;
-        max->value=range.second;
-        rangeMap->insert(std::make_pair("min", std::move(min)));
-        rangeMap->insert(std::make_pair("max", std::move(max)));
-        toReturn->value = std::move(rangeMap);
+        rangeMap->emplace("min", std::make_unique<GameEnvironment::Value>(range.first));
+        rangeMap->emplace("max", std::make_unique<GameEnvironment::Value>(range.second));
+
+        auto toReturn = std::make_unique<GameEnvironment::Value>(std::move(rangeMap));
         return toReturn;
     }
 };
@@ -159,25 +157,25 @@ std::unique_ptr<GameEnvironment::Environment> GameStateLoader::getEnvironment(co
 
 
 std::unique_ptr<GameEnvironment::Environment>  GameStateLoader::getConfigEnvironment(const ts::Node& root){
-    std::unique_ptr<GameEnvironment::Map> configMap = std::make_unique<GameEnvironment::Environment>();
+    std::unique_ptr<GameEnvironment::Map> configMap = std::make_unique<GameEnvironment::Map>();
     std::unique_ptr<GameEnvironment::Environment> toReturnEnvironment = std::make_unique<GameEnvironment::Environment>();
-    auto toStore = std::make_unique<GameEnvironment::Value>();
-    std::string_view configIdentifier = root.getChild(0).getSourceRange(source);
-    int index=0;
-    int numNamedChildren=root.getNumNamedChildren();
-    while (index<numNamedChildren&&root.getNamedChild(index).getSymbol()!=SYMBOL::SETUP){
 
+    std::string_view configIdentifier = root.getChild(0).getSourceRange(source);
+
+    int numNamedChildren=root.getNumNamedChildren();
+    for (int index=0; index<numNamedChildren; index++){
+        if(root.getNamedChild(index).getSymbol()==SYMBOL::SETUP){
+            break;
+        }
         ts::Extent identifierRange = root.getNamedChild(index).getPreviousSibling().getByteRange();
         std::string_view identifier = source.substr(identifierRange.start,
                                                     identifierRange.end - 1 - identifierRange.start);
         int nodeSymbol = root.getNamedChild(index).getSymbol();
         auto toStore = nodeSymbolToConvert[nodeSymbol]->convertNode(root.getNamedChild(index));
-        configMap->insert(std::make_pair(identifier, std::move(toStore)));
-        index++;
+        configMap->emplace(identifier, std::move(toStore));
     }
-    //setup will add into configMap here later.
-    toStore->value=std::move(configMap);
-    toReturnEnvironment->insert(std::make_pair(configIdentifier, std::move(toStore)));
+
+    toReturnEnvironment->emplace(configIdentifier, std::make_unique<GameEnvironment::Value>(std::move(configMap)));
     return toReturnEnvironment;
 }
 
