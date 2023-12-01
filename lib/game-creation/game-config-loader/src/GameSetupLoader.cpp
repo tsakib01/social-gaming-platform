@@ -1,6 +1,7 @@
 #include "GameSetupLoader.h"
 #include <iostream>
 #include <charconv>
+#include <algorithm>
 SetupInstance::SetupInstance(std::string_view identifier,KIND kind,std::string_view prompt):identifier(identifier),kind(kind),prompt(prompt),restInfo(std::string_view{}){}
 
 SetupInstance::SetupInstance(std::string_view identifier,KIND kind,std::string_view prompt,std::string_view restInfo, Domain domain):identifier(identifier),kind(kind),prompt(prompt),restInfo(restInfo), domain(domain){}
@@ -45,7 +46,9 @@ std::string_view SetupInstance::getPrompt(){
 std::string_view SetupInstance::getRestInfo(){
     return restInfo;
 }
-
+KIND SetupInstance::getKind(){
+    return kind;
+}
 void SetupInstance::intProcess(){
     this->print();
 }
@@ -149,7 +152,10 @@ Range convertToRange(std::string_view restInfo){
     if (openParen == std::string_view::npos || closeParen == std::string_view::npos || closeParen < openParen) {
         throw std::invalid_argument("Invalid input string");
     }
-
+    auto commaCount=std::count(restInfo.begin(), restInfo.end(), ',');
+    if(commaCount!=1){
+        throw std::invalid_argument("Invalid input string");
+    }
     // Extract the numbers as a substring
     std::string_view numbers = restInfo.substr(openParen + 1, closeParen - openParen - 1);
 
@@ -185,6 +191,10 @@ Range convertToRange(std::string_view restInfo){
 }
 
 ChoiceList convertToChoiceList( std::string_view restInfo){
+    auto quotesCount=std::count(restInfo.begin(), restInfo.end(), '\'');
+    if(quotesCount == 0 || quotesCount % 2 != 0){
+        throw std::runtime_error("Wrong number of quote");
+    }
     ChoiceList choices;
     while (!restInfo.empty()) {
         // Find the start of the key
@@ -263,8 +273,10 @@ std::vector<std::unique_ptr<SetupInstance>> GameSetupLoader::getGameSetup (const
 
     std::vector< std::unique_ptr<SetupInstance>> setups;
 
-    for(int index=3;index<numChildCount;index++){
-        setups.push_back(convertNodetoSetup(node.getNamedChild(index)));
+    for(int index=0;index<numChildCount;index++){
+        if(node.getNamedChild(index).getSymbol()==92) {
+            setups.push_back(convertNodetoSetup(node.getNamedChild(index)));
+        }
     }
     return setups;
 }

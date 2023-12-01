@@ -4,13 +4,14 @@
 #include <string>
 #include <string_view>
 #include "GameSetupLoader.h"
-
+#include "GameConfigLoader.h"
+#include "GameSetup.h"
+#include <fstream>
 
 class DomainCheckerTest : public ::testing::Test {
 protected:
     DomainChecker checker;
 };
-
 TEST_F(DomainCheckerTest, ReturnsTrueForVariantWithInRange) {
     Domain domain = Range{1, 10};
     auto checkerFunc = [this](auto&& arg) { return checker(arg, std::string_view("5")); };
@@ -66,12 +67,12 @@ TEST(ConvertToRangeTest, ValidInput) {
     EXPECT_EQ(expected, result);
 }
 
-//TEST(ConvertToRangeTest, InvalidInput) {
-//    EXPECT_THROW(convertToRange("(1,10"), std::invalid_argument);
-//    EXPECT_THROW(convertToRange("1,10)"), std::invalid_argument);
-//    EXPECT_THROW(convertToRange("(1;10)"), std::invalid_argument);
-//    EXPECT_THROW(convertToRange("(1, 10, 15)"), std::invalid_argument);
-//}
+TEST(ConvertToRangeTest, InvalidInput) {
+    EXPECT_THROW(convertToRange("(1,10"), std::invalid_argument);
+    EXPECT_THROW(convertToRange("1,10)"), std::invalid_argument);
+    EXPECT_THROW(convertToRange("(1;10)"), std::invalid_argument);
+    EXPECT_THROW(convertToRange("(1, 10, 15)"), std::invalid_argument);
+}
 
 TEST(ConvertToChoiceListTest, ValidInput) {
     ChoiceList expected{{"apple", "fruit"}, {"banana", "fruit"}};
@@ -79,11 +80,11 @@ TEST(ConvertToChoiceListTest, ValidInput) {
     EXPECT_EQ(expected, result);
 }
 
-//TEST(ConvertToChoiceListTest, InvalidInput) {
-//    EXPECT_THROW(convertToChoiceList("'apple','fruit,'banana','fruit'"), std::runtime_error);
-//    EXPECT_THROW(convertToChoiceList("'apple','fruit','banana,'fruit"), std::runtime_error);
-//    EXPECT_THROW(convertToChoiceList("apple,fruit,banana,fruit"), std::runtime_error);
-//}
+TEST(ConvertToChoiceListTest, InvalidInput) {
+    EXPECT_THROW(convertToChoiceList("'apple','fruit,'banana','fruit'"), std::runtime_error);
+    EXPECT_THROW(convertToChoiceList("'apple','fruit','banana,'fruit"), std::runtime_error);
+    EXPECT_THROW(convertToChoiceList("apple,fruit,banana,fruit"), std::runtime_error);
+}
 
 TEST(ConvertStringToDomainTest, ValidInput) {
     KIND kind = KIND::INTEGER;
@@ -99,11 +100,11 @@ TEST(ConvertStringToDomainTest, ValidInput) {
     EXPECT_EQ(expected, actual);
 }
 
-//TEST(ConvertStringToDomainTest, InvalidInput) {
-//    EXPECT_THROW(convertStringToDomain(KIND::INTEGER, "(1,10,15)"), std::invalid_argument);
-//    EXPECT_THROW(convertStringToDomain(KIND::ENUM, "'apple','fruit,'banana','fruit'"), std::runtime_error);
-//    EXPECT_THROW(convertStringToDomain(static_cast<KIND>(42), "(1,10)"), std::runtime_error); // Example of an unsupported KIND
-//}
+TEST(ConvertStringToDomainTest, InvalidInput) {
+    EXPECT_THROW(convertStringToDomain(KIND::INTEGER, "(1,10,15)"), std::invalid_argument);
+    EXPECT_THROW(convertStringToDomain(KIND::ENUM, "'apple','fruit,'banana','fruit'"), std::runtime_error);
+    EXPECT_THROW(convertStringToDomain(static_cast<KIND>(42), "(1,10)"), std::runtime_error); // Example of an unsupported KIND
+}
 TEST(SetupInstanceTest, CombinedTestForAllKinds) {
     // Testing KIND::INTEGER
     SetupInstance setupInt("int_test", KIND::INTEGER, "Enter a number between 1 and 10", "", Domain(Range{1, 10}));
@@ -127,4 +128,33 @@ TEST(SetupInstanceTest, CombinedTestForAllKinds) {
     EXPECT_FALSE(setupEnum.checkResponse("cherry"));
 }
 
+//SetupLoaderTest
+extern "C" {
+TSLanguage* tree_sitter_socialgaming();
+}
+class SetupParserTest  : public ::testing::Test {
+public:
+    SetupParserTest(std::string_view path){
+        std::ifstream ifs(path.data());
+        std::stringstream buffer;
+        buffer << ifs.rdbuf();
+        ifs.close();
+        source = buffer.str();
+        loadConfigurationNode();
+    }
 
+    ts::Node& getSetupNode(int num){
+        configuration->getNamedChild(num);
+    }
+
+    void loadConfigurationNode(){
+        ts::Language language = tree_sitter_socialgaming();
+        ts::Parser parser{language};
+        ts::Tree tree = parser.parseString(source);
+        ts::Node root = tree.getRootNode();
+        configuration = std::make_unique<ts::Node>(root.getChildByFieldName("configuration"));
+    }
+protected:
+    std::string_view source;
+    std::unique_ptr<ts::Node> configuration;
+};
