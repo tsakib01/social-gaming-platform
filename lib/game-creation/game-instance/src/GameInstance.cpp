@@ -1,6 +1,6 @@
 #include "GameInstance.h"
 #include "GameConfigLoader.h"
-
+#include "GameEnvironment.h"
 GameInstance::GameInstance(std::unique_ptr<RuleTree> gameRules, 
 std::unique_ptr<GameState> gameState, std::unique_ptr<GameSetup> gameSetup, uint16_t roomCode)
     : m_gameRules(std::move(gameRules)), 
@@ -108,4 +108,34 @@ GameInstance::gameIsJoinable() {
 bool
 GameInstance::gameHasSetup() {
     return m_gameSetup->hasSetup();
+}
+
+std::unique_ptr<GameEnvironment::Value> convertSetupResponseToValue( KIND kind, std::string_view response ){
+
+    if(kind == KIND::INTEGER){
+        return std::make_unique<GameEnvironment::Value>(std::stoi(std::string(response)));
+    }
+    else if(kind == KIND::BOOLEAN){
+        bool value ;
+        if (response=="y"){
+            value = true;
+        }
+        else{
+            value = false;
+        }
+        return std::make_unique<GameEnvironment::Value>(value);
+    }
+    else{
+        return std::make_unique<GameEnvironment::Value>(response);
+    }
+}
+
+void GameInstance::addSetupIntoState(){
+    int size = m_setupResponses.size();
+    for(int i=0; i<size; i++){
+        auto identifier = m_setupResponses[i].first;
+        auto kind = m_gameSetup->getKind(identifier);
+        auto value = convertSetupResponseToValue(kind, m_setupResponses[i].second );
+        m_gameState->addSetupToGameState(identifier,std::move(value));
+    }
 }

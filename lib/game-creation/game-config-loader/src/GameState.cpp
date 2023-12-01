@@ -22,6 +22,16 @@ void GameState::addState(GameEnvironment::Identifier identifier, std::unique_ptr
     }
 }
 
+void GameState::addSetupToGameState(GameEnvironment::Identifier identifier,  std::unique_ptr<GameEnvironment::Value> value){
+    if(environment->find("configuration")==environment->end()){
+        throw std::runtime_error ("No configuration in GameState");
+    }
+    auto configuration = environment->find("configuration");
+    EmplaceVisitor visitor(identifier,std::move(value));
+    std::visit(visitor, configuration->second->value);
+
+//    configuration->second->value.emplace(identifier, std::move(value));
+}
 const GameEnvironment::Value* GameState::getValue(GameEnvironment::Identifier identifier){
     auto variable = environment->find(identifier);
     if (variable == environment->end()){

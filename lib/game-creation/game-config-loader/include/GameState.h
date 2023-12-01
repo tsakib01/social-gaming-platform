@@ -18,6 +18,8 @@ public:
     void addEnvironment(GameEnvironment::Environment& newEnvironment);
     // Add an identifier with a given value.
     void addState(GameEnvironment::Identifier identifier, std::unique_ptr<GameEnvironment::Value> value);
+    // Add a setup to game state
+    void addSetupToGameState(GameEnvironment::Identifier identifier,  std::unique_ptr<GameEnvironment::Value> value);
     // Get a value of variable by a given identifier
     const GameEnvironment::Value* getValue(GameEnvironment::Identifier identifier);
     // Update the identifier's value to given value.
@@ -67,5 +69,31 @@ struct PrintVisitor {
     void operator()(const GameEnvironment::Value& value) const {
         std::visit(*this, value.value);
     }
+};
+
+class EmplaceVisitor{
+public:
+    explicit EmplaceVisitor(GameEnvironment::Identifier identifier, std::unique_ptr<GameEnvironment::Value> toStore) : identifier(identifier), toStore(std::move(toStore)) {}
+    void operator()( std::unique_ptr<GameEnvironment::Map>& value)  {
+       value->emplace(identifier,std::move(toStore));
+    }
+    void operator()(int value) {
+        std::cout << "Integer: " << value << std::endl;
+    }
+    void operator()(bool value)  {
+        std::cout << "Boolean: " << (value ? "true" : "false") << std::endl;
+    }
+    void operator()( std::string_view& value)  {
+        std::cout << "String: " << value << std::endl;
+    }
+    void operator()( std::unique_ptr<GameEnvironment::List>& value)  {
+        value->push_back(std::move(toStore));
+    }
+    void operator()( std::unique_ptr<GameEnvironment::Value>& value ) {
+        std::visit(*this, value->value);
+    }
+private:
+    std::string_view identifier;
+    std::unique_ptr<GameEnvironment::Value> toStore;
 };
 #endif

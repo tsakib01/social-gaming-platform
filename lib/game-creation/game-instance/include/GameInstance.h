@@ -48,6 +48,7 @@ public:
 
     void addUsers(const std::vector<User>& users);
     void deleteUsers(const std::vector<User>& users);
+    void addSetupIntoState();
 
     bool gameIsJoinable();
     bool gameHasSetup();
