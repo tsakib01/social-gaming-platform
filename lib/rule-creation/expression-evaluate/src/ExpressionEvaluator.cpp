@@ -32,6 +32,12 @@ ExpressionEvaluateVisitor::operator()(const UnaryExpression& expression) {
 }
 
 std::unique_ptr<GameEnvironment::Value>
+ExpressionEvaluateVisitor::operator()(const BuiltinExpression& expression) {
+    (void)expression;
+    return std::make_unique<GameEnvironment::Value>();
+}
+
+std::unique_ptr<GameEnvironment::Value>
 ExpressionEvaluateVisitor::operator()([[maybe_unused]] const Expression& expression) {
     throw std::runtime_error("Case Unreachable");
 }
