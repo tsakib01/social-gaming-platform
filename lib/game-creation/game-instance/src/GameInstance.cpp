@@ -64,11 +64,9 @@ GameInstance::deleteUsers(const std::vector<User>& users) {
 // and then access it in InGameUserManager. The code below seems to leave the key-value pairing 
 // as nullptrs, but their declaration doesn't necessarily have to come from GameInstance itself.
 void
-GameInstance::updateUserStates(const std::vector<User>& users) {
+GameInstance::updateUserStates(const std::vector<User>& users, GameEnvironment::Environment environmentToUse) {
         for (const User& user : users) {
-
         // This Enviroment has to be taken from somewhere...
-        GameEnvironment::Environment environmentToUse;
         m_inGameUserManager->setStatesOfUser(user.userID, environmentToUse);
     }
 }
@@ -77,3 +75,7 @@ GameInstanceState
 GameInstance::getGameInstanceState() {
     return m_state;
 }
+
+// Use visitor pattern
+// Return vector gamestates that will hold their player states
+// Updating identifier and corresponding values

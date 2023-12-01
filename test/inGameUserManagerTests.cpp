@@ -69,9 +69,11 @@ TEST(InGameUserManagerTests, CanSetStatesOfExistingUser){
     // Load Value with an int which nonNullDummyEnvironment will get (and nullEnvironment won't)
     GameEnvironment::Value testValue;
     testValue.value = 500;
+    testValue.value = true;
     std::unique_ptr<GameEnvironment::Value> testValuePtr;
     testValuePtr -> value;
     
+    // (ENVIRONMENT)
     std::map<GameEnvironment::Identifier, std::unique_ptr<GameEnvironment::Value>> testMap;
     testMap.insert({testIdentifier, std::move(testValuePtr)});
 
