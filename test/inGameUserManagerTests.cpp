@@ -6,11 +6,11 @@
 
 TEST(InGameUserManagerTests, BasicUserCount){
     InGameUserManager inGameUManager;
-    networking::Connection dummyConnection1;
+    UserId dummyConnection1;
     dummyConnection1.id = 1;
     GameEnvironment::Environment dummyEnvironment;
     
-    networking::Connection dummyConnection2;
+    UserId dummyConnection2;
     dummyConnection2.id = 2;
     GameEnvironment::Environment dummyEnvironment2;
 
@@ -22,11 +22,11 @@ TEST(InGameUserManagerTests, BasicUserCount){
 
 TEST(InGameUserManagerTests, CanDeleteAllUsers){
     InGameUserManager inGameUManager;
-    networking::Connection dummyConnection1;
+    UserId dummyConnection1;
     dummyConnection1.id = 1;
     GameEnvironment::Environment dummyEnvironment;
     
-    networking::Connection dummyConnection2;
+    UserId dummyConnection2;
     dummyConnection2.id = 2;
     GameEnvironment::Environment dummyEnvironment2;
     
@@ -40,7 +40,7 @@ TEST(InGameUserManagerTests, CanDeleteAllUsers){
 
 TEST(InGameUserManagerTests, CanGetStatesOfUser){
     InGameUserManager inGameUManager;
-    networking::Connection dummyConnection;
+    UserId dummyConnection;
     dummyConnection.id = 1;
     
     // We care about using the Identifier so that we can find the user's Value.
@@ -58,7 +58,7 @@ TEST(InGameUserManagerTests, CanGetStatesOfUser){
 // Test overwriting an Environment with nothing in it, with an Environment that does have something in it.
 TEST(InGameUserManagerTests, CanSetStatesOfExistingUser){
     InGameUserManager inGameUManager;
-    networking::Connection dummyConnection;
+    UserId dummyConnection;
     dummyConnection.id = 1;
     
     // We care about using the Identifier so that we can find the user's Value.

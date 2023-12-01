@@ -20,7 +20,7 @@ TEST_F(GameCommunicatorTest, TestSetAndGetGameChoices) {
 
 // Test storeCurrentUserInput and getCurrentUserInput
 TEST_F(GameCommunicatorTest, TestStoreAndGetCurrentUserInput) {
-    Connection userID{1};
+    UserId userID{1};
     Message userMessage;
     userMessage.connection = userID;
     userMessage.text = "rock";
@@ -31,7 +31,7 @@ TEST_F(GameCommunicatorTest, TestStoreAndGetCurrentUserInput) {
 
 // Test setGameMessage
 TEST_F(GameCommunicatorTest, TestSetGameMessage) {
-    std::vector<Connection> users = {Connection{123}, Connection{456}};
+    std::vector<UserId> users = {UserId{123}, UserId{456}};
     communicator.setGameMessage(users, "hello");
     auto retrievedMessages = communicator.getGameMessages();
     ASSERT_EQ(retrievedMessages.size(), 2);

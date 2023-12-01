@@ -3,7 +3,7 @@
 #include <iostream>
 
 void 
-UserManager::addUser(Connection userID) {
+UserManager::addUser(UserId userID) {
     auto it = std::find_if(m_users.begin(), m_users.end(), [userID](const User& user) {
         return user.userID == userID;
     });
@@ -16,7 +16,7 @@ UserManager::addUser(Connection userID) {
 }
 
 void 
-UserManager::removeUser(Connection userID) {
+UserManager::removeUser(UserId userID) {
     auto it = std::remove_if(m_users.begin(), m_users.end(), [userID] (const User& user) { 
         return user.userID == userID; 
     });
@@ -24,25 +24,25 @@ UserManager::removeUser(Connection userID) {
 }
 
 void 
-UserManager::setUserName(Connection userID, std::string_view username) {
+UserManager::setUserName(UserId userID, std::string_view username) {
     auto& user = getUserReferenceByID(userID);
     user.username = username;
 }
 
 void 
-UserManager::setUserRole(Connection userID, Role role) {
+UserManager::setUserRole(UserId userID, Role role) {
     auto& user = getUserReferenceByID(userID);    
     user.role = role;
 }
 
 void
-UserManager::setUserRoomCode(Connection userID, uint16_t roomCode) {
+UserManager::setUserRoomCode(UserId userID, uint16_t roomCode) {
     auto& user = getUserReferenceByID(userID);
     user.roomCode = roomCode;
 }
 
 void 
-UserManager::setUserState(Connection userID, UserState state) {
+UserManager::setUserState(UserId userID, UserState state) {
     auto& user = getUserReferenceByID(userID);
     user.state = state;
 }
@@ -70,7 +70,7 @@ UserManager::getRoomOwner(uint16_t roomCode) const {
 }
 
 User
-UserManager::getUserByID(Connection userID) const {
+UserManager::getUserByID(UserId userID) const {
     auto it = std::find_if(m_users.begin(), m_users.end(), [userID](const User& user) {
         return user.userID == userID;
     });
@@ -78,7 +78,7 @@ UserManager::getUserByID(Connection userID) const {
 }
 
 User&
-UserManager::getUserReferenceByID(Connection userID) {
+UserManager::getUserReferenceByID(UserId userID) {
     auto it = std::find_if(m_users.begin(), m_users.end(), [userID](const User& user) {
         return user.userID == userID;
     });
