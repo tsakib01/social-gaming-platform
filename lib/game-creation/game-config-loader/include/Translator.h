@@ -10,6 +10,7 @@
 #include <iostream>
 #include "Rule.h"
 #include "Expression.h"
+#include "GameStateLoader.h"
 
 
 class Translator;
@@ -178,10 +179,15 @@ private:
 };
 
 
-// Creates the child expression of this node for nodes that look like
+// Creates the expression for general expression nodes
 //      (expression
-//         (some child expression)
+//          ... 
 //      )
+// Which can be either          For example,
+// 1) a literal expression      quoted_string, number, etc.
+// 2) a unary expression        !players.elements...
+// 3) a binary expression       players.size() || winners.size()
+// 4) a dot expression          configuration.rounds.upfrom(1)
 class DummyExpressionFactory final : public ExpressionFactory {
 public:
     DummyExpressionFactory(const Translator* translator) : ExpressionFactory(translator) {}
@@ -189,6 +195,8 @@ private:
     std::unique_ptr<Expression> createImpl(const ts::Node& node); 
 };
 
+
+// Literal Expression Factories
 
 class IdentifierFactory final : public ExpressionFactory {
 public:
@@ -206,6 +214,31 @@ private:
 };
 
 
+class QuotedStringFactory final : public ExpressionFactory {
+public:
+    QuotedStringFactory(const Translator* translator) : ExpressionFactory(translator) {}
+private:
+    std::unique_ptr<Expression> createImpl(const ts::Node& node); 
+};
+
+
+class ListLiteralFactory final : public ExpressionFactory {
+public:
+    ListLiteralFactory(const Translator* translator) : ExpressionFactory(translator) {}
+private:
+    std::unique_ptr<Expression> createImpl(const ts::Node& node); 
+};
+
+class NumberFactory final : public ExpressionFactory {
+public:
+    NumberFactory(const Translator* translator) : ExpressionFactory(translator) {}
+private:
+    std::unique_ptr<Expression> createImpl(const ts::Node& node); 
+};
+
+// TODO: value_map literal expression
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // Translator
 ////////////////////////////////////////////////////////////////////////////////
@@ -216,7 +249,9 @@ public:
     using RuleFactoryPointer = std::unique_ptr<RuleFactory>;
     using ExpressionFactoryPointer = std::unique_ptr<ExpressionFactory>;
 
-    Translator(std::string_view source) : source{source} {}
+    Translator(std::string_view source) : source{source} {
+        gsl = GameStateLoader::createDefaultGameStateLoader(source);
+    }
     
     std::unique_ptr<RuleTree> translate(const ts::Node& root) const;
     std::unique_ptr<Rule> createRule(const ts::Node& node) const;
@@ -233,6 +268,9 @@ public:
     }
 
     std::string_view source = {};
+
+    // Borrowing from gameStateLoader for it's methods to convert from node -> GameEnvironment::Value
+    std::unique_ptr<GameStateLoader> gsl = nullptr;
 
 private:
     std::unordered_map<std::string, RuleFactoryPointer> ruleFactories;

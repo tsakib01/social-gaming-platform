@@ -27,25 +27,25 @@ GameInstanceManager::createGameInstance(std::string_view gameFilePath) {
     GameConfigLoader gameConfigLoader{gameFilePath};
     auto rules = gameConfigLoader.createGameRules();
     auto state = gameConfigLoader.createGameState();
+    auto setup = gameConfigLoader.createGameSetup();
     uint16_t inviteCode = generateRoomCode();
 
-    m_gameList.push_back(std::make_unique<GameInstance>(std::move(rules), std::move(state), inviteCode));
+    m_gameList.push_back(std::make_unique<GameInstance>(std::move(rules), std::move(state), std::move(setup), inviteCode));
 
     return inviteCode;
 }
 
+ConfigResult
+GameInstanceManager::inputConfig(uint16_t roomCode, const std::string& response) {
+    auto& game = getGameInstance(roomCode);
+    return game->inputConfig(response);
+}
+
 void
 GameInstanceManager::startGame(uint16_t roomCode, const std::vector<User>& users) {
-    // Move from gameList to activeGameList
-    addUsersToGame(roomCode, users);
-
-    auto it = std::find_if(m_gameList.begin(), m_gameList.end(), [roomCode](const std::unique_ptr<GameInstance>& game) {
-        return game->getRoomCode() == roomCode;
-    });
-
-    if (it != m_gameList.end()) {
-        (*it)->startGame();
-    }
+    auto& game = getGameInstance(roomCode);
+    game->addUsers(users);
+    game->startGame();
 }
 
 void 
@@ -59,7 +59,6 @@ GameInstanceManager::runCycle() {
                 return game->gameIsFinished();
             }), m_gameList.end());
     }
-    // After a game finishes exeuction (until an input), call gameInstance.flipRunWaitState()
 }
 
 std::vector<uint16_t> 
@@ -74,18 +73,30 @@ GameInstanceManager::getRoomCodes() {
 
 void
 GameInstanceManager::addUsersToGame(uint16_t roomCode, const std::vector<User>& users) {
-    auto game = getGameIterator(roomCode);
-    (*game)->addUsers(users);
+    auto& game = getGameInstance(roomCode);
+    game->addUsers(users);
 }
 
 void 
 GameInstanceManager::deleteUsersFromGame(uint16_t roomCode, const std::vector<User>& users){
-    auto game = getGameIterator(roomCode);
-    (*game)->deleteUsers(users);
+    auto& game = getGameInstance(roomCode);
+    game->deleteUsers(users);
 }
 
-std::vector<std::unique_ptr<GameInstance>>::iterator 
-GameInstanceManager::getGameIterator(uint16_t roomCode) {
+bool 
+GameInstanceManager::gameIsJoinable(uint16_t roomCode) {
+    auto& game = getGameInstance(roomCode);
+    return game->gameIsJoinable();
+}
+
+bool
+GameInstanceManager::gameHasSetup(uint16_t roomCode) {
+    auto& game = getGameInstance(roomCode);
+    return game->gameHasSetup();
+}
+
+std::unique_ptr<GameInstance>& 
+GameInstanceManager::getGameInstance(uint16_t roomCode) {
     auto game = std::find_if(m_gameList.begin(), m_gameList.end(), [roomCode](const std::unique_ptr<GameInstance>& gameInstance) {
         return gameInstance->getRoomCode() == roomCode;
     });
@@ -94,5 +105,5 @@ GameInstanceManager::getGameIterator(uint16_t roomCode) {
         throw std::runtime_error("Game was not found.");
     }
 
-    return game;
+    return *game;
 } 

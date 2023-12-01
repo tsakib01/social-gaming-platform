@@ -36,7 +36,15 @@ constexpr std::string_view KINDToString(KIND kind)
     }
 
 }
-
+std::string_view SetupInstance::getIdentifier(){
+    return identifier;
+}
+std::string_view SetupInstance::getPrompt(){
+    return prompt;
+}
+std::string_view SetupInstance::getRestInfo(){
+    return restInfo;
+}
 
 void SetupInstance::intProcess(){
     this->print();

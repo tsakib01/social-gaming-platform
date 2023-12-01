@@ -12,6 +12,8 @@ namespace SYMBOL{
     const int BOOL = 123;
     const int LIST = 126;
     const int MAP = 128;
+    const int NUMBER_RANGE = 124;
+    const int SETUP = 92;
 }
 
 class ConvertNodeToNumber final : public ConvertInterface {
@@ -111,7 +113,24 @@ private:
         return toReturn;
     }
 };
+class ConvertNodeToNumRange final : public ConvertInterface {
+public:
+    ConvertNodeToNumRange(const GameStateLoader* gameStateLoader)
+            : ConvertInterface(gameStateLoader)
+    {}
+private:
+    std::unique_ptr<GameEnvironment::Value> convertNodeImpl(const ts::Node& node) const{
 
+        auto range = convertToRange(node.getSourceRange(gameStateLoader->getSource()));
+
+        std::unique_ptr<GameEnvironment::Map> rangeMap = std::make_unique<GameEnvironment::Environment>();
+        rangeMap->emplace("min", std::make_unique<GameEnvironment::Value>(range.first));
+        rangeMap->emplace("max", std::make_unique<GameEnvironment::Value>(range.second));
+
+        auto toReturn = std::make_unique<GameEnvironment::Value>(std::move(rangeMap));
+        return toReturn;
+    }
+};
 GameStateLoader::GameStateLoader(std::string_view source)
 : source(source)
 {}
@@ -135,6 +154,32 @@ std::unique_ptr<GameEnvironment::Environment> GameStateLoader::getEnvironment(co
     }
     return environment;
 }
+
+
+std::unique_ptr<GameEnvironment::Environment>  GameStateLoader::getConfigEnvironment(const ts::Node& root){
+    std::unique_ptr<GameEnvironment::Map> configMap = std::make_unique<GameEnvironment::Map>();
+    std::unique_ptr<GameEnvironment::Environment> toReturnEnvironment = std::make_unique<GameEnvironment::Environment>();
+
+    std::string_view configIdentifier = root.getChild(0).getSourceRange(source);
+
+    int numNamedChildren=root.getNumNamedChildren();
+    for (int index=0; index<numNamedChildren; index++){
+        if(root.getNamedChild(index).getSymbol()==SYMBOL::SETUP){
+            break;
+        }
+        ts::Extent identifierRange = root.getNamedChild(index).getPreviousSibling().getByteRange();
+        std::string_view identifier = source.substr(identifierRange.start,
+                                                    identifierRange.end - 1 - identifierRange.start);
+        int nodeSymbol = root.getNamedChild(index).getSymbol();
+        auto toStore = nodeSymbolToConvert[nodeSymbol]->convertNode(root.getNamedChild(index));
+        configMap->emplace(identifier, std::move(toStore));
+    }
+
+    toReturnEnvironment->emplace(configIdentifier, std::make_unique<GameEnvironment::Value>(std::move(configMap)));
+    return toReturnEnvironment;
+}
+
+
 
 // Print node by level order
 void GameStateLoader::printByLevelOrder(const ts::Node& node){
@@ -171,12 +216,19 @@ const std::map<int, std::unique_ptr<ConvertInterface>>* GameStateLoader::getNode
     return &nodeSymbolToConvert;
 }
 
-GameStateLoader GameStateLoader::createDefaultGameStateLoader(std::string_view source){
-    GameStateLoader gameStateLoader(source);
-    gameStateLoader.registerConversion(SYMBOL::NUMBER, std::make_unique<ConvertNodeToNumber>(&gameStateLoader));
-    gameStateLoader.registerConversion(SYMBOL::BOOL, std::make_unique<ConvertNodeToBool>(&gameStateLoader));
-    gameStateLoader.registerConversion(SYMBOL::STRING, std::make_unique<ConvertNodeToString>(&gameStateLoader));
-    gameStateLoader.registerConversion(SYMBOL::LIST, std::make_unique<ConvertNodeToList>(&gameStateLoader));
-    gameStateLoader.registerConversion(SYMBOL::MAP, std::make_unique<ConvertNodeToMap>(&gameStateLoader));
+std::unique_ptr<GameStateLoader> GameStateLoader::createDefaultGameStateLoader(std::string_view source){
+    auto gameStateLoader = std::make_unique<GameStateLoader>(source);
+    gameStateLoader->registerConversion(SYMBOL::NUMBER, std::make_unique<ConvertNodeToNumber>(gameStateLoader.get()));
+    gameStateLoader->registerConversion(SYMBOL::BOOL, std::make_unique<ConvertNodeToBool>(gameStateLoader.get()));
+    gameStateLoader->registerConversion(SYMBOL::STRING, std::make_unique<ConvertNodeToString>(gameStateLoader.get()));
+    gameStateLoader->registerConversion(SYMBOL::LIST, std::make_unique<ConvertNodeToList>(gameStateLoader.get()));
+    gameStateLoader->registerConversion(SYMBOL::MAP, std::make_unique<ConvertNodeToMap>(gameStateLoader.get()));
+    gameStateLoader->registerConversion(SYMBOL::NUMBER_RANGE, std::make_unique<ConvertNodeToNumRange>(gameStateLoader.get()));
     return gameStateLoader;
+}
+
+std::unique_ptr<GameEnvironment::Value> 
+GameStateLoader::convertNode(const ts::Node& node) const {
+    int nodeSymbol = node.getSymbol();
+    return nodeSymbolToConvert.at(nodeSymbol)->convertNode(node);
 }

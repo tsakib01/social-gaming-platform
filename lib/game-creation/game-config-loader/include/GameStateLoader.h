@@ -6,6 +6,7 @@
 #include<variant>
 #include<vector>
 #include "GameEnvironment.h"
+#include "GameSetupLoader.h"
 #include <cpp-tree-sitter.h>
 
 class GameStateLoader;
@@ -35,14 +36,16 @@ private:
     std::string_view source;
     std::map<int, std::unique_ptr<ConvertInterface>> nodeSymbolToConvert;
 public:
+    GameStateLoader() = default;
     GameStateLoader(std::string_view source);
     void printByLevelOrder(const ts::Node& node);
     void registerConversion(int symbol, std::unique_ptr<ConvertInterface> convert);
     std::string_view getSource() const;
     const std::map<int, std::unique_ptr<ConvertInterface>>* getNodeSymbolToConvert() const;
+    std::unique_ptr<GameEnvironment::Value> convertNode(const ts::Node& node) const;
     // // Need to pass the root of value_map
     std::unique_ptr<GameEnvironment::Environment> getEnvironment(const ts::Node& root);
-    static GameStateLoader createDefaultGameStateLoader(std::string_view source);
+    std::unique_ptr<GameEnvironment::Environment> getConfigEnvironment(const ts::Node& root);
+    static std::unique_ptr<GameStateLoader> createDefaultGameStateLoader(std::string_view source);
 };
-
 #endif

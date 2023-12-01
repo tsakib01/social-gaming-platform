@@ -21,7 +21,6 @@ namespace GameEnvironment{
     class Value;
     using Map = std::map<Identifier, std::unique_ptr<Value>>;
     using List = std::vector<std::unique_ptr<Value>>;
-        
     class Value{
     public:
         Value() = default;
@@ -30,8 +29,7 @@ namespace GameEnvironment{
         Value(std::string_view value) : value(value) {}
         Value(std::unique_ptr<Map> value) : value(std::move(value)) {}
         Value(std::unique_ptr<List> value) : value(std::move(value)) {}
-
-        std::variant<int, bool, std::string_view, std::unique_ptr<Map>, std::unique_ptr<List>> value;
+        std::variant<int, bool, std::string_view, std::unique_ptr<Map>, std::unique_ptr<List> > value;
     };
 
     using Environment = std::map<Identifier, std::unique_ptr<Value>>;

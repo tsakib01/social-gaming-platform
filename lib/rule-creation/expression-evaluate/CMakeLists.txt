@@ -1,9 +1,8 @@
-add_library(ruleExecute
-    src/RuleExecute.cpp
-    src/OutgoingMessages.cpp
+add_library(expressionEvaluate
+    src/ExpressionEvaluator.cpp
 )
 
-target_include_directories(ruleExecute
+target_include_directories(expressionEvaluate
     PUBLIC
         $<INSTALL_INTERFACE:include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -11,12 +10,11 @@ target_include_directories(ruleExecute
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-target_link_libraries(ruleExecute
-    expression
+target_link_libraries(expressionEvaluate
     gameConfigLoader
-    userManager
+    expression
 )
 
-install(TARGETS ruleExecute
+install(TARGETS expressionEvaluate
     ARCHIVE DESTINATION lib
 )

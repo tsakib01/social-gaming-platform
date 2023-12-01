@@ -40,22 +40,22 @@ ServerManager::processJoinGame(const Message& message) {
 		uint16_t code = std::stoi(message.text);
 		std::vector<uint16_t> roomCodes = gameInstanceManager->getRoomCodes();
 
-		if (std::find(roomCodes.begin(), roomCodes.end(), code) != roomCodes.end()) {
+		if (std::find(roomCodes.begin(), roomCodes.end(), code) != roomCodes.end() && gameInstanceManager->gameIsJoinable(code)) {
 			userManager->setUserRole(message.connection, Role::PLAYER);
 			userManager->setUserRoomCode(message.connection, code);
 			userManager->setUserState(message.connection, UserState::GAME_WAIT);
 	
 			User player = userManager->getUserByID(message.connection);
-			User host = userManager->getRoomOwner(code);
+			User owner = userManager->getRoomOwner(code);
 
 			return std::deque<Message>{ 
-				{message.connection, "Joined game. Waiting on host...\n"},
-				{host.userID, "[" + std::string(player.username) + "] joined.\n"}};
+				{message.connection, "Joined game. Waiting on owner...\n"},
+				{owner.userID, "[" + std::string(player.username) + "] joined.\n"}};
 		} 
 		
 		else {
 			return std::deque<Message>{
-				{message.connection, "Room not found, try again.\n"}};
+				{message.connection, "Invalid, try again.\n"}};
 		}
 	} 
 
@@ -78,9 +78,18 @@ ServerManager::processGameSelect(const Message& message) {
 			uint16_t roomCode = gameInstanceManager->createGameInstance(games[choice-1]);
 			userManager->setUserRole(message.connection, Role::OWNER);
 			userManager->setUserRoomCode(message.connection, roomCode);
-			userManager->setUserState(message.connection, UserState::GAME_WAIT);
-			return std::deque<Message>{
-				{message.connection, "Room Code: " + std::to_string(roomCode) + "     Type (S) to start.\n"}};
+
+			if (gameInstanceManager->gameHasSetup(roomCode)) {
+				userManager->setUserState(message.connection, UserState::GAME_CONFIG);
+				const auto [prompt, valid, finished] = gameInstanceManager->inputConfig(roomCode, "");
+				return std::deque<Message>{
+					{message.connection, prompt + "\n"}};
+			} 
+			else {
+				userManager->setUserState(message.connection, UserState::GAME_WAIT);
+				return std::deque<Message>{
+					{message.connection, "Room Code: " + std::to_string(roomCode) + "     Type (S) to start.\n"}};
+			}
 		}
 
 		else {
@@ -99,8 +108,25 @@ ServerManager::processGameSelect(const Message& message) {
 }
 
 std::deque<Message>
-ServerManager::processGameConfig(const Message& message) {
-	// Not implemented yet.
+ServerManager::processGameConfig(const Message& message) {	
+	User owner = userManager->getUserByID(message.connection);
+	const auto [prompt, validResponse, finished] = gameInstanceManager->inputConfig(owner.roomCode, message.text);
+
+	if (finished.status) {
+		userManager->setUserState(message.connection, UserState::GAME_WAIT);
+		return std::deque<Message>{
+			{message.connection, "Room Code: " + std::to_string(owner.roomCode) + "     Type (S) to start.\n"}};
+	}
+
+	else if (!finished.status && validResponse.status) {
+		return std::deque<Message>{
+			{message.connection, prompt + "\n"}};
+	}
+
+	else {
+		return std::deque<Message>{
+			{message.connection, "Invalid, try again.\n"}};
+	}
 }
 
 std::deque<Message>

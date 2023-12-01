@@ -7,7 +7,7 @@
 #include <cstdint>
 #include "Server.h"
 
-using networking::Connection;
+using UserId = networking::Connection;
 
 enum class Role : char {
     OWNER, 
@@ -27,37 +27,36 @@ enum class UserState : char {
     NONE
 };
 
-
 struct User {
-    Connection userID;
+    UserId userID;
     std::string username;
     Role role;
     UserState state;
     uint16_t roomCode;
 
-    User(Connection userID) : userID{userID}, state{UserState::NEW} {};
+    User(UserId userID) : userID{userID}, state{UserState::NEW} {};
 };
 
 class UserManager {
 public:
     UserManager() {};
 
-    void addUser(Connection userID);
-    void removeUser(Connection userID);
+    void addUser(UserId userID);
+    void removeUser(UserId userID);
 
-    void setUserName(Connection userID, std::string_view username);
-    void setUserRole(Connection userID, Role role);
-    void setUserRoomCode(Connection userID, uint16_t roomCode);
-    void setUserState(Connection userID, UserState state);
+    void setUserName(UserId userID, std::string_view username);
+    void setUserRole(UserId userID, Role role);
+    void setUserRoomCode(UserId userID, uint16_t roomCode);
+    void setUserState(UserId userID, UserState state);
 
     std::vector<User> getAllUsers() const;
     std::vector<User> getUsersInGame(uint16_t roomCode) const;
-    User getUserByID(Connection userID) const;
+    User getUserByID(UserId userID) const;
     User getRoomOwner(uint16_t roomCode) const;
 
 private:
-    std::vector<User> users;
-    std::vector<User>::iterator getUserIteratorByID(Connection userID);
+    std::vector<User> m_users;
+    User& getUserReferenceByID(UserId userID);
 };
 
 #endif
