@@ -57,9 +57,10 @@ GameConfigLoader::createGameState() {
     // Add constants and variables fields to game state.
     auto constants = gameStateLoader->getEnvironment(root.getChildByFieldName("constants").getNamedChild(0));
     auto variables = gameStateLoader->getEnvironment(root.getChildByFieldName("variables").getNamedChild(0));
+    auto configuration=gameStateLoader->getConfigEnvironment(root.getChildByFieldName("configuration"));
     gameState->addEnvironment(*constants);
     gameState->addEnvironment(*variables);
-    
+    gameState->addEnvironment(*configuration);
     gameState->print();
     return gameState;
 }
