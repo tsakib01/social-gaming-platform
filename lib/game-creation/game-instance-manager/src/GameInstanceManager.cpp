@@ -27,18 +27,24 @@ GameInstanceManager::createGameInstance(std::string_view gameFilePath) {
     GameConfigLoader gameConfigLoader{gameFilePath};
     auto rules = gameConfigLoader.createGameRules();
     auto state = gameConfigLoader.createGameState();
+    auto setup = gameConfigLoader.createGameSetup();
     uint16_t inviteCode = generateRoomCode();
 
-    m_gameList.push_back(std::make_unique<GameInstance>(std::move(rules), std::move(state), inviteCode));
+    m_gameList.push_back(std::make_unique<GameInstance>(std::move(rules), std::move(state), std::move(setup), inviteCode));
 
     return inviteCode;
 }
 
+ConfigResult
+GameInstanceManager::inputConfig(uint16_t roomCode, const std::string& response) {
+    auto& game = getGameInstance(roomCode);
+    return game->inputConfig(response);
+}
+
 void
 GameInstanceManager::startGame(uint16_t roomCode, const std::vector<User>& users) {
-    addUsersToGame(roomCode, users);
-    
-    auto& game = getGameReference(roomCode);
+    auto& game = getGameInstance(roomCode);
+    game->addUsers(users);
     game->startGame();
 }
 
@@ -53,7 +59,6 @@ GameInstanceManager::runCycle() {
                 return game->gameIsFinished();
             }), m_gameList.end());
     }
-    // After a game finishes exeuction (until an input), call gameInstance.flipRunWaitState()
 }
 
 std::vector<uint16_t> 
@@ -68,18 +73,30 @@ GameInstanceManager::getRoomCodes() {
 
 void
 GameInstanceManager::addUsersToGame(uint16_t roomCode, const std::vector<User>& users) {
-    auto& game = getGameReference(roomCode);
+    auto& game = getGameInstance(roomCode);
     game->addUsers(users);
 }
 
 void 
 GameInstanceManager::deleteUsersFromGame(uint16_t roomCode, const std::vector<User>& users){
-    auto& game = getGameReference(roomCode);
+    auto& game = getGameInstance(roomCode);
     game->deleteUsers(users);
 }
 
+bool 
+GameInstanceManager::gameIsJoinable(uint16_t roomCode) {
+    auto& game = getGameInstance(roomCode);
+    return game->gameIsJoinable();
+}
+
+bool
+GameInstanceManager::gameHasSetup(uint16_t roomCode) {
+    auto& game = getGameInstance(roomCode);
+    return game->gameHasSetup();
+}
+
 std::unique_ptr<GameInstance>& 
-GameInstanceManager::getGameReference(uint16_t roomCode) {
+GameInstanceManager::getGameInstance(uint16_t roomCode) {
     auto game = std::find_if(m_gameList.begin(), m_gameList.end(), [roomCode](const std::unique_ptr<GameInstance>& gameInstance) {
         return gameInstance->getRoomCode() == roomCode;
     });
