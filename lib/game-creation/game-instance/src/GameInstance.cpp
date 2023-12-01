@@ -67,7 +67,7 @@ void
 GameInstance::updateUserStates(const std::vector<User>& users, GameEnvironment::Environment environmentToUse) {
         for (const User& user : users) {
         // This Enviroment has to be taken from somewhere...
-        m_inGameUserManager->setStatesOfUser(user.userID, environmentToUse);
+        m_inGameUserManager->setStatesOfUser(user.userID, std::move(environmentToUse));
     }
 }
 
