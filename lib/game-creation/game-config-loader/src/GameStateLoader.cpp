@@ -179,6 +179,22 @@ std::unique_ptr<GameEnvironment::Environment>  GameStateLoader::getConfigEnviron
     return toReturnEnvironment;
 }
 
+std::unique_ptr<GameEnvironment::Environment>  GameStateLoader::getPer_playerEnvironment(const ts::Node& root){
+    std::unique_ptr<GameEnvironment::Environment> toReturnEnvironment = std::make_unique<GameEnvironment::Environment>();
+
+    std::string_view per_playerIdentifier = root.getChild(0).getSourceRange(source);
+
+    int numNamedChildren=root.getNumNamedChildren();
+    for (int index=0; index<numNamedChildren; index++){
+
+        std::string_view identifier = root.getNamedChild(index).getPreviousSibling().getSourceRange(source);
+        int nodeSymbol = root.getNamedChild(index).getSymbol();
+        auto toStore = nodeSymbolToConvert[nodeSymbol]->convertNode(root.getNamedChild(index));
+        toReturnEnvironment->emplace(identifier, std::move(toStore));
+    }
+
+    return toReturnEnvironment;
+}
 
 
 // Print node by level order
