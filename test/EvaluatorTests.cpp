@@ -840,6 +840,10 @@ TEST_F(EvaluatorTest, TestShuffleIntList) {
 
     GameEnvironment::Value originalIntListValue(std::move(originalIntList2));
     GameEnvironment::Value shuffledIntListValue(std::move(originalIntList1Value));
+    //checks for case when shuffling might return the original list
+    while (std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&shuffledIntListValue, &originalIntListValue}).value)) {
+        evaluator.evaluate(MODIFIER::SHUFFLE, {&shuffledIntListValue});
+    }
 
     EXPECT_FALSE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&originalIntListValue, &shuffledIntListValue}).value));
 }
@@ -857,11 +861,15 @@ TEST_F(EvaluatorTest, TestShuffleStringList) {
         originalStringList2->push_back(std::make_unique<GameEnvironment::Value>(stringValues[i]));
     }
 
-    GameEnvironment::Value originalIntList1Value(std::move(originalStringList1));
-    evaluator.evaluate(MODIFIER::SHUFFLE, {&originalIntList1Value});
+    GameEnvironment::Value originalStringList1Value(std::move(originalStringList1));
+    evaluator.evaluate(MODIFIER::SHUFFLE, {&originalStringList1Value});
 
     GameEnvironment::Value originalStringListValue(std::move(originalStringList2));
-    GameEnvironment::Value shuffledStringListValue(std::move(originalIntList1Value));
+    GameEnvironment::Value shuffledStringListValue(std::move(originalStringList1Value));
+    //checks for case when shuffling might return the original list
+    while (std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&shuffledStringListValue, &originalStringListValue}).value)) {
+        evaluator.evaluate(MODIFIER::SHUFFLE, {&shuffledStringListValue});
+    }
 
     EXPECT_FALSE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&originalStringListValue, &shuffledStringListValue}).value));
 }
@@ -878,11 +886,15 @@ TEST_F(EvaluatorTest, TestShuffleBooleanList) {
         originalBoolList2->push_back(std::make_unique<GameEnvironment::Value>(value));
     }
 
-    GameEnvironment::Value originalIntList1Value(std::move(originalBoolList1));
-    evaluator.evaluate(MODIFIER::SHUFFLE, {&originalIntList1Value});
+    GameEnvironment::Value originalBoolList1Value(std::move(originalBoolList1));
+    evaluator.evaluate(MODIFIER::SHUFFLE, {&originalBoolList1Value});
 
     GameEnvironment::Value originalBoolListValue(std::move(originalBoolList2));
-    GameEnvironment::Value shuffledBoolListValue(std::move(originalIntList1Value));
+    GameEnvironment::Value shuffledBoolListValue(std::move(originalBoolList1Value));
+    //checks for case when shuffling might return the original list
+    while (std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&shuffledBoolListValue, &originalBoolListValue}).value)) {
+        evaluator.evaluate(MODIFIER::SHUFFLE, {&shuffledBoolListValue});
+    }
 
     EXPECT_FALSE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&originalBoolListValue, &shuffledBoolListValue}).value));
 }
@@ -906,9 +918,11 @@ TEST_F(EvaluatorTest, TestShuffleListOfListOfIntegers) {
     }
 
     GameEnvironment::Value shuffledListOfListOfIntValue(std::move(originalListOfListOfIntList1));
-    evaluator.evaluate(MODIFIER::REVERSE, {&shuffledListOfListOfIntValue});
     GameEnvironment::Value originalListOfListOfIntValue(std::move(originalListOfListOfIntList2));
-
+    //checks for case when shuffling might return the original list
+    while (std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&shuffledListOfListOfIntValue, &originalListOfListOfIntValue}).value)) {
+        evaluator.evaluate(MODIFIER::SHUFFLE, {&shuffledListOfListOfIntValue});
+    }
     // Verify that the reversed list of lists matches the expected list of lists
     EXPECT_FALSE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&originalListOfListOfIntValue, &shuffledListOfListOfIntValue}).value));
 }
@@ -931,10 +945,11 @@ TEST_F(EvaluatorTest, TestShuffleListOfMaps) {
     }
 
     GameEnvironment::Value shuffledListOfMapValue(std::move(originalListOfMap1));
-    evaluator.evaluate(MODIFIER::SHUFFLE, {&shuffledListOfMapValue});
     GameEnvironment::Value originalListOfMapValue(std::move(originalListOfMap2));
-
-
+    //checks for case when shuffling might return the original list
+    while (std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&shuffledListOfMapValue, &originalListOfMapValue}).value)) {
+        evaluator.evaluate(MODIFIER::SHUFFLE, {&shuffledListOfMapValue});
+    }
     // Verify that the shuffled list of maps is different from the original list of maps
     EXPECT_FALSE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&shuffledListOfMapValue, &originalListOfMapValue}).value));
 }
