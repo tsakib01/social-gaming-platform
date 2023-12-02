@@ -28,19 +28,6 @@ TEST_F(EvaluatorTest, TestValidAddOperation) {
     intValue1.value = -5;
     intValue2.value = -3;
     EXPECT_EQ(std::get<int>(evaluator.evaluate(OPERATOR::ADD, {&intValue1, &intValue2}).value), -8);
-
-    // Adding two empty strings
-    GameEnvironment::Value emptyStringValue;
-    emptyStringValue.value = std::string_view("");
-    EXPECT_EQ(std::get<std::string_view>(evaluator.evaluate(OPERATOR::ADD, {&emptyStringValue, &emptyStringValue}).value), "");
-
-    // Adding an empty string and a non-empty string
-    GameEnvironment::Value nonEmptyStringValue;
-    nonEmptyStringValue.value = std::string_view("Hello");
-    EXPECT_EQ(std::get<std::string_view>(evaluator.evaluate(OPERATOR::ADD, {&emptyStringValue, &nonEmptyStringValue}).value), "Hello");
-
-    // Adding a non-empty string and an empty string
-    EXPECT_EQ(std::get<std::string_view>(evaluator.evaluate(OPERATOR::ADD, {&emptyStringValue, &nonEmptyStringValue}).value), "Hello");
 }
 
 // Test case for invalid ADD operations
@@ -50,16 +37,8 @@ TEST_F(EvaluatorTest, TestInvalidAddOperations) {
     intValue.value = 5;
     EXPECT_THROW(evaluator.evaluate(OPERATOR::ADD, {&intValue}), std::runtime_error);
 
-    // Only 1 argument for string
-    GameEnvironment::Value stringValue;
-    stringValue.value = std::string_view("Hello");
-    EXPECT_THROW(evaluator.evaluate(OPERATOR::ADD, {&stringValue}), std::runtime_error);
-
     // Try to add 3 arguments for integers
     EXPECT_THROW(evaluator.evaluate(OPERATOR::ADD, {&intValue, &intValue, &intValue}), std::runtime_error);
-
-    // Try to add 3 arguments for string
-    EXPECT_THROW(evaluator.evaluate(OPERATOR::ADD, {&stringValue, &stringValue, &stringValue}), std::runtime_error);
 
     // Try to add two booleans
     GameEnvironment::Value boolValue1, boolValue2;

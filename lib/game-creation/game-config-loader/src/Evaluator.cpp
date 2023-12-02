@@ -4,19 +4,12 @@
 
 // Add operation supports
 // 1. Addition of two integers
-// 2. Concatenation of two strings
 class AddOperation final : public Operation {
 private:
     struct AddVisitor {
         GameEnvironment::Value operator()(const int& left, const int& right){
             GameEnvironment::Value value;
             value.value = left + right;
-            return value;
-        }
-
-        GameEnvironment::Value operator()(const std::string_view& left, const std::string_view& right){
-            GameEnvironment::Value value;
-            // value.value = std::string(left) + std::string(right);
             return value;
         }
 
