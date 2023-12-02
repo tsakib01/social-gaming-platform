@@ -182,8 +182,6 @@ std::unique_ptr<GameEnvironment::Environment>  GameStateLoader::getConfigEnviron
 std::unique_ptr<GameEnvironment::Environment>  GameStateLoader::getPer_playerEnvironment(const ts::Node& root){
     std::unique_ptr<GameEnvironment::Environment> toReturnEnvironment = std::make_unique<GameEnvironment::Environment>();
 
-    std::string_view per_playerIdentifier = root.getChild(0).getSourceRange(source);
-
     int numNamedChildren=root.getNumNamedChildren();
     for (int index=0; index<numNamedChildren; index++){
 
