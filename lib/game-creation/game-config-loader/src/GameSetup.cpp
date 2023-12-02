@@ -41,4 +41,4 @@ bool GameSetup::isResponseValid(std::string_view identifier,std::string_view res
 }
 bool GameSetup::hasSetup() { 
     return setups.size() > 0;
-}
+} 

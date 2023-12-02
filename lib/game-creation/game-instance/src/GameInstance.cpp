@@ -103,6 +103,10 @@ GameInstance::updateUserStates(const std::vector<User>& users, GameEnvironment::
     }
 }
 
+std::map<uintptr_t, GameEnvironment::Environment> GameInstance::getUserStates(){
+    return m_inGameUserManager->getAllUserStates();
+}
+
 GameInstanceState
 GameInstance::getGameInstanceState() {
     return m_state;
