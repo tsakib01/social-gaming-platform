@@ -50,6 +50,7 @@ namespace GameEnvironment{
 
             std::unique_ptr<Value> operator()(const std::unique_ptr<Map>& map){
                 auto copyMap = std::make_unique<Map>();
+
                 for (const auto& [key, value] : *map){
                     copyMap->emplace(key, std::move(std::visit(*this, value->value)));
                 }
@@ -70,12 +71,10 @@ namespace GameEnvironment{
         Value(std::unique_ptr<List> value) : value(std::move(value)) {}
         
         // Copy constructor does deep copy
-        Value(const Value& other)
-        {
-            auto copyValue = std::visit(CopyVisitor{}, other.value);
-            value = std::move(copyValue->value);
-        }
-
+        Value(const Value& other) 
+        : value(std::move(std::visit(CopyVisitor{}, other.value)->value))
+        {}
+        
         std::variant<int, bool, std::string_view, std::unique_ptr<Map>, std::unique_ptr<List> > value;
     };
 
