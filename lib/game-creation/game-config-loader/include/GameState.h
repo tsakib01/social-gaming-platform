@@ -75,19 +75,12 @@ class EmplaceVisitor{
 public:
     explicit EmplaceVisitor(GameEnvironment::Identifier identifier, std::unique_ptr<GameEnvironment::Value> toStore) : identifier(identifier), toStore(std::move(toStore)) {}
     void operator()( std::unique_ptr<GameEnvironment::Map>& value)  {
-       value->emplace(identifier,std::move(toStore));
+        value->emplace(identifier,std::move(toStore));
     }
-    void operator()(int value) {
-        std::cout << "Integer: " << value << std::endl;
-    }
-    void operator()(bool value)  {
-        std::cout << "Boolean: " << (value ? "true" : "false") << std::endl;
-    }
-    void operator()( std::string_view& value)  {
-        std::cout << "String: " << value << std::endl;
-    }
-    void operator()( std::unique_ptr<GameEnvironment::List>& value)  {
-        value->push_back(std::move(toStore));
+    void operator()(int ) {}
+    void operator()(bool )  {}
+    void operator()( std::string_view& )  {}
+    void operator()( std::unique_ptr<GameEnvironment::List>& )  {
     }
     void operator()( std::unique_ptr<GameEnvironment::Value>& value ) {
         std::visit(*this, value->value);
@@ -96,4 +89,7 @@ private:
     std::string_view identifier;
     std::unique_ptr<GameEnvironment::Value> toStore;
 };
+
+
+
 #endif
