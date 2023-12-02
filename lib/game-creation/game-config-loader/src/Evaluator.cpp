@@ -368,10 +368,58 @@ private:
     struct ExtendListVisitor {
         void operator()(std::unique_ptr<GameEnvironment::List>& targetList, 
                         const std::unique_ptr<GameEnvironment::List>& extendList) {
-            // Append the contents of extendList to targetList
-            targetList->insert(targetList->end(), 
-                               std::make_move_iterator(extendList->begin()), 
-                               std::make_move_iterator(extendList->end()));
+
+            if (extendList) {
+                // Iterate over the extendList
+                for (const auto& item : *extendList) {
+                    // Make a deep copy of the item
+                    std::unique_ptr<GameEnvironment::Value> copiedItem;
+                    switch (item->value.index()) {
+                        case 0:
+                            copiedItem = std::move(getValue(item));
+                            break;
+                        case 1:
+                            copiedItem = std::move(getValue(item));
+                            break;
+                        case 2:
+                            copiedItem = std::move(getValue(item));
+                            break;
+                        case 3: { // Works for List of Maps of Integers/Strings/Booleans
+                            std::unique_ptr<GameEnvironment::Map> copiedMap = std::make_unique<GameEnvironment::Map>();
+                            auto& map = std::get<3>(item->value);
+                            for(auto it = map->begin(); it != map->end(); ++it) {
+                                auto& v = it->second;
+                                std::unique_ptr<GameEnvironment::Value> mapItemValue = getValue(v);
+                                std::pair<std::string_view, std::unique_ptr<GameEnvironment::Value>> keyValuePair = std::make_pair(it->first, std::move(mapItemValue));
+                                copiedMap->insert(std::move(keyValuePair));
+                            }
+                            copiedItem = std::move(std::make_unique<GameEnvironment::Value>(std::move(copiedMap)));
+                            break;
+                        }
+                        case 4: { // Works for List of List of Integers/Strings/Booleans
+                            std::unique_ptr<GameEnvironment::List> copiedList = std::make_unique<GameEnvironment::List>();
+                            auto& list = std::get<4>(item->value);
+                            for (const auto& listItem : *list) {
+                                copiedList->push_back(std::move(getValue(listItem)));
+                            }
+                            copiedItem = std::move(std::make_unique<GameEnvironment::Value>(std::move(copiedList)));
+                            break;
+                        }
+                    }
+
+                    targetList->push_back(std::move(copiedItem));
+
+                }
+            }
+        }
+
+        std::unique_ptr<GameEnvironment::Value> 
+        getValue(const std::unique_ptr<GameEnvironment::Value>& v) {
+            std::unique_ptr<GameEnvironment::Value> value;
+            if (std::holds_alternative<int>(v->value)) value = std::make_unique<GameEnvironment::Value>(std::get<int>(v->value));
+            if (std::holds_alternative<bool>(v->value)) value = std::make_unique<GameEnvironment::Value>(std::get<bool>(v->value));
+            if (std::holds_alternative<std::string_view>(v->value)) value = std::make_unique<GameEnvironment::Value>(std::get<std::string_view>(v->value));
+            return value;
         }
 
         template <typename T, typename U>
