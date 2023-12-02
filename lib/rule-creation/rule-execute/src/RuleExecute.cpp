@@ -50,16 +50,6 @@ void RuleExecuteVisitor::visit(ExtendRule& rule) {
     context.instructionStack.pop();
 }
 
-void RuleExecuteVisitor::visit(ReverseRule& rule) {
-    (void)rule;
-    context.instructionStack.pop();
-}
-
-void RuleExecuteVisitor::visit(ShuffleRule& rule) {
-    (void)rule;
-    context.instructionStack.pop();
-}
-
 void RuleExecuteVisitor::visit(ScoresRule& rule) {
     (void)rule;
     std::cout << "executing scores rule" << std::endl;

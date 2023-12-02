@@ -29,8 +29,6 @@ public:
     void visit(ParallelForRule& rule) override;
     void visit(InputChoiceRule& rule) override;
     void visit(ExtendRule& rule) override;
-    void visit(ReverseRule& rule) override;
-    void visit(ShuffleRule& rule) override;
     void visit(ScoresRule& rule) override;
     void visit(Rule& rule) override;
 
