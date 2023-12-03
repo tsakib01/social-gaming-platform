@@ -4,6 +4,8 @@
 #include "Server.h"
 #include "InGameUserManager.h"
 
+#include <iostream>
+
 TEST(InGameUserManagerTests, BasicUserCount){
     InGameUserManager inGameUManager;
     UserId dummyConnection1;
@@ -92,4 +94,37 @@ TEST(InGameUserManagerTests, CanSetStatesOfExistingUser){
     // Finally, this test proves that testResturnedStates's first element
     // (testIdentifier) is not equivalent to nullEnvironment's first element (which has nothing).
     ASSERT_TRUE(testReturnedStates.begin() != nullEnvironment.begin());
+}
+
+TEST(InGameUserManagerTests, CanGetValueOfExistingUser){
+    InGameUserManager inGameUManager;
+    UserId dummyConnection;
+    dummyConnection.id = 1;
+    
+    // We care about using the Identifier so that we can find the user's Value.
+    GameEnvironment::Identifier testIdentifier = "testidentifier";
+
+    // Load Value with an int which nonNullDummyEnvironment will get (and nullEnvironment won't)
+    GameEnvironment::Value testValue;
+    testValue.value = 500;
+    
+    std::unique_ptr<GameEnvironment::Value> testValuePtr;
+    testValuePtr -> value = 500;
+
+    // (ENVIRONMENT)
+    std::map<GameEnvironment::Identifier, std::unique_ptr<GameEnvironment::Value>> testMap;
+    testMap.insert({testIdentifier, std::move(testValuePtr)});
+
+    // Begins with nullEnvironment which doesn't have any elements in its map.
+    GameEnvironment::Environment& nonNullDummyEnvironment = testMap;
+    inGameUManager.addNewUser(dummyConnection, std::move(nonNullDummyEnvironment));
+    std::unique_ptr<GameEnvironment::Value> returnValue = inGameUManager.getValueOfUser(dummyConnection, testIdentifier);
+    int originalValue = std::get<int>(testValue.value);
+    //int ptrValue = std::get<int>(testValuePtr -> value);
+    // int returnValue = std::get<int>(returnValue -> value);
+    //int test2 std::get<int>(testValue.value);
+    
+    // int okay = returnValue -> value;
+    // int okay2 = std::get<int>(returnValue -> value);
+    //ASSERT_TRUE(okay == okay2);
 }
