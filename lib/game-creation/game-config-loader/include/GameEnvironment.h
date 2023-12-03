@@ -39,7 +39,7 @@ namespace GameEnvironment{
                 return std::make_unique<GameEnvironment::Value>(string);
             }
 
-            std::unique_ptr<Value> operator()(const std::unique_ptr<List>& list){
+            std::unique_ptr<Value> operator()(const std::unique_ptr<List>& list) const {
                 auto copyList = std::make_unique<List>();
 
                 for (const auto& element : *list){
@@ -48,7 +48,7 @@ namespace GameEnvironment{
                 return std::make_unique<Value>(std::move(copyList));
             }
 
-            std::unique_ptr<Value> operator()(const std::unique_ptr<Map>& map){
+            std::unique_ptr<Value> operator()(const std::unique_ptr<Map>& map) const {
                 auto copyMap = std::make_unique<Map>();
 
                 for (const auto& [key, value] : *map){
@@ -58,7 +58,7 @@ namespace GameEnvironment{
             }
 
             template <typename T>
-            std::unique_ptr<Value> operator()([[maybe_unused]] const T& value){
+            std::unique_ptr<Value> operator()([[maybe_unused]] const T& value) const {
                 throw std::runtime_error("Unsupported value");
             }
         };
