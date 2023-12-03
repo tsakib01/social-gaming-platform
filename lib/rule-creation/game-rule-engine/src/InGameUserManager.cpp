@@ -44,20 +44,26 @@ GameEnvironment::Environment& InGameUserManager::getStatesOfUser(UserId connecti
     return statesToGet;
 }
 
-//Write getter for Value
-// Look at gamestate
 
 std::map<uintptr_t, GameEnvironment::Environment> InGameUserManager::getAllUserStates(){
     return std::move(m_userStates);
 }
 
-const std::unique_ptr<GameEnvironment::Value> InGameUserManager::getValueOfUser(UserId connection, GameEnvironment::Identifier identifier){
+// const std::unique_ptr<GameEnvironment::Value> InGameUserManager::getValueOfUser(UserId connection, GameEnvironment::Identifier identifier){
+//     auto iterator = m_userStates.find(connection.id);
+//     assert(iterator != m_userStates.end());
+//     GameEnvironment::Environment& environment = InGameUserManager::m_userStates[connection.id];
+//     return std::move(environment[identifier]);
+// }
+
+GameEnvironment::Value InGameUserManager::getValueOfUser(UserId connection, GameEnvironment::Identifier identifier){
     auto iterator = m_userStates.find(connection.id);
     assert(iterator != m_userStates.end());
     GameEnvironment::Environment& environment = InGameUserManager::m_userStates[connection.id];
-    return std::move(environment[identifier]);
+    return environment[identifier].get();
 }
 
+// Probably not needed anymore?
 // Create a new pair to replace the existing one that the User ID maps to.
 void InGameUserManager::setStatesOfUser(UserId userID, GameEnvironment::Environment statesToSet){
     auto iterator = m_userStates.find(userID.id);
@@ -73,7 +79,13 @@ void InGameUserManager::setStatesOfUser(UserId userID, GameEnvironment::Environm
 void InGameUserManager::setIdentifierOfUser(UserId connection, GameEnvironment::Identifier identifier, std::unique_ptr<GameEnvironment::Value> value){
     auto usersIterator = m_userStates.find(connection.id);
     assert(usersIterator != m_userStates.end());
+    
+    // Get the environment from the correct User ID
     GameEnvironment::Environment& environment = InGameUserManager::m_userStates[connection.id];
+    
+    // Set the environment's new value to the identifier
     environment[identifier] = std::move(value);
+    
+    // The changed environment is assigned to the User ID
     InGameUserManager::m_userStates[connection.id] = std::move(environment);
 }
