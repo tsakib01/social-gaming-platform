@@ -37,7 +37,7 @@ ServerManager::startServer() {
 		outgoing.insert(outgoing.end(), responseMsg.begin(), responseMsg.end());
         server->send(outgoing);
 
-        sleep(0.3f);
+        sleep(0.5f);
     }
 }
 
