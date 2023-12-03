@@ -1,7 +1,8 @@
 #include <gtest/gtest.h>
 #include "Evaluator.h"
+#include <iostream>
 
-class EvaluatorTest : public ::testing::Test {
+class EvaluatorOperationTest : public ::testing::Test {
 protected:
     Evaluator evaluator;
 
@@ -12,7 +13,7 @@ protected:
 };
 
 // Test case for ADD operation
-TEST_F(EvaluatorTest, TestValidAddOperation) {
+TEST_F(EvaluatorOperationTest, TestValidAddOperation) {
     // Positive numbers
     GameEnvironment::Value intValue1, intValue2;
     intValue1.value = 5;
@@ -44,7 +45,7 @@ TEST_F(EvaluatorTest, TestValidAddOperation) {
 }
 
 // Test case for invalid ADD operations
-TEST_F(EvaluatorTest, TestInvalidAddOperations) {
+TEST_F(EvaluatorOperationTest, TestInvalidAddOperations) {
     // Only 1 argument for integer
     GameEnvironment::Value intValue;
     intValue.value = 5;
@@ -79,7 +80,7 @@ TEST_F(EvaluatorTest, TestInvalidAddOperations) {
 }
 
 // Test case for SUBTRACT operation
-TEST_F(EvaluatorTest, TestValidSubtractOperation) {
+TEST_F(EvaluatorOperationTest, TestValidSubtractOperation) {
     // Positive numbers
     GameEnvironment::Value intValue1, intValue2;
     intValue1.value = 5;
@@ -103,7 +104,7 @@ TEST_F(EvaluatorTest, TestValidSubtractOperation) {
 }
 
 // Test case for invalid SUBTRACT operations
-TEST_F(EvaluatorTest, TestInvalidSubtractOperations) {
+TEST_F(EvaluatorOperationTest, TestInvalidSubtractOperations) {
     // Try to subtract only 1 argument for integer
     GameEnvironment::Value intValue;
     intValue.value = 5;
@@ -136,7 +137,7 @@ TEST_F(EvaluatorTest, TestInvalidSubtractOperations) {
 
 
 // Test case for MULTIPLY operation
-TEST_F(EvaluatorTest, TestValidMultiplyOperation) {
+TEST_F(EvaluatorOperationTest, TestValidMultiplyOperation) {
     // Positive numbers
     GameEnvironment::Value intValue1, intValue2;
     intValue1.value = 5;
@@ -165,7 +166,7 @@ TEST_F(EvaluatorTest, TestValidMultiplyOperation) {
 }
 
 // Test case for invalid MULTIPLY operations
-TEST_F(EvaluatorTest, TestInvalidMultiplyOperations) {
+TEST_F(EvaluatorOperationTest, TestInvalidMultiplyOperations) {
     // Try to multiply only 1 argument for integer
     GameEnvironment::Value intValue;
     intValue.value = 5;
@@ -197,7 +198,7 @@ TEST_F(EvaluatorTest, TestInvalidMultiplyOperations) {
 }
 
 // Test case for DIVIDE operation
-TEST_F(EvaluatorTest, TestValidDivideOperation) {
+TEST_F(EvaluatorOperationTest, TestValidDivideOperation) {
     // Positive numbers
     GameEnvironment::Value intValue1, intValue2;
     intValue1.value = 10;
@@ -231,7 +232,7 @@ TEST_F(EvaluatorTest, TestValidDivideOperation) {
 }
 
 // Test case for invalid DIVIDE operations
-TEST_F(EvaluatorTest, TestInvalidDivideOperations) {
+TEST_F(EvaluatorOperationTest, TestInvalidDivideOperations) {
     // Try to divide only 1 argument for integer
     GameEnvironment::Value intValue1;
     intValue1.value = 5;
@@ -268,7 +269,7 @@ TEST_F(EvaluatorTest, TestInvalidDivideOperations) {
 }
 
 // Test case for OR operation
-TEST_F(EvaluatorTest, TestValidOrOperation) {
+TEST_F(EvaluatorOperationTest, TestValidOrOperation) {
     // Two true values
     GameEnvironment::Value trueValue1, trueValue2;
     trueValue1.value = true;
@@ -287,7 +288,7 @@ TEST_F(EvaluatorTest, TestValidOrOperation) {
 }
 
 // Test case for invalid OR operations
-TEST_F(EvaluatorTest, TestInvalidOrOperations) {
+TEST_F(EvaluatorOperationTest, TestInvalidOrOperations) {
     // Only 1 argument for boolean
     GameEnvironment::Value boolValue;
     boolValue.value = true;
@@ -320,7 +321,7 @@ TEST_F(EvaluatorTest, TestInvalidOrOperations) {
 }
 
 // Test case for AND operation
-TEST_F(EvaluatorTest, TestValidAndOperation) {
+TEST_F(EvaluatorOperationTest, TestValidAndOperation) {
     // Two true values
     GameEnvironment::Value trueValue1, trueValue2;
     trueValue1.value = true;
@@ -339,7 +340,7 @@ TEST_F(EvaluatorTest, TestValidAndOperation) {
 }
 
 // Test case for invalid AND operations
-TEST_F(EvaluatorTest, TestInvalidAndOperations) {
+TEST_F(EvaluatorOperationTest, TestInvalidAndOperations) {
     // Only 1 argument for boolean
     GameEnvironment::Value boolValue;
     boolValue.value = true;
@@ -372,7 +373,7 @@ TEST_F(EvaluatorTest, TestInvalidAndOperations) {
 }
 
 // Test case for NOT operation
-TEST_F(EvaluatorTest, TestValidNotOperation) {
+TEST_F(EvaluatorOperationTest, TestValidNotOperation) {
     // NOT true
     GameEnvironment::Value trueValue;
     trueValue.value = true;
@@ -385,7 +386,7 @@ TEST_F(EvaluatorTest, TestValidNotOperation) {
 }
 
 // Test case for invalid NOT operations
-TEST_F(EvaluatorTest, TestInvalidNotOperations) {
+TEST_F(EvaluatorOperationTest, TestInvalidNotOperations) {
     // No argument provided
     EXPECT_THROW(evaluator.evaluate(OPERATOR::NOT, {}), std::runtime_error);
 
@@ -416,7 +417,7 @@ TEST_F(EvaluatorTest, TestInvalidNotOperations) {
 }
 
 // Test case for EQUAL operation - Primitive Types
-TEST_F(EvaluatorTest, TestEqualPrimitiveTypes) {
+TEST_F(EvaluatorOperationTest, TestEqualPrimitiveTypes) {
     // Integer equality
     GameEnvironment::Value intValue1(5), intValue2(5);
     EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&intValue1, &intValue2}).value));
@@ -443,7 +444,7 @@ TEST_F(EvaluatorTest, TestEqualPrimitiveTypes) {
 }
 
 // Test case for EQUAL operation - List of integers
-TEST_F(EvaluatorTest, TestEqualIntList){
+TEST_F(EvaluatorOperationTest, TestEqualIntList){
     // List of integers
     std::unique_ptr<GameEnvironment::List> intList1 = std::make_unique<GameEnvironment::List>();
     std::unique_ptr<GameEnvironment::List> intList2 = std::make_unique<GameEnvironment::List>();
@@ -465,7 +466,7 @@ TEST_F(EvaluatorTest, TestEqualIntList){
 }
 
 // Test case for EQUAL operation - List of bool
-TEST_F(EvaluatorTest, TestEqualBoolList){
+TEST_F(EvaluatorOperationTest, TestEqualBoolList){
     // // List of booleans
     std::unique_ptr<GameEnvironment::List> boolList1 = std::make_unique<GameEnvironment::List>();
     std::unique_ptr<GameEnvironment::List> boolList2 = std::make_unique<GameEnvironment::List>();
@@ -487,7 +488,7 @@ TEST_F(EvaluatorTest, TestEqualBoolList){
 }
 
 // Test case for EQUAL operation - List of string
-TEST_F(EvaluatorTest, TestEqualStringList){
+TEST_F(EvaluatorOperationTest, TestEqualStringList){
     // List of strings
     std::unique_ptr<GameEnvironment::List> stringList1 = std::make_unique<GameEnvironment::List>();
     std::unique_ptr<GameEnvironment::List> stringList2 = std::make_unique<GameEnvironment::List>();
@@ -509,7 +510,7 @@ TEST_F(EvaluatorTest, TestEqualStringList){
 }
 
 // Test case for EQUAL operation - List of list of integers
-TEST_F(EvaluatorTest, TestEqualListOfIntList) {
+TEST_F(EvaluatorOperationTest, TestEqualListOfIntList) {
     // List of list of integers
     std::unique_ptr<GameEnvironment::List> listOfIntList1 = std::make_unique<GameEnvironment::List>();
     std::unique_ptr<GameEnvironment::List> listOfIntList2 = std::make_unique<GameEnvironment::List>();
@@ -541,7 +542,7 @@ TEST_F(EvaluatorTest, TestEqualListOfIntList) {
 }
 
 // Test case for EQUAL operation - List of Map
-TEST_F(EvaluatorTest, TestEqualListOfMap) {
+TEST_F(EvaluatorOperationTest, TestEqualListOfMap) {
     // List of maps
     std::unique_ptr<GameEnvironment::List> listOfMap1 = std::make_unique<GameEnvironment::List>();
     std::unique_ptr<GameEnvironment::List> listOfMap2 = std::make_unique<GameEnvironment::List>();
@@ -573,7 +574,7 @@ TEST_F(EvaluatorTest, TestEqualListOfMap) {
 }
 
 // Test case for EQUAL operation - Map of integers
-TEST_F(EvaluatorTest, TestEqualMapOfInt) {
+TEST_F(EvaluatorOperationTest, TestEqualMapOfInt) {
     // Map of integers
     std::unique_ptr<GameEnvironment::Map> intMap1 = std::make_unique<GameEnvironment::Map>();
     std::unique_ptr<GameEnvironment::Map> intMap2 = std::make_unique<GameEnvironment::Map>();
@@ -595,7 +596,7 @@ TEST_F(EvaluatorTest, TestEqualMapOfInt) {
 }
 
 // Test case for EQUAL operation - Map of booleans
-TEST_F(EvaluatorTest, TestEqualMapOfBool) {
+TEST_F(EvaluatorOperationTest, TestEqualMapOfBool) {
     // Map of booleans
     std::unique_ptr<GameEnvironment::Map> boolMap1 = std::make_unique<GameEnvironment::Map>();
     std::unique_ptr<GameEnvironment::Map> boolMap2 = std::make_unique<GameEnvironment::Map>();
@@ -617,7 +618,7 @@ TEST_F(EvaluatorTest, TestEqualMapOfBool) {
 }
 
 // Test case for EQUAL operation - Map of strings
-TEST_F(EvaluatorTest, TestEqualMapOfString) {
+TEST_F(EvaluatorOperationTest, TestEqualMapOfString) {
     // Map of strings
     std::unique_ptr<GameEnvironment::Map> stringMap1 = std::make_unique<GameEnvironment::Map>();
     std::unique_ptr<GameEnvironment::Map> stringMap2 = std::make_unique<GameEnvironment::Map>();
@@ -639,7 +640,7 @@ TEST_F(EvaluatorTest, TestEqualMapOfString) {
 }
 
 // Test case for EQUAL operation - Map of lists
-TEST_F(EvaluatorTest, TestEqualMapOfList) {
+TEST_F(EvaluatorOperationTest, TestEqualMapOfList) {
     // Map of lists
     std::unique_ptr<GameEnvironment::Map> mapOfList1 = std::make_unique<GameEnvironment::Map>();
     std::unique_ptr<GameEnvironment::Map> mapOfList2 = std::make_unique<GameEnvironment::Map>();
@@ -671,7 +672,7 @@ TEST_F(EvaluatorTest, TestEqualMapOfList) {
 }
 
 // Test case for EQUAL operation - Map of maps
-TEST_F(EvaluatorTest, TestEqualMapOfMap) {
+TEST_F(EvaluatorOperationTest, TestEqualMapOfMap) {
     // Map of maps
     std::unique_ptr<GameEnvironment::Map> mapOfMap1 = std::make_unique<GameEnvironment::Map>();
     std::unique_ptr<GameEnvironment::Map> mapOfMap2 = std::make_unique<GameEnvironment::Map>();

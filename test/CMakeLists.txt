@@ -18,7 +18,8 @@ file(
 add_executable(runAllTests
     userManagerTests.cpp
     setupTests.cpp
-    EvaluatorTests.cpp
+    EvaluatorTestsForOperation.cpp
+    EvaluatorTestsForModifyOperation.cpp
     gameCommunicatorTests.cpp
     ruleFactoryTests.cpp
     inGameUserManagerTests.cpp
