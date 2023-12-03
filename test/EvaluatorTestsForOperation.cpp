@@ -689,7 +689,7 @@ TEST_F(EvaluatorOperationTest, TestEqualMapOfMap) {
     EXPECT_FALSE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&mapOfMapValue1, &mapOfMapValue3}).value));
 }
 
-TEST_F(EvaluatorOperationTest, TestLookInOneLevelMap){
+TEST_F(EvaluatorOperationTest, TestLookUpOneLevelMap){
     std::unique_ptr<GameEnvironment::Map> map = std::make_unique<GameEnvironment::Map>();
 
     map->emplace("int1", std::make_unique<GameEnvironment::Value>(5));
@@ -711,7 +711,7 @@ TEST_F(EvaluatorOperationTest, TestLookInOneLevelMap){
     EXPECT_EQ(std::get<bool>(evaluator.evaluate(OPERATOR::LOOK_UP, {&mapValue, &identifiers[5]}).value), false);
 }
 
-TEST_F(EvaluatorOperationTest, TestLookInMultiLevelMap){
+TEST_F(EvaluatorOperationTest, TestLookUpMultiLevelMap){
     std::unique_ptr<GameEnvironment::Map> map1 = std::make_unique<GameEnvironment::Map>();
 
     map1->emplace("int1", std::make_unique<GameEnvironment::Value>(5));
@@ -740,7 +740,7 @@ TEST_F(EvaluatorOperationTest, TestLookInMultiLevelMap){
     EXPECT_EQ(std::get<std::string_view>(evaluator.evaluate(OPERATOR::LOOK_UP, {&level2Map, &identifiers[1]}).value), "string");
     EXPECT_EQ(std::get<bool>(evaluator.evaluate(OPERATOR::LOOK_UP, {&level2Map, &identifiers[2]}).value), true);
 }
-TEST_F(EvaluatorOperationTest, TestLookInFromGameState){
+TEST_F(EvaluatorOperationTest, TestLookUpFromGameState){
     GameConfigLoader gameConfigLoader{"./test/games/setup-parser-test.game"};
     auto gameState = gameConfigLoader.createGameState();
     auto configuration = gameState->getValue("configuration");
@@ -750,7 +750,7 @@ TEST_F(EvaluatorOperationTest, TestLookInFromGameState){
     auto information = std::get<std::string_view>(name.value);
     EXPECT_EQ(information, "\"Rock, Paper, Scissors\"");
 }
-TEST_F(EvaluatorOperationTest, TestLookInInvalidType){
+TEST_F(EvaluatorOperationTest, TestLookUpInvalidType){
     std::unique_ptr<GameEnvironment::Map> map = std::make_unique<GameEnvironment::Map>();
     std::vector< GameEnvironment::Value> identifiers={GameEnvironment::Value(std::string_view("int1")), GameEnvironment::Value(std::string_view("int2")),
                                                   GameEnvironment::Value(std::string_view("string1")),GameEnvironment::Value(std::string_view("string2")),GameEnvironment::Value(std::string_view("bool1")), GameEnvironment::Value(std::string_view("bool2")) };
