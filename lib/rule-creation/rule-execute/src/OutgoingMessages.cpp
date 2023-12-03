@@ -1,5 +1,7 @@
 #include "OutgoingMessages.h"
 #include <iostream>
+#include <stdexcept>
+
 OutgoingMessages::OutgoingMessages(std::vector<UserId> users) {
     auto inserter = std::inserter(m_userMessages, m_userMessages.end());
     auto makeEmptyMsg = [] (const auto& user) { return std::make_pair(user, ""); };

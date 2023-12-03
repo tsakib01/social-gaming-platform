@@ -21,7 +21,7 @@ public:
     // Add a setup to game state
     void addSetupToGameState(GameEnvironment::Identifier identifier,  std::unique_ptr<GameEnvironment::Value> value);
     // Get a value of variable by a given identifier
-    GameEnvironment::Value* getValue(GameEnvironment::Identifier identifier);
+    GameEnvironment::Value getValue(GameEnvironment::Identifier identifier);
     // Update the identifier's value to given value.
     void updateState(GameEnvironment::Identifier identifier, std::unique_ptr<GameEnvironment::Value> value);
     // Get the current execution index of a rule
