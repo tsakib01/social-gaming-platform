@@ -32,6 +32,10 @@ ServerManager::startServer() {
 		std::deque<Message> userMsg = buildUserMessages(incoming);
 		std::deque<Message> responseMsg = buildResponses(incoming);
 
+		if (quit) {
+			break;
+		}
+
 		std::deque<Message> outgoing;
 		outgoing.insert(outgoing.end(), userMsg.begin(), userMsg.end());
 		outgoing.insert(outgoing.end(), responseMsg.begin(), responseMsg.end());

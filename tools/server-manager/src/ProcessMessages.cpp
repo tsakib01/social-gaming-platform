@@ -29,6 +29,7 @@ ServerManager::processIntro(const Message& message) {
 			{buildGameFiles(message)}}; 
 	}
 	else if (message.text == "Q") {
+		quit = true;
 		return std::deque<Message>{
 			{message.connection, "Terminating program...\n"}};
 	}
