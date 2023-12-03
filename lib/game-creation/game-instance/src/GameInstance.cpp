@@ -62,6 +62,11 @@ GameInstance::execute() {
     }
     if (m_context.blocked) {
         m_state = GameInstanceState::WAITING;
+        
+        // Add outgoingMessages to gameCommunicator
+        OutgoingMessages& outgoing = m_context.outgoingMessages;
+        GameCommunicator.setGameMessage(outgoing.getMessages());
+        outgoing.clear();
     }
 }
 

@@ -9,6 +9,7 @@ struct ExecuteContext {
     GameState& gameState;
     std::stack<Rule*> instructionStack;
     bool blocked = false;
+    OutgoingMessages& outgoingMessages;
 
     ExecuteContext(GameState& state, Rule* initialRule)
         : gameState(state) {
