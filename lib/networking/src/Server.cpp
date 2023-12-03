@@ -137,13 +137,12 @@ Channel::send(std::string outgoing, bool isSystemMessage) {
   }
 
   // Prefix message with a boolean flag
-  char flag = (isSystemMessage ? '1' : '0');
-  std::string formattedMessage;
-  formattedMessage += flag;
+  char systemFlag = (isSystemMessage ? '1' : '0');
+  std::string formattedMessage = (isSystemMessage ? "1" : "0");
   for (size_t i = 0; i < outgoing.size(); i++) {
     formattedMessage += outgoing[i];
     if (outgoing[i] == '\n' && i != outgoing.size() - 1) {
-      formattedMessage += flag;
+      formattedMessage += systemFlag;
     }
   }
 

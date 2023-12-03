@@ -379,7 +379,8 @@ std::deque<ReceivedMessage> Client::receive() {
         if (result[0] == '1') {
           isSystemMessage = true;
         }
-        if (result[0] == '1' || result[0] == '0') {
+
+        if ((result[0] == '1' || result[0] == '0')) {
           result = result.substr(1);
         }
     }

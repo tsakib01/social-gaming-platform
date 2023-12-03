@@ -6,7 +6,7 @@ ServerManager::processNew(const Message& message) {
 		userManager->setUserName(message.connection, message.text);
 		userManager->setUserState(message.connection, UserState::INTRO);
 		return std::deque<Message>{
-			{message.connection, "Type (J) to join, (C) to create a game.\n"}};
+			{message.connection, "(J) to join, (C) to create a game.\n", true}};
 	}
 
 	else {

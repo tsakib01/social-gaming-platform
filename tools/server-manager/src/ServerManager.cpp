@@ -46,7 +46,7 @@ ServerManager::onConnect(Connection client) {
 	std::cout << "New connection: " << client.id << "\n";
 	userManager->addUser(client);
 	server->send(std::deque<Message> {
-		{client, "Welcome to the Social Gaming app!\nWhat is your name?\n"}});
+		{client, "Welcome! What is your name?\n"}});
 }
 
 void 

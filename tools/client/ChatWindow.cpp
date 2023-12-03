@@ -69,6 +69,7 @@ ChatWindowImpl::ChatWindowImpl(std::function<void(std::string)> onTextEntry,
   start_color();
   init_pair(1, COLOR_GREEN, COLOR_BLACK);
   init_pair(2, COLOR_WHITE, COLOR_BLACK);
+  init_pair(3, COLOR_BLUE, COLOR_BLACK);
   noecho();
   halfdelay(updateDelay);
 
@@ -168,16 +169,30 @@ void
 ChatWindowImpl::displayText(const std::deque<ReceivedMessage>& messages) {
   // This variadic function is part of the curses interface.
   // NOLINTNEXTLINE (cppcoreguidelines-pro-type-vararg)
+  
+  ReceivedMessage prev;
   for (ReceivedMessage message : messages) {
+    
     if (message.isSystemMessage) {
-      wattron(view, COLOR_PAIR(1) | A_BOLD);
+      if (!prev.isSystemMessage) {
+        wattron(view, COLOR_PAIR(1) | A_BOLD);
+        wprintw(view, "SERVER: ");
+        wattroff(view, COLOR_PAIR(1) | A_BOLD);
+        wattron(view, COLOR_PAIR(2));
+        wprintw(view, ": ");
+        wattroff(view, COLOR_PAIR(2));
+      }
+      wattron(view, COLOR_PAIR(3) | A_BOLD);
       wprintw(view, "%s", message.text.c_str());
-      wattroff(view, COLOR_PAIR(1) | A_BOLD);
+      wattroff(view, COLOR_PAIR(3) | A_BOLD);
+        
     } else {
       wattron(view, COLOR_PAIR(2));
       wprintw(view, "%s", message.text.c_str());
       wattroff(view, COLOR_PAIR(2));
     }
+
+    prev = message;
   }
 }
 
