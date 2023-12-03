@@ -1,22 +1,19 @@
 #include "Evaluator.h"
 #include <stdexcept>
 #include <iostream>
+#include <algorithm>
+#include <random>
+
+//--------------------------------------------------------------- OPERATION CLASS IMPLEMENTATIONS --------------------------------- 
 
 // Add operation supports
 // 1. Addition of two integers
-// 2. Concatenation of two strings
 class AddOperation final : public Operation {
 private:
     struct AddVisitor {
         GameEnvironment::Value operator()(const int& left, const int& right){
             GameEnvironment::Value value;
             value.value = left + right;
-            return value;
-        }
-
-        GameEnvironment::Value operator()(const std::string_view& left, const std::string_view& right){
-            GameEnvironment::Value value;
-            // value.value = std::string(left) + std::string(right);
             return value;
         }
 
@@ -303,16 +300,175 @@ GameEnvironment::Value Evaluator::evaluate(OPERATOR operationEnum, std::vector<c
     return operationItr->second->evaluate(values);
 }
 
+//--------------------------------------------------------------- LIST MODDIFY OPERATION CLASS IMPLEMENTATIONS --------------------------------- 
+
+// Reverses items of the list, which can hold any type  
+class ReverseListOperation final : public ModifyOperation {
+private:
+    struct ReverseListVisitor {
+
+        void operator()([[maybe_unused]] std::unique_ptr<GameEnvironment::List>& list){
+            std::reverse(list->begin(), list->end());
+        }
+
+        template <typename T>
+        void operator()([[maybe_unused]] T& list){
+            throw std::runtime_error("Unsupported types for reverse");
+        }
+    };
+
+    // Add operation requires 1 arguments
+    bool getSpecificationImpl(std::vector<GameEnvironment::Value*> values) const override {
+        return values.size() == 1;
+    };
+
+    void evaluateImpl(std::vector<GameEnvironment::Value*> values) override{
+        std::visit(ReverseListVisitor{}, values[0]->value);
+    }; 
+};
+
+// Shuffles items of the list, which can hold any type
+class ShuffleListOperation final : public ModifyOperation {
+private:
+    struct ShuffleListVisitor {
+        void operator()(std::unique_ptr<GameEnvironment::List>& list) {
+            // Create a random number generator
+            std::random_device rd;
+            std::mt19937 g(rd());
+
+            // Shuffle the list
+            std::shuffle(list->begin(), list->end(), g);
+        }
+
+        template <typename T>
+        void operator()([[maybe_unused]] T& list) {
+            throw std::runtime_error("Unsupported types for shuffle");
+        }
+    };
+
+    bool getSpecificationImpl(std::vector<GameEnvironment::Value*> values) const override {
+        return values.size() == 1;
+    }
+
+    void evaluateImpl(std::vector<GameEnvironment::Value*> values) override {
+        std::visit(ShuffleListVisitor{}, values[0]->value);
+    }
+};
+
+// Extends the list by appending items from the second list to the first one
+class ExtendListOperation final : public ModifyOperation {
+private:
+    struct ExtendListVisitor {
+        void operator()(std::unique_ptr<GameEnvironment::List>& targetList, 
+                        const std::unique_ptr<GameEnvironment::List>& extendList) {
+
+            if (extendList) {
+                // Iterate over the extendList
+                for (const auto& item : *extendList) {
+                    // Make a deep copy of the item
+                    std::unique_ptr<GameEnvironment::Value> copiedItem;
+                    switch (item->value.index()) {
+                        case 0:
+                            copiedItem = std::move(getValue(item));
+                            break;
+                        case 1:
+                            copiedItem = std::move(getValue(item));
+                            break;
+                        case 2:
+                            copiedItem = std::move(getValue(item));
+                            break;
+                        case 3: { // Works for List of Maps of Integers/Strings/Booleans
+                            std::unique_ptr<GameEnvironment::Map> copiedMap = std::make_unique<GameEnvironment::Map>();
+                            auto& map = std::get<3>(item->value);
+                            for(auto it = map->begin(); it != map->end(); ++it) {
+                                auto& v = it->second;
+                                std::unique_ptr<GameEnvironment::Value> mapItemValue = getValue(v);
+                                std::pair<std::string_view, std::unique_ptr<GameEnvironment::Value>> keyValuePair = std::make_pair(it->first, std::move(mapItemValue));
+                                copiedMap->insert(std::move(keyValuePair));
+                            }
+                            copiedItem = std::move(std::make_unique<GameEnvironment::Value>(std::move(copiedMap)));
+                            break;
+                        }
+                        case 4: { // Works for List of List of Integers/Strings/Booleans
+                            std::unique_ptr<GameEnvironment::List> copiedList = std::make_unique<GameEnvironment::List>();
+                            auto& list = std::get<4>(item->value);
+                            for (const auto& listItem : *list) {
+                                copiedList->push_back(std::move(getValue(listItem)));
+                            }
+                            copiedItem = std::move(std::make_unique<GameEnvironment::Value>(std::move(copiedList)));
+                            break;
+                        }
+                    }
+
+                    targetList->push_back(std::move(copiedItem));
+
+                }
+            }
+        }
+
+        std::unique_ptr<GameEnvironment::Value> 
+        getValue(const std::unique_ptr<GameEnvironment::Value>& v) {
+            std::unique_ptr<GameEnvironment::Value> value;
+            if (std::holds_alternative<int>(v->value)) value = std::make_unique<GameEnvironment::Value>(std::get<int>(v->value));
+            if (std::holds_alternative<bool>(v->value)) value = std::make_unique<GameEnvironment::Value>(std::get<bool>(v->value));
+            if (std::holds_alternative<std::string_view>(v->value)) value = std::make_unique<GameEnvironment::Value>(std::get<std::string_view>(v->value));
+            return value;
+        }
+
+        template <typename T, typename U>
+        void operator()([[maybe_unused]] T& targetList, [[maybe_unused]] const U& extendList) {
+            throw std::runtime_error("Unsupported types for extend");
+        }
+    };
+
+    bool getSpecificationImpl(std::vector<GameEnvironment::Value*> values) const override {
+        // Ensure there are exactly two arguments and both are lists
+        return values.size() == 2;
+    }
+
+    void evaluateImpl(std::vector<GameEnvironment::Value*> values) override {
+        std::visit(ExtendListVisitor{}, values[0]->value, values[1]->value);
+    }
+};
+
+// Register modifying list operations to the map
+void 
+Evaluator::registerOperation(MODIFIER MODIFIEREnum, std::unique_ptr<ModifyOperation> ModifyOperation){
+    auto [it, succeeded] = MODIFIERToModifyOperation.try_emplace(MODIFIEREnum, std::move(ModifyOperation));
+    
+    // When the given operation is already registered
+    if (!succeeded){
+        std::runtime_error("A similar list modifying operation already exists.");
+    }
+}
+
+void
+Evaluator::evaluate(MODIFIER MODIFIEREnum, std::vector<GameEnvironment::Value*> values){
+    auto operationItr = MODIFIERToModifyOperation.find(MODIFIEREnum);
+    // No operation registered
+    if (operationItr == MODIFIERToModifyOperation.end()){
+        std::runtime_error("The list modifying operator is not registered");
+    }
+    operationItr->second->evaluate(values);
+}
+
+
+
+//--------------------------------------------------------------- DEFAULT FACTORY IMPLEMENTATIONS --------------------------------- 
 // Make a default evaluator
 Evaluator Evaluator::defaultEvaluatorFactory(){
     Evaluator evaluator;
-    evaluator.registerOperation(OPERATOR::ADD, std::make_unique<AddOperation>());
-    evaluator.registerOperation(OPERATOR::SUBTRACT, std::make_unique<SubtractOperation>());
-    evaluator.registerOperation(OPERATOR::MULTIPLY, std::make_unique<MultiplyOperation>());
-    evaluator.registerOperation(OPERATOR::DIVIDE, std::make_unique<DivideOperation>());
-    evaluator.registerOperation(OPERATOR::OR, std::make_unique<OrOperation>());
-    evaluator.registerOperation(OPERATOR::AND, std::make_unique<AndOperation>());
-    evaluator.registerOperation(OPERATOR::NOT, std::make_unique<NotOperation>());
-    evaluator.registerOperation(OPERATOR::EQUAL, std::make_unique<EqualOperation>());
+    evaluator.registerOperation(OPERATOR::ADD,          std::make_unique<AddOperation>());
+    evaluator.registerOperation(OPERATOR::SUBTRACT,     std::make_unique<SubtractOperation>());
+    evaluator.registerOperation(OPERATOR::MULTIPLY,     std::make_unique<MultiplyOperation>());
+    evaluator.registerOperation(OPERATOR::DIVIDE,       std::make_unique<DivideOperation>());
+    evaluator.registerOperation(OPERATOR::OR,           std::make_unique<OrOperation>());
+    evaluator.registerOperation(OPERATOR::AND,          std::make_unique<AndOperation>());
+    evaluator.registerOperation(OPERATOR::NOT,          std::make_unique<NotOperation>());
+    evaluator.registerOperation(OPERATOR::EQUAL,        std::make_unique<EqualOperation>());
+    evaluator.registerOperation(MODIFIER::REVERSE,  std::make_unique<ReverseListOperation>());
+    evaluator.registerOperation(MODIFIER::SHUFFLE,  std::make_unique<ShuffleListOperation>());
+    evaluator.registerOperation(MODIFIER::EXTEND,   std::make_unique<ExtendListOperation>());
     return evaluator;
 }
+
