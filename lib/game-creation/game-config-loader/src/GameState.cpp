@@ -22,9 +22,9 @@ void GameState::addState(GameEnvironment::Identifier identifier, std::unique_ptr
     }
 }
 
-GameEnvironment::Value GameState::getValue(GameEnvironment::Identifier identifier){
+GameEnvironment::Value GameState::getValue(GameEnvironment::Identifier identifier) const {
     auto variable = environment->find(identifier);
-    if (variable == environment->end()){
+    if (variable == environment->end()) {
         std::runtime_error ("The identifier does not exists in the environment");
     }
     return GameEnvironment::Value(*(variable->second));
@@ -36,6 +36,14 @@ void GameState::updateState(GameEnvironment::Identifier identifier, std::unique_
         std::runtime_error ("The identifier does not exists in the environment");
     }
     variable->second = std::move(value);
+}
+
+bool GameState::hasValue(GameEnvironment::Identifier identifier) {
+    auto variable = environment->find(identifier);
+    if (variable == environment->end()){
+        return false;
+    }
+    return true;
 }
 
 // struct PrintVisitor {

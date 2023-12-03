@@ -11,10 +11,8 @@ std::unique_ptr<GameState> gameState, std::unique_ptr<GameSetup> gameSetup, uint
       m_ruleExecutor(m_context)
 {
     m_inGameUserManager = std::make_unique<InGameUserManager>();
-    // const std::shared_ptr<RuleNode> rulesRoot = gameRules->getRules();
-    // instructionStack.push(rulesRoot);
-
     m_state = GameInstanceState::QUEUED;
+    
     if (!gameHasSetup()) {
         m_setupIndex = SETUP_FINISHED;
     }
