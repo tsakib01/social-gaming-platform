@@ -56,7 +56,7 @@ GameInstance::startGame() {
 }
 
 void 
-GameInstance::executeNextInstruction() {
+GameInstance::execute() {
     while (!m_context.blocked && (m_context.instructionStack.size() > 0)) {
         m_context.instructionStack.top()->accept(m_ruleExecutor);
     }

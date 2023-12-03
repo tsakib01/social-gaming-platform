@@ -42,7 +42,7 @@ public:
 
     void startGame();
     bool gameIsFinished();
-    void executeNextInstruction(); 
+    void execute(); 
 
     uint16_t getRoomCode();
     GameInstanceState getGameInstanceState();

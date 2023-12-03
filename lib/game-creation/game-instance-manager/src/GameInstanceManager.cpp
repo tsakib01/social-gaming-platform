@@ -52,7 +52,7 @@ void
 GameInstanceManager::runCycle() {
     while (!m_gameList.empty()) {
         for (std::unique_ptr<GameInstance>& game : m_gameList) {
-            game->executeNextInstruction();
+            game->execute();
         }
         m_gameList.erase(std::remove_if(m_gameList.begin(), m_gameList.end(),
             [](const std::unique_ptr<GameInstance>& game) {
