@@ -32,13 +32,13 @@ main(int argc, char* argv[]) {
     try {
       client.update();
     } catch (std::exception& e) {
-      chatWindow.displayText("Exception from Client update:", false);
-      chatWindow.displayText(e.what(), false);
+      chatWindow.displayText(std::deque<ReceivedMessage>{{"Exception from Client update:", false}});
+      chatWindow.displayText(std::deque<ReceivedMessage>{{e.what(), false}});
     }
 
-    auto [response, isSystemMessage] = client.receive();
-    if (!response.empty()) {
-      chatWindow.displayText(response, isSystemMessage);
+    std::deque<ReceivedMessage> messages = client.receive();
+    if (!messages.empty()) {
+      chatWindow.displayText(messages);
     }
     chatWindow.update();
   }

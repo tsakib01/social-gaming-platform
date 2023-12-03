@@ -37,7 +37,7 @@ public:
 
   void refreshWindow();
 
-  void displayText(const std::string& text, bool isSystemMessage);
+  void displayText(const std::deque<ReceivedMessage>& messages);
 
 private:
   std::function<void(std::string)> onTextEntry;
@@ -165,17 +165,19 @@ ChatWindowImpl::refreshWindow() {
 
 
 void
-ChatWindowImpl::displayText(const std::string& text, bool isSystemMessage) {
+ChatWindowImpl::displayText(const std::deque<ReceivedMessage>& messages) {
   // This variadic function is part of the curses interface.
   // NOLINTNEXTLINE (cppcoreguidelines-pro-type-vararg)
-  if (isSystemMessage) {
-    wattron(view, COLOR_PAIR(1) | A_BOLD);
-    wprintw(view, "%s", text.c_str());
-    wattroff(view, COLOR_PAIR(1) | A_BOLD);
-  } else {
-    wattron(view, COLOR_PAIR(2));
-    wprintw(view, "%s", text.c_str());
-    wattroff(view, COLOR_PAIR(2));
+  for (ReceivedMessage message : messages) {
+    if (message.isPlayerMessage) {
+      wattron(view, COLOR_PAIR(1) | A_BOLD);
+      wprintw(view, "%s", message.text.c_str());
+      wattroff(view, COLOR_PAIR(1) | A_BOLD);
+    } else {
+      wattron(view, COLOR_PAIR(2));
+      wprintw(view, "%s", message.text.c_str());
+      wattroff(view, COLOR_PAIR(2));
+    }
   }
 }
 
@@ -217,8 +219,8 @@ ChatWindow::update() {
 
 
 void
-ChatWindow::displayText(const std::string& text, bool isSystemMessage) {
-  impl->displayText(text, isSystemMessage);
+ChatWindow::displayText(const std::deque<ReceivedMessage>& messages) {
+  impl->displayText(messages);
 }
 
 

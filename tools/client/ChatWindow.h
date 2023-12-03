@@ -13,6 +13,8 @@
 #include <memory>
 #include <string>
 
+#include "Client.h"
+
 
 // Note: The ncurses state needs to be hidden from the public interface
 // due to macro conflicts with boost asio. Thus, we hide the implementation
@@ -33,7 +35,7 @@ public:
 
   void update();
 
-  void displayText(const std::string& text, bool isSystemMessage);
+  void displayText(const std::deque<ReceivedMessage>& messages);
 
 private:
   std::unique_ptr<ChatWindowImpl> impl;

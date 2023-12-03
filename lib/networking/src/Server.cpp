@@ -82,7 +82,7 @@ public:
       { }
 
   void start(boost::beast::http::request<boost::beast::http::string_body>& request);
-  void send(std::string outgoing, bool isSystemMessage);
+  void send(std::string outgoing, bool isPlayerMessage);
   void disconnect();
 
   [[nodiscard]] Connection getConnection() const noexcept { return connection; }
@@ -131,11 +131,13 @@ Channel::disconnect() {
 
 
 void
-Channel::send(std::string outgoing, bool isSystemMessage) {
+Channel::send(std::string outgoing, bool isPlayerMessage) {
   if (outgoing.empty()) {
     return;
   }
-  writeBuffer.push_back(std::move(outgoing));
+  // Prefix message with a boolean flag
+  std::string formattedMessage = (isPlayerMessage ? "1" : "0") + outgoing;
+  writeBuffer.push_back(std::move(formattedMessage));
 
   if (1 < writeBuffer.size()) {
     // Note, multiple writes will be chained within asio via `continueSending`,
@@ -391,7 +393,7 @@ Server::send(const std::deque<Message>& messages) {
   for (const auto& message : messages) {
     auto found = impl->channels.find(message.connection);
     if (impl->channels.end() != found) {
-      found->second->send(message.text, message.isSystemMessage);
+      found->second->send(message.text, message.isPlayerMessage);
     }
   }
 }

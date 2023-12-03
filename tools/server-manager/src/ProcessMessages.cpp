@@ -6,7 +6,7 @@ ServerManager::processNew(const Message& message) {
 		userManager->setUserName(message.connection, message.text);
 		userManager->setUserState(message.connection, UserState::INTRO);
 		return std::deque<Message>{
-			{message.connection, "Type (J) to join, (C) to create a game.\n"}};
+			{message.connection, "Type (J) to join, (C) to create a game, (Q) to quit.\n"}};
 	}
 
 	else {
@@ -27,7 +27,11 @@ ServerManager::processIntro(const Message& message) {
 		userManager->setUserState(message.connection, UserState::GAME_SELECT);
 		return std::deque<Message>{
 			{buildGameFiles(message)}}; 
-	}	
+	}
+	else if (message.text == "Q") {
+		return std::deque<Message>{
+			{message.connection, "Terminating program...\n"}};
+	}
 	else {
 		return std::deque<Message>{
 			{message.connection, "Invalid, try again.\n"}};

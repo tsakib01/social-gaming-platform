@@ -60,7 +60,7 @@ struct ConnectionHash {
 struct Message {
   Connection connection;
   std::string text;
-  bool isSystemMessage;
+  bool isPlayerMessage;
 };
 
 

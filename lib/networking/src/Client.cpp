@@ -360,14 +360,37 @@ Client::update() {
   impl->update();
 }
 
-
-ReceivedMessage
-Client::receive() {
+std::deque<ReceivedMessage> Client::receive() {
   auto& stream = impl->getIncomingStream();
-  auto result = stream.str();
+  auto messages = std::deque<ReceivedMessage>();
+
+  std::istringstream inputStream(stream.str());
+
+  while (true) {
+    std::string result;
+    std::getline(inputStream, result);
+
+    if (result.empty()) {
+      break;
+    }
+
+    bool isPlayerMessage = false;
+    if (!result.empty()) {
+        if (result[0] == '1') {
+          isPlayerMessage = true;
+        }
+        if (result[0] == '1' || result[0] == '0') {
+          result = result.substr(1);
+        }
+    }
+
+    messages.push_back(ReceivedMessage{result + "\n", isPlayerMessage});
+  }
+  
   stream.str(std::string{});
   stream.clear();
-  return ReceivedMessage{result, true};
+
+  return messages;
 }
 
 

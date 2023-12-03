@@ -11,10 +11,11 @@
 
 #include <memory>
 #include <string>
+#include <deque>
 
 struct ReceivedMessage {
   std::string text;
-  bool isSystemMessage;
+  bool isPlayerMessage = false;
 };
 
 namespace networking {
@@ -64,7 +65,7 @@ public:
    *  messages were received from the Server, they are first concatenated
    *  into a single std::string.
    */
-  [[nodiscard]] ReceivedMessage receive();
+  [[nodiscard]] std::deque<ReceivedMessage> receive();
 
   /**
    *  Returns true iff the client disconnected from the server after initially
