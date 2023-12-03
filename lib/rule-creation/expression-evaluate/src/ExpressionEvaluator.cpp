@@ -103,8 +103,6 @@ ExpressionEvaluateVisitor::handleBuiltinExpression(const GameEnvironment::Value&
         // Add more cases as needed...
 
         default: {
-            // Handle default case (if necessary)
-
             break;
         }
     }
