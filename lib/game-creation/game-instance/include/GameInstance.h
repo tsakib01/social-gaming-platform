@@ -48,7 +48,7 @@ public:
 
     void addUsers(const std::vector<User>& users);
     void deleteUsers(const std::vector<User>& users);
-    void updateUserStates(const std::vector<User>& users, GameEnvironment::Environment environmentToUse);
+    void updateUserStates(const std::vector<User>& users);
     std::map<uintptr_t, GameEnvironment::Environment> getUserStates();
     bool gameIsJoinable();
     bool gameHasSetup();
