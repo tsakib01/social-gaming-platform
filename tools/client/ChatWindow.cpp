@@ -37,7 +37,7 @@ public:
 
   void refreshWindow();
 
-  void displayText(const std::string& text);
+  void displayText(const std::string& text, bool isSystemMessage);
 
 private:
   std::function<void(std::string)> onTextEntry;
@@ -61,6 +61,14 @@ ChatWindowImpl::ChatWindowImpl(std::function<void(std::string)> onTextEntry,
                                int updateDelay)
   : onTextEntry{std::move(onTextEntry)} {
   initscr();
+  if (has_colors() == FALSE) {
+    endwin();
+    printf("Your terminal does not support color\n");
+    exit(1);
+  }
+  start_color();
+  init_pair(1, COLOR_GREEN, COLOR_BLACK);
+  init_pair(2, COLOR_WHITE, COLOR_BLACK);
   noecho();
   halfdelay(updateDelay);
 
@@ -157,10 +165,18 @@ ChatWindowImpl::refreshWindow() {
 
 
 void
-ChatWindowImpl::displayText(const std::string& text) {
+ChatWindowImpl::displayText(const std::string& text, bool isSystemMessage) {
   // This variadic function is part of the curses interface.
   // NOLINTNEXTLINE (cppcoreguidelines-pro-type-vararg)
-  wprintw(view, "%s", text.c_str());
+  if (isSystemMessage) {
+    wattron(view, COLOR_PAIR(1) | A_BOLD);
+    wprintw(view, "%s", text.c_str());
+    wattroff(view, COLOR_PAIR(1) | A_BOLD);
+  } else {
+    wattron(view, COLOR_PAIR(2));
+    wprintw(view, "%s", text.c_str());
+    wattroff(view, COLOR_PAIR(2));
+  }
 }
 
 
@@ -201,8 +217,8 @@ ChatWindow::update() {
 
 
 void
-ChatWindow::displayText(const std::string& text) {
-  impl->displayText(text);
+ChatWindow::displayText(const std::string& text, bool isSystemMessage) {
+  impl->displayText(text, isSystemMessage);
 }
 
 

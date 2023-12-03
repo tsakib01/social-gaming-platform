@@ -23,28 +23,22 @@ main(int argc, char* argv[]) {
 
   networking::Client client{argv[1], argv[2]};
 
-  bool done = false;
-  auto onTextEntry = [&done, &client] (std::string text) {
-    if ("exit" == text || "quit" == text) {
-      done = true;
-    } else {
-      client.send(text);
-    }
+  auto onTextEntry = [&client] (std::string text) {
+    client.send(text);
   };
 
   ChatWindow chatWindow(onTextEntry);
-  while (!done && !client.isDisconnected()) {
+  while (!client.isDisconnected()) {
     try {
       client.update();
     } catch (std::exception& e) {
-      chatWindow.displayText("Exception from Client update:");
-      chatWindow.displayText(e.what());
-      done = true;
+      chatWindow.displayText("Exception from Client update:", false);
+      chatWindow.displayText(e.what(), false);
     }
 
-    auto response = client.receive();
+    auto [response, isSystemMessage] = client.receive();
     if (!response.empty()) {
-      chatWindow.displayText(response);
+      chatWindow.displayText(response, isSystemMessage);
     }
     chatWindow.update();
   }

@@ -33,7 +33,7 @@ public:
 
   void update();
 
-  void displayText(const std::string& text);
+  void displayText(const std::string& text, bool isSystemMessage);
 
 private:
   std::unique_ptr<ChatWindowImpl> impl;

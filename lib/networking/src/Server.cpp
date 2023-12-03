@@ -82,7 +82,7 @@ public:
       { }
 
   void start(boost::beast::http::request<boost::beast::http::string_body>& request);
-  void send(std::string outgoing);
+  void send(std::string outgoing, bool isSystemMessage);
   void disconnect();
 
   [[nodiscard]] Connection getConnection() const noexcept { return connection; }
@@ -131,7 +131,7 @@ Channel::disconnect() {
 
 
 void
-Channel::send(std::string outgoing) {
+Channel::send(std::string outgoing, bool isSystemMessage) {
   if (outgoing.empty()) {
     return;
   }
@@ -391,7 +391,7 @@ Server::send(const std::deque<Message>& messages) {
   for (const auto& message : messages) {
     auto found = impl->channels.find(message.connection);
     if (impl->channels.end() != found) {
-      found->second->send(message.text);
+      found->second->send(message.text, message.isSystemMessage);
     }
   }
 }

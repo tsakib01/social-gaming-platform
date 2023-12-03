@@ -361,13 +361,13 @@ Client::update() {
 }
 
 
-std::string
+ReceivedMessage
 Client::receive() {
   auto& stream = impl->getIncomingStream();
   auto result = stream.str();
   stream.str(std::string{});
   stream.clear();
-  return result;
+  return ReceivedMessage{result, true};
 }
 
 
