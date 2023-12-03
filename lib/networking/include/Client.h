@@ -15,7 +15,7 @@
 
 struct ReceivedMessage {
   std::string text;
-  bool isPlayerMessage = false;
+  bool isSystemMessage;
 };
 
 namespace networking {

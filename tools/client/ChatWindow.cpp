@@ -169,7 +169,7 @@ ChatWindowImpl::displayText(const std::deque<ReceivedMessage>& messages) {
   // This variadic function is part of the curses interface.
   // NOLINTNEXTLINE (cppcoreguidelines-pro-type-vararg)
   for (ReceivedMessage message : messages) {
-    if (message.isPlayerMessage) {
+    if (message.isSystemMessage) {
       wattron(view, COLOR_PAIR(1) | A_BOLD);
       wprintw(view, "%s", message.text.c_str());
       wattroff(view, COLOR_PAIR(1) | A_BOLD);
