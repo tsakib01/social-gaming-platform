@@ -7,7 +7,6 @@ ServerManager::ServerManager(const unsigned short port, const char* htmlFile) {
                   [this](auto client) { this->onDisconnect(client); });
     gameInstanceManager = std::make_unique<GameInstanceManager>();
     userManager = std::make_shared<UserManager>();
-	gameCommunicator = std::make_unique<GameCommunicator>();
 }
 
 void 
