@@ -24,6 +24,7 @@ add_executable(runAllTests
     ruleFactoryTests.cpp
     inGameUserManagerTests.cpp
     outgoingMessagesTests.cpp
+    GameEnvironmentTests.cpp
 )
 
 target_link_libraries(runAllTests
