@@ -33,11 +33,13 @@ GameInstance::inputConfig(const std::string& response) {
     }
 
     if (m_gameSetup->isResponseValid(identifiers[m_setupIndex], response)) {
-        m_setupResponses.push_back({std::string(identifiers[m_setupIndex]), response});
+        m_setupResponses.push_back({(identifiers[m_setupIndex]), response});
         m_setupIndex++;
         if (m_setupIndex == identifiers.size()) {
             m_setupIndex = SETUP_FINISHED;
-            // TODO: Can insert setupResponses into gameState here. 
+            // TODO: Can insert setupResponses into gameState here.
+            addSetupIntoState();
+//            m_gameState->print();
             return ConfigResult{
                 "Finished setup.\n", ValidResponse{true}, Finished{true}};
         }
@@ -133,7 +135,7 @@ std::unique_ptr<GameEnvironment::Value> convertSetupResponseToValue( KIND kind, 
 void GameInstance::addSetupIntoState(){
     int size = m_setupResponses.size();
     for(int i=0; i<size; i++){
-        auto identifier = m_setupResponses[i].first;
+        std::string_view identifier = m_setupResponses[i].first;
         auto kind = m_gameSetup->getKind(identifier);
         auto value = convertSetupResponseToValue(kind, m_setupResponses[i].second );
         m_gameState->addSetupToGameState(identifier,std::move(value));
