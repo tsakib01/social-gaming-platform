@@ -22,12 +22,12 @@ void GameState::addState(GameEnvironment::Identifier identifier, std::unique_ptr
     }
 }
 
-const GameEnvironment::Value* GameState::getValue(GameEnvironment::Identifier identifier){
+GameEnvironment::Value GameState::getValue(GameEnvironment::Identifier identifier){
     auto variable = environment->find(identifier);
     if (variable == environment->end()){
         std::runtime_error ("The identifier does not exists in the environment");
     }
-    return variable->second.get();
+    return GameEnvironment::Value(*(variable->second));
 }
 
 void GameState::updateState(GameEnvironment::Identifier identifier, std::unique_ptr<GameEnvironment::Value>  value){
