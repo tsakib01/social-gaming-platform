@@ -45,29 +45,29 @@ TEST_F(ValueCopyConstructorTest2, CanGetValueOfExistingUserMAYBE) {
     // EXPECT_TRUE(copy2.get()->value == copy.get()->value);
 }
 
-// // From an existing user, get their identifier
-// TEST_F(ValueCopyConstructorTest2, CanSetIdentifierOfExistingUserMAYBE) {
-//     auto oldValue = std::make_unique<GameEnvironment::Value>(500);
-//     auto newValue = std::make_unique<GameEnvironment::Value>(501);
+// From an existing user, get their identifier
+TEST_F(ValueCopyConstructorTest2, CanSetIdentifierOfExistingUserMAYBE) {
+    auto oldValue = std::make_unique<GameEnvironment::Value>(500);
+    auto newValue = std::make_unique<GameEnvironment::Value>(501);
     
-//     std::unique_ptr<InGameUserManager> m_inGameUserManager;
-//     //InGameUserManager inGameUManager;
-//     m_inGameUserManager = std::make_unique<InGameUserManager>();
-//     UserId dummyConnection;
+    std::unique_ptr<InGameUserManager> m_inGameUserManager;
+    //InGameUserManager inGameUManager;
+    m_inGameUserManager = std::make_unique<InGameUserManager>();
+    UserId dummyConnection;
     
-//     dummyConnection.id = 1;
-//     GameEnvironment::Identifier testIdentifier = "testidentifier";
+    dummyConnection.id = 1;
+    GameEnvironment::Identifier testIdentifier = "testidentifier";
 
-//     std::map<GameEnvironment::Identifier, std::unique_ptr<GameEnvironment::Value>> testMap;
-//     testMap.insert({testIdentifier, std::move(oldValue)});
-//     m_inGameUserManager -> addNewUser(dummyConnection, std::move(testMap));
+    std::map<GameEnvironment::Identifier, std::unique_ptr<GameEnvironment::Value>> testMap;
+    testMap.insert({testIdentifier, std::move(oldValue)});
+    m_inGameUserManager -> addNewUser(dummyConnection, std::move(testMap));
 
-//     // Value should now change from 500 to 501
-//     m_inGameUserManager -> setIdentifierOfUser(dummyConnection, testIdentifier, std::move(newValue));
-//     GameEnvironment::Value takenValue = m_inGameUserManager -> getValueOfUser(dummyConnection, testIdentifier);
-//     auto returnValue = std::make_unique<GameEnvironment::Value>(takenValue);
-//     //ASSERT_TRUE(returnValue -> value == newValue -> value);
-// }
+    // Value should now change from 500 to 501
+    m_inGameUserManager -> setIdentifierOfUser(dummyConnection, testIdentifier, std::move(newValue));
+    GameEnvironment::Value takenValue = m_inGameUserManager -> getValueOfUser(dummyConnection, testIdentifier);
+    auto returnValue = std::make_unique<GameEnvironment::Value>(takenValue);
+    //ASSERT_TRUE(returnValue -> value == newValue -> value);
+}
 
 TEST(InGameUserManagerTests, BasicUserCount){
     InGameUserManager inGameUManager;
