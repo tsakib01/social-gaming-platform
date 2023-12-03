@@ -1,4 +1,6 @@
 #include "GameState.h"
+#include "GameEnvironment.h"
+#include "Evaluator.h"
 #include <iostream>
 
 GameState::GameState()
@@ -22,15 +24,15 @@ void GameState::addState(GameEnvironment::Identifier identifier, std::unique_ptr
     }
 }
 
-void GameState::addSetupToGameState(GameEnvironment::Identifier identifier,  std::unique_ptr<GameEnvironment::Value> value){
-    if(environment->find("configuration")==environment->end()){
+void GameState::addSetupToGameState(GameEnvironment::Identifier identifier,  GameEnvironment::Value toStore){
+    auto configuration = environment->find("configuration");
+    if(configuration==environment->end()){
         throw std::runtime_error ("No configuration in GameState");
     }
-    auto configuration = environment->find("configuration");
-    EmplaceVisitor visitor(identifier,std::move(value));
-    std::visit(visitor, configuration->second->value);
-
-//    configuration->second->value.emplace(identifier, std::move(value));
+    auto identifierValue = GameEnvironment::Value(identifier);
+    Evaluator evaluator = Evaluator::defaultEvaluatorFactory();
+    std::vector<GameEnvironment::Value*> values={configuration->second.get(), &identifierValue, &toStore};
+    evaluator.evaluate(MODIFIER::SET, values);
 }
 
 GameEnvironment::Value GameState::getValue(GameEnvironment::Identifier identifier){

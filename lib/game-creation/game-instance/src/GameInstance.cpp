@@ -1,6 +1,5 @@
 #include "GameInstance.h"
 #include "GameConfigLoader.h"
-#include "GameEnvironment.h"
 GameInstance::GameInstance(std::unique_ptr<RuleTree> gameRules, 
 std::unique_ptr<GameState> gameState, std::unique_ptr<GameSetup> gameSetup, uint16_t roomCode)
     : m_gameRules(std::move(gameRules)), 
@@ -39,6 +38,7 @@ GameInstance::inputConfig(const std::string& response) {
             m_setupIndex = SETUP_FINISHED;
             // TODO: Can insert setupResponses into gameState here.
             addSetupIntoState();
+
 //            m_gameState->print();
             return ConfigResult{
                 "Finished setup.\n", ValidResponse{true}, Finished{true}};
@@ -112,10 +112,10 @@ GameInstance::gameHasSetup() {
     return m_gameSetup->hasSetup();
 }
 
-std::unique_ptr<GameEnvironment::Value> convertSetupResponseToValue( KIND kind, std::string_view response ){
+GameEnvironment::Value convertSetupResponseToValue( KIND kind, std::string_view response ){
 
     if(kind == KIND::INTEGER){
-        return std::make_unique<GameEnvironment::Value>(std::stoi(std::string(response)));
+        return GameEnvironment::Value(std::stoi(std::string(response)));
     }
     else if(kind == KIND::BOOLEAN){
         bool value ;
@@ -125,10 +125,10 @@ std::unique_ptr<GameEnvironment::Value> convertSetupResponseToValue( KIND kind, 
         else{
             value = false;
         }
-        return std::make_unique<GameEnvironment::Value>(value);
+        return GameEnvironment::Value(value);
     }
     else{
-        return std::make_unique<GameEnvironment::Value>(response);
+        return GameEnvironment::Value(response);
     }
 }
 
@@ -138,6 +138,6 @@ void GameInstance::addSetupIntoState(){
         std::string_view identifier = m_setupResponses[i].first;
         auto kind = m_gameSetup->getKind(identifier);
         auto value = convertSetupResponseToValue(kind, m_setupResponses[i].second );
-        m_gameState->addSetupToGameState(identifier,std::move(value));
+        m_gameState->addSetupToGameState(identifier,value);
     }
 }

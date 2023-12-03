@@ -3,7 +3,6 @@
 #include <iostream>
 #include <algorithm>
 #include <random>
-
 //--------------------------------------------------------------- OPERATION CLASS IMPLEMENTATIONS --------------------------------- 
 
 // Add operation supports
@@ -280,7 +279,32 @@ private:
         return std::visit(EqualOperationVisitor{}, values[0]->value, values[1]->value);
     } 
 };
+//Get a copy of value form GameEnvironment::Map by Identifier
+class LookInOperation final : public Operation {
+private:
+    struct LookInVisitor{
+        GameEnvironment::Value operator()( const std::unique_ptr<GameEnvironment::Map>& map, const std::string_view& identifier )  {
+            auto target = map->find(identifier);
+            if(target==map->end()) {
+                throw std::runtime_error("identifier not in");
+            }
+            return GameEnvironment::Value(*target->second);
+        }
+        template <typename T, typename U>
+        GameEnvironment::Value operator()([[maybe_unused]] const T& left,[[maybe_unused]] const U& right ){
+            throw std::runtime_error("Unsupported types for LookIn");
+        }
+    };
 
+    // LookIn operation requires 2 arguments
+    bool getSpecificationImpl(std::vector<const GameEnvironment::Value*> values) const override {
+        return values.size() == 2;
+    };
+
+    GameEnvironment::Value evaluateImpl(std::vector<const GameEnvironment::Value*> values) const override{
+        return std::visit(LookInVisitor{}, values[0]->value, values[1]->value );
+    }
+};
 // Register operation to the map
 void Evaluator::registerOperation(OPERATOR operatorEnum, std::unique_ptr<Operation> operation){
     auto [it, succeeded] = operatorToOperation.try_emplace(operatorEnum, std::move(operation));
@@ -431,6 +455,42 @@ private:
     }
 };
 
+//Append one element to Map or List
+class SetOperation final : public ModifyOperation {
+private:
+    class SetVisitor{
+    public:
+        explicit SetVisitor(GameEnvironment::Value toStore) : toStore(toStore){}
+        void operator()( std::unique_ptr<GameEnvironment::Map>& map,  std::string_view& identifier)  {
+          map->emplace(identifier,std::make_unique<GameEnvironment::Value>(toStore));
+        }
+        void operator()( std::unique_ptr<GameEnvironment::List>& list,  int& index)  {
+            if (index >= 0 && index <= list->size()) {
+                auto it = std::next(list->begin(), index);
+                list->insert(it, std::make_unique<GameEnvironment::Value>(toStore));
+            }
+            else{
+                throw std::runtime_error("index out of scope");
+            }
+        }
+        template <typename T, typename U>
+        void operator()([[maybe_unused]]  T& map, [[maybe_unused]]  U& identifier ){
+          throw std::runtime_error("Unsupported types for Set");
+      }
+    private:
+        GameEnvironment::Value toStore;
+    };
+
+    // Add operation requires 3 arguments
+    bool getSpecificationImpl(std::vector<GameEnvironment::Value*> values) const override {
+        return values.size() == 3;
+    };
+
+    void evaluateImpl(std::vector<GameEnvironment::Value*> values) override{
+        std::visit(SetVisitor{ *(values[2])}, values[0]->value, values[1]->value);
+    };
+};
+
 // Register modifying list operations to the map
 void 
 Evaluator::registerOperation(MODIFIER MODIFIEREnum, std::unique_ptr<ModifyOperation> ModifyOperation){
@@ -466,9 +526,13 @@ Evaluator Evaluator::defaultEvaluatorFactory(){
     evaluator.registerOperation(OPERATOR::AND,          std::make_unique<AndOperation>());
     evaluator.registerOperation(OPERATOR::NOT,          std::make_unique<NotOperation>());
     evaluator.registerOperation(OPERATOR::EQUAL,        std::make_unique<EqualOperation>());
+    evaluator.registerOperation(OPERATOR::LOOK_UP,     std::make_unique<LookInOperation>());
     evaluator.registerOperation(MODIFIER::REVERSE,  std::make_unique<ReverseListOperation>());
     evaluator.registerOperation(MODIFIER::SHUFFLE,  std::make_unique<ShuffleListOperation>());
     evaluator.registerOperation(MODIFIER::EXTEND,   std::make_unique<ExtendListOperation>());
+    evaluator.registerOperation(MODIFIER::SET,   std::make_unique<SetOperation>());
+
+
     return evaluator;
 }
 

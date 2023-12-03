@@ -261,12 +261,3 @@ TEST(AllSetupParserTest, invalidGameFile ){
     ts::Node configuration = root.getChildByFieldName("configuration");
     EXPECT_THROW(gameSetupLoader.getGameSetup(configuration), std::runtime_error);
 }
-
-TEST(GetValueVisitorTest, checkGetterWork){
-    GameConfigLoader gameConfigLoader{"./test/games/setup-parser-test.game"};
-    auto gameState = gameConfigLoader.createGameState();
-    auto configuration = gameState->getValue("configuration");
-    auto name = configuration->getValueInMap("name");
-    EXPECT_EQ(*std::get_if<std::string_view>(&name->value), "\"Rock, Paper, Scissors\"");
-}
-

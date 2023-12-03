@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "Evaluator.h"
+#include "GameConfigLoader.h"
 #include <iostream>
 
 class EvaluatorModifyOperationTest : public ::testing::Test {
@@ -457,8 +458,68 @@ TEST_F(EvaluatorModifyOperationTest, TestExtendListOfMaps) {
     EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&list2Value, &list3Value}).value));
 }
 
+TEST_F(EvaluatorModifyOperationTest, TestSetToConfigValue){
+    GameConfigLoader gameConfigLoader{"./test/games/setup-parser-test.game"};
+    auto gameState = gameConfigLoader.createGameState();
+    auto configuration = gameState->getValue("configuration");
+    std::string_view idenfitier1=std::string_view("rounds");
+    auto identifier = GameEnvironment::Value(idenfitier1);
+    auto toStore = GameEnvironment::Value(10);
+    evaluator.evaluate(MODIFIER::SET, {&configuration, &identifier, &toStore});
+    auto rounds = evaluator.evaluate(OPERATOR::LOOK_UP, {&configuration, &identifier});
+    auto information = std::get<int>(rounds.value);
+    EXPECT_EQ(information, 10);
+}
 
+TEST_F(EvaluatorModifyOperationTest, TestSetMapValue){
+    std::unique_ptr<GameEnvironment::Map> map1 = std::make_unique<GameEnvironment::Map>();
 
+    map1->emplace("int1", std::make_unique<GameEnvironment::Value>(5));
+    map1->emplace("string1", std::make_unique<GameEnvironment::Value>(std::string_view("string")));
+    map1->emplace("bool1", std::make_unique<GameEnvironment::Value>(true));
+    GameEnvironment::Value mapValue1(std::move(map1));
+
+    std::vector< GameEnvironment::Value> identifiers={GameEnvironment::Value(std::string_view("int1")),
+                                                      GameEnvironment::Value(std::string_view("string1")),GameEnvironment::Value(std::string_view("bool1")) };
+
+    std::unique_ptr<GameEnvironment::Map> map2 = std::make_unique<GameEnvironment::Map>();
+    GameEnvironment::Value mapValue2(std::move(map2));
+    GameEnvironment::Value int1(5);
+    GameEnvironment::Value string1(std::string_view("string"));
+    GameEnvironment::Value bool1(true);
+    evaluator.evaluate(MODIFIER::SET, {&mapValue2, &identifiers[0], &int1});
+    evaluator.evaluate(MODIFIER::SET, {&mapValue2, &identifiers[1], &string1});
+    evaluator.evaluate(MODIFIER::SET, {&mapValue2, &identifiers[2], &bool1});
+    EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&mapValue1, &mapValue2}).value));
+}
+
+TEST_F(EvaluatorModifyOperationTest, TestSetListValue){
+    GameEnvironment::Value intValue(4);
+    GameEnvironment::Value boolValue(true);
+
+    std::unique_ptr<GameEnvironment::List> list1 = std::make_unique<GameEnvironment::List>();
+    list1->push_back(std::make_unique<GameEnvironment::Value>(intValue));
+    list1->push_back(std::make_unique<GameEnvironment::Value>(boolValue));
+    GameEnvironment::Value listValue1(std::move(list1));
+    std::unique_ptr<GameEnvironment::List> list2 = std::make_unique<GameEnvironment::List>();
+    GameEnvironment::Value listValue2(std::move(list2));
+    GameEnvironment::Value index1(1);
+    GameEnvironment::Value index2(0);
+    evaluator.evaluate(MODIFIER::SET, {&listValue2, &index2, &intValue});
+    evaluator.evaluate(MODIFIER::SET, {&listValue2, &index1, &boolValue});
+    EXPECT_TRUE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&listValue1, &listValue2}).value));
+}
+
+TEST_F(EvaluatorModifyOperationTest, TestInvalidValue){
+    std::unique_ptr<GameEnvironment::List> list = std::make_unique<GameEnvironment::List>();
+    GameEnvironment::Value intValue(4);
+    GameEnvironment::Value boolValue(true);
+    list->push_back(std::make_unique<GameEnvironment::Value>(intValue));
+    GameEnvironment::Value listValue(std::move(list));
+    EXPECT_THROW(evaluator.evaluate(MODIFIER::SET, {&listValue, &intValue, &intValue}),std::runtime_error);
+    EXPECT_THROW(evaluator.evaluate(MODIFIER::SET, {&intValue, &boolValue, &listValue}),std::runtime_error);
+    EXPECT_THROW(evaluator.evaluate(MODIFIER::SET, {&boolValue, &intValue, &listValue}),std::runtime_error);
+}
 
 
 

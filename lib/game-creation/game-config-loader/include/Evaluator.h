@@ -8,12 +8,12 @@
 
 // Allowed operations by evaluator
 enum class OPERATOR {
-    ADD, SUBTRACT, MULTIPLY, DIVIDE, OR, AND, NOT, EQUAL
+    ADD, SUBTRACT, MULTIPLY, DIVIDE, OR, AND, NOT, EQUAL, LOOK_UP
 };
 
 // Allowed operations for modifying lists by evaluator
 enum class MODIFIER {
-    EXTEND, REVERSE, SHUFFLE
+    EXTEND, REVERSE, SHUFFLE, SET
 };
 
 // An interface of Operation
