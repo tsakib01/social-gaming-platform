@@ -533,9 +533,10 @@ TEST_F(EvaluatorTest, TestEqualListOfMap) {
         std::unique_ptr<GameEnvironment::Map> innerMap3 = std::make_unique<GameEnvironment::Map>();
 
         for (int j = 0; j < 5; j++) {
-            innerMap1->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(j));
-            innerMap2->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(j));
-            innerMap3->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(j + 1));
+            std::string innerID = "ID" + std::to_string(j);
+            innerMap1->emplace(innerID, std::make_unique<GameEnvironment::Value>(j));
+            innerMap2->emplace(innerID, std::make_unique<GameEnvironment::Value>(j));
+            innerMap3->emplace(innerID, std::make_unique<GameEnvironment::Value>(j + 1));
         }
 
         listOfMap1->push_back(std::make_unique<GameEnvironment::Value>(std::move(innerMap1)));
@@ -560,9 +561,10 @@ TEST_F(EvaluatorTest, TestEqualMapOfInt) {
 
     // Populating lists with 5 elements
     for (int i = 0; i < 5; i++) {
-        intMap1->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(i));
-        intMap2->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(i));
-        intMap3->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(i + 1));
+        std::string id = "ID" + std::to_string(i);
+        intMap1->emplace(id, std::make_unique<GameEnvironment::Value>(i));
+        intMap2->emplace(id, std::make_unique<GameEnvironment::Value>(i));
+        intMap3->emplace(id, std::make_unique<GameEnvironment::Value>(i + 1));
     }
 
     GameEnvironment::Value intMapValue1(std::move(intMap1));
@@ -582,9 +584,10 @@ TEST_F(EvaluatorTest, TestEqualMapOfBool) {
 
     // Populating lists with 5 elements
     for (int i = 0; i < 5; i++) {
-        boolMap1->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(i % 2 == 0));
-        boolMap2->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(i % 2 == 0));
-        boolMap3->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(i % 2 == 1));
+        std::string id = "ID" + std::to_string(i);
+        boolMap1->emplace(id, std::make_unique<GameEnvironment::Value>(i % 2 == 0));
+        boolMap2->emplace(id, std::make_unique<GameEnvironment::Value>(i % 2 == 0));
+        boolMap3->emplace(id, std::make_unique<GameEnvironment::Value>(i % 2 == 1));
     }
 
     GameEnvironment::Value boolMapValue1(std::move(boolMap1));
@@ -604,9 +607,10 @@ TEST_F(EvaluatorTest, TestEqualMapOfString) {
 
     // Populating lists with 5 elements
     for (int i = 0; i < 5; i++) {
-        stringMap1->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(std::string_view("Hello")));
-        stringMap2->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(std::string_view("Hello")));
-        stringMap3->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(std::string_view("World")));
+        std::string id = "ID" + std::to_string(i);
+        stringMap1->emplace(id, std::make_unique<GameEnvironment::Value>(std::string_view("Hello")));
+        stringMap2->emplace(id, std::make_unique<GameEnvironment::Value>(std::string_view("Hello")));
+        stringMap3->emplace(id, std::make_unique<GameEnvironment::Value>(std::string_view("World")));
     }
 
     GameEnvironment::Value stringMapValue1(std::move(stringMap1));
@@ -635,10 +639,10 @@ TEST_F(EvaluatorTest, TestEqualMapOfList) {
             list2->push_back(std::make_unique<GameEnvironment::Value>(j));
             list3->push_back(std::make_unique<GameEnvironment::Value>(j + 1));
         }
-
-        mapOfList1->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(std::move(list1)));
-        mapOfList2->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(std::move(list2)));
-        mapOfList3->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(std::move(list3)));
+        std::string id = "ID" + std::to_string(i);
+        mapOfList1->emplace(id, std::make_unique<GameEnvironment::Value>(std::move(list1)));
+        mapOfList2->emplace(id, std::make_unique<GameEnvironment::Value>(std::move(list2)));
+        mapOfList3->emplace(id, std::make_unique<GameEnvironment::Value>(std::move(list3)));
     }
 
     GameEnvironment::Value mapOfListValue1(std::move(mapOfList1));
@@ -663,14 +667,16 @@ TEST_F(EvaluatorTest, TestEqualMapOfMap) {
         std::unique_ptr<GameEnvironment::Map> innerMap3 = std::make_unique<GameEnvironment::Map>();
 
         for (int j = 0; j < 5; j++) {
-            innerMap1->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(i + j));
-            innerMap2->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(i + j));
-            innerMap3->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>((i + j) + 1));
+            std::string innerID = "ID" + std::to_string(j);
+            innerMap1->emplace(innerID, std::make_unique<GameEnvironment::Value>(i + j));
+            innerMap2->emplace(innerID, std::make_unique<GameEnvironment::Value>(i + j));
+            innerMap3->emplace(innerID, std::make_unique<GameEnvironment::Value>((i + j) + 1));
         }
 
-        mapOfMap1->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(std::move(innerMap1)));
-        mapOfMap2->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(std::move(innerMap2)));
-        mapOfMap3->emplace(std::string_view("ID"), std::make_unique<GameEnvironment::Value>(std::move(innerMap3)));
+        std::string id = "ID" + std::to_string(i);
+        mapOfMap1->emplace(id, std::make_unique<GameEnvironment::Value>(std::move(innerMap1)));
+        mapOfMap2->emplace(id, std::make_unique<GameEnvironment::Value>(std::move(innerMap2)));
+        mapOfMap3->emplace(id, std::make_unique<GameEnvironment::Value>(std::move(innerMap3)));
     }
 
     GameEnvironment::Value mapOfMapValue1(std::move(mapOfMap1));
