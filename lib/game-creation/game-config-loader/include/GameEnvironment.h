@@ -74,6 +74,15 @@ namespace GameEnvironment{
         Value(const Value& other) 
         : value(std::move(std::visit(CopyVisitor{}, other.value)->value))
         {}
+
+        // Assignment operator
+        Value& operator=(const Value& other){
+            if (this == &other){
+                return *this;
+            }
+            value = std::move(std::visit(CopyVisitor{}, other.value)->value);
+            return *this;
+        } 
         
         std::variant<int, bool, std::string_view, std::unique_ptr<Map>, std::unique_ptr<List> > value;
     };
