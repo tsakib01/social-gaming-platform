@@ -64,10 +64,8 @@ GameInstance::execute() {
         m_state = GameInstanceState::WAITING;
         
         // TODO: Replace this once executeContext has outgoingMessages
-        // OutgoingMessages outgoing = m_context.outgoingMessages;
-        std::vector<UserId> temp = {};
-        OutgoingMessages outgoing = OutgoingMessages{temp};
-
+        // auto outgoing = m_context.outgoingMessages;
+        auto outgoing = OutgoingMessages{{}};
         m_gameCommunicator.setGameMessage(outgoing.getMessages());
         outgoing.clear();
     }
