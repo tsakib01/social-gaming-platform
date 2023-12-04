@@ -176,7 +176,7 @@ ChatWindowImpl::displayText(const std::deque<ReceivedMessage>& messages) {
     if (message.isSystemMessage) {
       if (!prev.isSystemMessage) {
         wattron(view, COLOR_PAIR(1) | A_BOLD);
-        wprintw(view, "SERVER: ");
+        wprintw(view, "SERVER");
         wattroff(view, COLOR_PAIR(1) | A_BOLD);
         wattron(view, COLOR_PAIR(2));
         wprintw(view, ": ");

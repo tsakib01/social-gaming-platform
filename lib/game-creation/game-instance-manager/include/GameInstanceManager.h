@@ -14,6 +14,8 @@ public:
     uint16_t createGameInstance(std::string_view gameFilePath);
     
     void startGame(uint16_t roomCode, const std::vector<User>& users);
+    void deleteGame(uint16_t roomCode);
+
     ConfigResult inputConfig(uint16_t roomCode, const std::string& response);
     void runCycle();
     
