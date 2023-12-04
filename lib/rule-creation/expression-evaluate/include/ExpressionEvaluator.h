@@ -21,6 +21,9 @@ public:
 
     std::unique_ptr<GameEnvironment::Value>
     operator()([[maybe_unused]] const Expression& expression) override;
+    
+    std::unique_ptr<GameEnvironment::Value>
+    handleBuiltinExpression(const GameEnvironment::Value&, const BuiltinExpression& expression);
 
 private:
     const Evaluator& m_evaluator;
