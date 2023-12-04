@@ -374,17 +374,10 @@ std::deque<ReceivedMessage> Client::receive() {
       break;
     }
 
-    bool isSystemMessage = false;
-    if (!result.empty()) {
-        if (result[0] == '1') {
-          isSystemMessage = true;
-        }
-
-        if ((result[0] == '1' || result[0] == '0')) {
-          result = result.substr(1);
-        }
+    bool isSystemMessage = (result[0] == '1');
+    if (isSystemMessage || result[0] == '0') {
+      result = result.substr(1);
     }
-
     messages.push_back(ReceivedMessage{result + "\n", isSystemMessage});
   }
   
