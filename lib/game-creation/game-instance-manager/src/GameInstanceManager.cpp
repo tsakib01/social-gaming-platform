@@ -49,6 +49,16 @@ GameInstanceManager::startGame(uint16_t roomCode, const std::vector<User>& users
     game->startGame();
 }
 
+void
+GameInstanceManager::deleteGame(uint16_t roomCode) {
+    auto gameIterator = std::remove_if(m_gameList.begin(), m_gameList.end(),
+        [roomCode](const std::unique_ptr<GameInstance>& gameInstance) {
+            return gameInstance->getRoomCode() == roomCode;
+        });
+
+    m_gameList.erase(gameIterator, m_gameList.end());
+}
+
 void 
 GameInstanceManager::runCycle() {
     while (!m_gameList.empty()) {
