@@ -29,7 +29,7 @@ GameInstance::inputConfig(const std::string& response) {
     if (!sentFirstPrompt) {
         sentFirstPrompt = true;
         return ConfigResult{
-            std::string(prompts[m_setupIndex]), ValidResponse{false}, Finished{false}};
+            "Configuration Setup...\nEnter " + std::string(prompts[m_setupIndex]), ValidResponse{false}, Finished{false}};
     }
 
     if (m_gameSetup->isResponseValid(identifiers[m_setupIndex], response)) {
@@ -42,7 +42,7 @@ GameInstance::inputConfig(const std::string& response) {
                 "Finished setup.\n", ValidResponse{true}, Finished{true}};
         }
         return ConfigResult{
-            std::string(prompts[m_setupIndex]), ValidResponse{true}, Finished{false}};
+            "Enter " + std::string(prompts[m_setupIndex]), ValidResponse{true}, Finished{false}};
     } 
     
     return ConfigResult{
