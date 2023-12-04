@@ -25,6 +25,8 @@ add_executable(runAllTests
     inGameUserManagerTests.cpp
     outgoingMessagesTests.cpp
     GameEnvironmentTests.cpp
+    ServerManagerTests.cpp
+    ProcessMessagesTests.cpp
 )
 
 target_link_libraries(runAllTests
@@ -36,5 +38,6 @@ target_link_libraries(runAllTests
     gameConfigLoader
     gameRuleEngine
     ruleExecute
+    serverManager
 )
 
