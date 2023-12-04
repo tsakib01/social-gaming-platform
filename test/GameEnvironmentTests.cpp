@@ -3,7 +3,7 @@
 #include "Evaluator.h"
 
 // Test for copy constructor for GameEnvironment::Value
-class ValueCopyConstructorTest : public ::testing::Test {
+class ValueCopyConstructorTest : public ::testing::Test {    
 protected:
     // Helper function to check if two values are equal
     bool valuesEqual(const GameEnvironment::Value& v1, const GameEnvironment::Value& v2) {
@@ -46,8 +46,7 @@ protected:
     std::unique_ptr<GameEnvironment::Map> generateNumberMap(){
         auto originalMap = std::make_unique<GameEnvironment::Map>();
         for (int i = 0; i < 5; i++){
-            std::string id = "ID" + std::to_string(i);
-            originalMap->emplace(id, std::make_unique<GameEnvironment::Value>(i));
+            originalMap->emplace(MAP_KEYS[i], std::make_unique<GameEnvironment::Value>(i));
         }
         return originalMap;
     }
@@ -56,8 +55,7 @@ protected:
     std::unique_ptr<GameEnvironment::Map> generateBoolMap(){
         auto originalMap = std::make_unique<GameEnvironment::Map>();
         for (int i = 0; i < 5; i++){
-            std::string id = "ID" + std::to_string(i);
-            originalMap->emplace(id, std::make_unique<GameEnvironment::Value>(i % 2 == 0));
+            originalMap->emplace(MAP_KEYS[i], std::make_unique<GameEnvironment::Value>(i % 2 == 0));
         }
         return originalMap;
     }
@@ -66,13 +64,13 @@ protected:
     std::unique_ptr<GameEnvironment::Map> generateStringMap(){
         auto originalMap = std::make_unique<GameEnvironment::Map>();
         for (int i = 0; i < 5; i++){
-            std::string id = "ID" + std::to_string(i);
-            originalMap->emplace(id, std::make_unique<GameEnvironment::Value>("Hello" + std::to_string(i)));
+            originalMap->emplace(MAP_KEYS[i], std::make_unique<GameEnvironment::Value>("Hello" + std::to_string(i)));
         }
         return originalMap;
     }
 
     Evaluator evaluator;
+    std::string MAP_KEYS[5] = {"ID1", "ID2", "ID3", "ID4", "ID5"};
 };
 
 // Copy Constructor Check For Number 
@@ -181,9 +179,8 @@ TEST_F(ValueCopyConstructorTest, MapOfListCopyTest){
     // Generate a map of list
     auto originalMap = std::make_unique<GameEnvironment::Map>();
     for (int i = 0; i < 5; i++){
-        std::string id = "ID" + std::to_string(i);
         auto subList = generateNumberList();
-        originalMap->emplace(id, std::make_unique<GameEnvironment::Value>(std::move(subList)));
+        originalMap->emplace(MAP_KEYS[i], std::make_unique<GameEnvironment::Value>(std::move(subList)));
     }
     auto original = std::make_unique<GameEnvironment::Value>(std::move(originalMap));
     auto copy = std::make_unique<GameEnvironment::Value>(*original);
@@ -195,9 +192,8 @@ TEST_F(ValueCopyConstructorTest, MapOfMapCopyTest){
     // Generate a map of map
     auto originalMap = std::make_unique<GameEnvironment::Map>();
     for (int i = 0; i < 5; i++){
-        std::string id = "ID" + std::to_string(i);
         auto subMap = generateNumberMap();
-        originalMap->emplace(id, std::make_unique<GameEnvironment::Value>(std::move(subMap)));
+        originalMap->emplace(MAP_KEYS[i], std::make_unique<GameEnvironment::Value>(std::move(subMap)));
     }
     auto original = std::make_unique<GameEnvironment::Value>(std::move(originalMap));
     auto copy = std::make_unique<GameEnvironment::Value>(*original);
