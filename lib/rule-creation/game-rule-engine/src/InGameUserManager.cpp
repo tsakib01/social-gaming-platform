@@ -44,39 +44,33 @@ GameEnvironment::Environment& InGameUserManager::getStatesOfUser(UserId connecti
     return statesToGet;
 }
 
-
 std::map<uintptr_t, GameEnvironment::Environment> InGameUserManager::getAllUserStates(){
     return std::move(m_userStates);
 }
-
-// const std::unique_ptr<GameEnvironment::Value> InGameUserManager::getValueOfUser(UserId connection, GameEnvironment::Identifier identifier){
-//     auto iterator = m_userStates.find(connection.id);
-//     assert(iterator != m_userStates.end());
-//     GameEnvironment::Environment& environment = InGameUserManager::m_userStates[connection.id];
-//     return std::move(environment[identifier]);
-// }
 
 GameEnvironment::Value InGameUserManager::getValueOfUser(UserId connection, GameEnvironment::Identifier identifier){
     auto iterator = m_userStates.find(connection.id);
     assert(iterator != m_userStates.end());
     GameEnvironment::Environment& environment = InGameUserManager::m_userStates[connection.id];
-    return environment[identifier].get();
+    // Value is stored a unique_ptr, so we should use * to dereference it
+    return *environment[identifier];
 }
 
 // Probably not needed anymore?
 // Create a new pair to replace the existing one that the User ID maps to.
-void InGameUserManager::setStatesOfUser(UserId userID, GameEnvironment::Environment statesToSet){
-    auto iterator = m_userStates.find(userID.id);
+void InGameUserManager::setStatesOfUser(UserId connection, GameEnvironment::Environment statesToSet){
+    auto iterator = m_userStates.find(connection.id);
 
     // User SHOULD already exist in the game.
     assert(iterator != m_userStates.end());
 
     // insert() doesn't work when the key (the userID in this case) already exists
     // in the map, so use the line below instead to replace what the userID is mapped to.
-    InGameUserManager::m_userStates[userID.id] = std::move(statesToSet);
+    InGameUserManager::m_userStates[connection.id] = std::move(statesToSet);
 }
 
-void InGameUserManager::setIdentifierOfUser(UserId connection, GameEnvironment::Identifier identifier, std::unique_ptr<GameEnvironment::Value> value){
+void InGameUserManager::setIdentifierOfUser(
+    UserId connection, GameEnvironment::Identifier identifier, GameEnvironment::Value value){
     auto usersIterator = m_userStates.find(connection.id);
     assert(usersIterator != m_userStates.end());
     
@@ -84,7 +78,7 @@ void InGameUserManager::setIdentifierOfUser(UserId connection, GameEnvironment::
     GameEnvironment::Environment& environment = InGameUserManager::m_userStates[connection.id];
     
     // Set the environment's new value to the identifier
-    environment[identifier] = std::move(value);
+    environment[identifier] = std::make_unique<GameEnvironment::Value>(value);
     
     // The changed environment is assigned to the User ID
     InGameUserManager::m_userStates[connection.id] = std::move(environment);

@@ -25,8 +25,10 @@ class InGameUserManager {
     //const std::unique_ptr<GameEnvironment::Value> getValueOfUser(UserId userID, GameEnvironment::Identifier identifier);
     GameEnvironment::Value getValueOfUser(UserId userID, GameEnvironment::Identifier identifier);
     void setStatesOfUser(UserId userID, GameEnvironment::Environment states);
-    void setIdentifierOfUser(UserId userID, GameEnvironment::Identifier identifier, std::unique_ptr<GameEnvironment::Value> value);
+    void setIdentifierOfUser(UserId userID, GameEnvironment::Identifier identifier, GameEnvironment::Value value);
     private:
+
+    // Store all states in a single Value
     std::map<uintptr_t, GameEnvironment::Environment> m_userStates;
 
 };
