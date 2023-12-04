@@ -46,7 +46,7 @@ public:
     // // Need to pass the root of value_map
     std::unique_ptr<GameEnvironment::Environment> getEnvironment(const ts::Node& root);
     std::unique_ptr<GameEnvironment::Environment> getConfigEnvironment(const ts::Node& root);
-    std::unique_ptr<GameEnvironment::Environment> getPer_playerEnvironment(const ts::Node& root);
+    std::unique_ptr<GameEnvironment::Environment> getPerPlayerEnvironment(const ts::Node& root);
     static std::unique_ptr<GameStateLoader> createDefaultGameStateLoader(std::string_view source);
 };
 #endif

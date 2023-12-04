@@ -3,6 +3,7 @@
 
 #include "GameEnvironment.h"
 #include "Rule.h"
+#include "Evaluator.h"
 #include <string_view>
 #include <iostream>
 #include <variant>
@@ -33,6 +34,7 @@ public:
     // Print all of identifier and its associative values of the map.
     void print();
 private:
+    Evaluator evaluator = Evaluator::defaultEvaluatorFactory();
     std::unique_ptr<GameEnvironment::Environment> environment;
     std::map<Rule*, size_t> ruleEnvironment;
 };

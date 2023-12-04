@@ -1,6 +1,4 @@
 #include "GameState.h"
-#include "GameEnvironment.h"
-#include "Evaluator.h"
 #include <iostream>
 
 GameState::GameState()
@@ -30,7 +28,7 @@ void GameState::addSetupToGameState(GameEnvironment::Identifier identifier,  Gam
         throw std::runtime_error ("No configuration in GameState");
     }
     auto identifierValue = GameEnvironment::Value(identifier);
-    Evaluator evaluator = Evaluator::defaultEvaluatorFactory();
+
     std::vector<GameEnvironment::Value*> values={configuration->second.get(), &identifierValue, &toStore};
     evaluator.evaluate(MODIFIER::SET, values);
 }
