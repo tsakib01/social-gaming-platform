@@ -2,6 +2,7 @@
 
 #include "Rule.h"
 #include "GameState.h"
+#include "OutgoingMessages.h"
 #include <stack>
 
 /// Context for executing a rule
@@ -9,7 +10,6 @@ struct ExecuteContext {
     GameState& gameState;
     std::stack<Rule*> instructionStack;
     bool blocked = false;
-    OutgoingMessages& outgoingMessages;
 
     ExecuteContext(GameState& state, Rule* initialRule)
         : gameState(state) {

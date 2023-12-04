@@ -63,9 +63,12 @@ GameInstance::execute() {
     if (m_context.blocked) {
         m_state = GameInstanceState::WAITING;
         
-        // Add outgoingMessages to gameCommunicator
-        OutgoingMessages& outgoing = m_context.outgoingMessages;
-        GameCommunicator.setGameMessage(outgoing.getMessages());
+        // TODO: Replace this once executeContext has outgoingMessages
+        // OutgoingMessages outgoing = m_context.outgoingMessages;
+        std::vector<UserId> temp = {};
+        OutgoingMessages outgoing = OutgoingMessages{temp};
+
+        m_gameCommunicator.setGameMessage(outgoing.getMessages());
         outgoing.clear();
     }
 }

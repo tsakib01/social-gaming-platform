@@ -41,12 +41,12 @@ public:
 
     std::vector<std::string_view> getChoicesForUser(uint16_t roomCode) const;
     std::string_view getCurrentUserInput(UserId userID) const;
-    std::vector<Message> getGameMessages() const { return gameMessages; }
+    std::deque<Message> getGameMessages() const { return gameMessages; }
 
 private:
     std::vector<GameChoices> gameChoices;
     std::vector<UserInput> userInputs; 
-    std::vector<Message> gameMessages;
+    std::deque<Message> gameMessages;
 };
 
 #endif

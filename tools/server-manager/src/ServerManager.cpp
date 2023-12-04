@@ -30,10 +30,12 @@ ServerManager::startServer() {
 		
 		std::deque<Message> userMsg = buildUserMessages(incoming);
 		std::deque<Message> responseMsg = buildResponses(incoming);
+		std::deque<Message> gameMsg = gameCommunicator.getGameMessages();
 
 		std::deque<Message> outgoing;
 		outgoing.insert(outgoing.end(), userMsg.begin(), userMsg.end());
 		outgoing.insert(outgoing.end(), responseMsg.begin(), responseMsg.end());
+		outgoing.insert(outgoing.end(), gameMsg.begin(), gameMsg.end());
         server->send(outgoing);
 
         sleep(0.5f);

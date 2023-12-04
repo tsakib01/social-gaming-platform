@@ -32,9 +32,7 @@ GameCommunicator::storeCurrentUserInput(const Message& message) {
 
 void 
 GameCommunicator::setGameMessage(std::map<UserId, std::string_view> outgoing) {
-    // TODO: fix this
-
-    for (const auto& user : users) {
+    for (const auto& [user, message] : outgoing) {
         Message g_message;
         g_message.connection = user;
         g_message.text = message;
