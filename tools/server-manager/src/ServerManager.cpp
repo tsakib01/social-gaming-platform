@@ -25,9 +25,6 @@ ServerManager::startServer() {
 
 		const auto incoming = server->receive();
 		
-		// std::deque gameMessages = gameCommunicator->getMessages();
-		// server->send(gameMessages);
-		
 		std::deque<Message> userMsg = buildUserMessages(incoming);
 		std::deque<Message> responseMsg = buildResponses(incoming);
 		std::deque<Message> gameMsg = gameCommunicator.getGameMessages();
