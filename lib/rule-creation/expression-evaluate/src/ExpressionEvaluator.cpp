@@ -69,18 +69,8 @@ std::unique_ptr<GameEnvironment::Value>
 ExpressionEvaluateVisitor::handleBuiltinExpression(const GameEnvironment::Value& value, const BuiltinExpression& expression) {
     switch (expression.builtin) {
         case Builtin::UPFROM: {
-            auto count = std::get_if<int>(&value.value);
             std::unique_ptr<GameEnvironment::Value> argument = expression.arguments.front()->accept(*this);
-            auto upfrom = std::get_if<int>(&argument->value);
-            if (!count || !upfrom) {
-                throw std::runtime_error("Error resolving builtin: upfrom");
-            }
-            std::unique_ptr<GameEnvironment::List> list = std::make_unique<GameEnvironment::List>();
-            list->reserve(*count - *upfrom);
-            for (int i = *upfrom; i <= *count; i++) {
-                list->emplace_back(std::make_unique<GameEnvironment::Value>(i));
-            }
-            return std::make_unique<GameEnvironment::Value>(std::move(list));
+            return std::make_unique<GameEnvironment::Value>(m_evaluator.evaluate(OPERATOR::UPFROM, {&value, argument.get()}));
         }
         case Builtin::SIZE: {
             // Handle the SIZE case

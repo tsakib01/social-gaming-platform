@@ -21,8 +21,7 @@ struct ExecuteContext {
 class RuleExecuteVisitor : public RuleVisitor {
 public:
     RuleExecuteVisitor(ExecuteContext& context)
-        : context(context), eval(), exprVisitor(eval, context.gameState) {
-        eval.defaultEvaluatorFactory();
+        : context(context), evaluator(Evaluator::defaultEvaluatorFactory()), exprVisitor(evaluator, context.gameState) {
     }
 
     void visit(BodyRule& rule) override;
@@ -38,6 +37,6 @@ public:
 
 private:
     ExecuteContext& context;
-    Evaluator eval;
+    Evaluator evaluator;
     ExpressionEvaluateVisitor exprVisitor;
 };
