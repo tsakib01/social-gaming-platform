@@ -58,11 +58,11 @@ GameConfigLoader::createGameState() {
     auto constants = gameStateLoader->getEnvironment(root.getChildByFieldName("constants").getNamedChild(0));
     auto variables = gameStateLoader->getEnvironment(root.getChildByFieldName("variables").getNamedChild(0));
     auto configuration=gameStateLoader->getConfigEnvironment(root.getChildByFieldName("configuration"));
-    auto per_player=gameStateLoader->getPer_playerEnvironment(root.getChildByFieldName("per_player"));
+    auto perPlayer=gameStateLoader->getPerPlayerEnvironment(root.getChildByFieldName("per_player"));
     gameState->addEnvironment(*constants);
     gameState->addEnvironment(*variables);
     gameState->addEnvironment(*configuration);
-    gameState->addEnvironment(*per_player);
+    gameState->addEnvironment(*perPlayer);
     gameState->print();
     return gameState;
 }
