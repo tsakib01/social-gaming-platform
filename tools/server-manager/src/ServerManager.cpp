@@ -70,7 +70,7 @@ ServerManager::buildUserMessages(const std::deque<Message>& incoming) {
 
 	for (const Message& message : incoming) {
 		messages.push_back(Message{message.connection, 
-			"> " + message.text + "\n"});
+			"> " + message.text + "\n", false});
 	}
 
 	return messages;

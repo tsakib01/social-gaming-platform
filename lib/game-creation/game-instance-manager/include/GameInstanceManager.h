@@ -14,6 +14,8 @@ public:
     uint16_t createGameInstance(std::string_view gameFilePath, GameCommunicator& gameCommunicator);
     
     void startGame(uint16_t roomCode, const std::vector<User>& users);
+    void deleteGame(uint16_t roomCode);
+
     ConfigResult inputConfig(uint16_t roomCode, const std::string& response);
     void runCycle();
     
@@ -26,7 +28,7 @@ public:
 
 private:
     std::vector<std::unique_ptr<GameInstance>> m_gameList;
-
+    std::vector<std::unique_ptr<GameConfigLoader>> m_configs;
     // Generates a random unique number between 1000-9999
     uint16_t generateRoomCode();
     std::unique_ptr<GameInstance>& getGameInstance(uint16_t roomCode); 

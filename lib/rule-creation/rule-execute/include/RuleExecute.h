@@ -4,6 +4,8 @@
 #include "GameState.h"
 #include "OutgoingMessages.h"
 #include <stack>
+#include "Evaluator.h"
+#include "ExpressionEvaluator.h"
 
 /// Context for executing a rule
 struct ExecuteContext {
@@ -20,7 +22,8 @@ struct ExecuteContext {
 class RuleExecuteVisitor : public RuleVisitor {
 public:
     RuleExecuteVisitor(ExecuteContext& context)
-        : context(context) {}
+        : context(context), evaluator(Evaluator::defaultEvaluatorFactory()), exprVisitor(evaluator, context.gameState) {
+    }
 
     void visit(BodyRule& rule) override;
     void visit(ForRule& rule) override;
@@ -35,4 +38,6 @@ public:
 
 private:
     ExecuteContext& context;
+    Evaluator evaluator;
+    ExpressionEvaluateVisitor exprVisitor;
 };
