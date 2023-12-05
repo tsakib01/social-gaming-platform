@@ -6,6 +6,7 @@
 #include "InGameUserManager.h"
 #include "RuleExecute.h"
 #include "GameSetup.h"
+#include "GameCommunicator.h"
 #include <stack>
 #include <iostream>
 
@@ -34,14 +35,14 @@ const int SETUP_FINISHED = -1;
 class GameInstance {
 public:
     GameInstance(std::unique_ptr<RuleTree> rules, std::unique_ptr<GameState> state, 
-        std::unique_ptr<GameSetup> gameSetup, uint16_t m_roomCode);
+        std::unique_ptr<GameSetup> gameSetup, GameCommunicator& gameCommunicator, uint16_t m_roomCode);
     ~GameInstance() {};
 
     ConfigResult inputConfig(const std::string& response);
 
     void startGame();
     bool gameIsFinished();
-    void executeNextInstruction(); 
+    void execute(); 
 
     uint16_t getRoomCode();
     GameInstanceState getGameInstanceState();
@@ -61,6 +62,7 @@ private:
     GameInstanceState m_state;
     ExecuteContext m_context;
     RuleExecuteVisitor m_ruleExecutor;
+    GameCommunicator& m_gameCommunicator;
 
     uint16_t m_roomCode;
     int m_setupIndex = 0;

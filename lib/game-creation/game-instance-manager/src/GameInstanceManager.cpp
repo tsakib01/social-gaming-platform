@@ -23,15 +23,15 @@ GameInstanceManager::generateRoomCode() {
 }
 
 uint16_t 
-GameInstanceManager::createGameInstance(std::string_view gameFilePath) {
+GameInstanceManager::createGameInstance(std::string_view gameFilePath, GameCommunicator& gameCommunicator) {
     std::unique_ptr<GameConfigLoader> gameConfigLoader = std::make_unique<GameConfigLoader>(gameFilePath);
-    auto rules = gameConfigLoader->createGameRules();
-    auto state = gameConfigLoader->createGameState();
-    auto setup = gameConfigLoader->createGameSetup();
+    auto rules = gameConfigLoader.createGameRules();
+    auto state = gameConfigLoader.createGameState();
+    auto setup = gameConfigLoader.createGameSetup();
     uint16_t inviteCode = generateRoomCode();
 
+    m_gameList.push_back(std::make_unique<GameInstance>(std::move(rules), std::move(state), std::move(setup), gameCommunicator, inviteCode));
     m_configs.push_back(std::move(gameConfigLoader));
-    m_gameList.push_back(std::make_unique<GameInstance>(std::move(rules), std::move(state), std::move(setup), inviteCode));
 
     return inviteCode;
 }
@@ -63,7 +63,7 @@ void
 GameInstanceManager::runCycle() {
     while (!m_gameList.empty()) {
         for (std::unique_ptr<GameInstance>& game : m_gameList) {
-            game->executeNextInstruction();
+            game->execute();
         }
         m_gameList.erase(std::remove_if(m_gameList.begin(), m_gameList.end(),
             [](const std::unique_ptr<GameInstance>& game) {

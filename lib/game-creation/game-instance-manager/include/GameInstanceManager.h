@@ -11,7 +11,7 @@ class GameInstanceManager {
 public:
     GameInstanceManager();
     
-    uint16_t createGameInstance(std::string_view gameFilePath);
+    uint16_t createGameInstance(std::string_view gameFilePath, GameCommunicator& gameCommunicator);
     
     void startGame(uint16_t roomCode, const std::vector<User>& users);
     void deleteGame(uint16_t roomCode);

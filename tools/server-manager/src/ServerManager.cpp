@@ -7,7 +7,6 @@ ServerManager::ServerManager(const unsigned short port, const char* htmlFile) {
                   [this](auto client) { this->onDisconnect(client); });
     gameInstanceManager = std::make_unique<GameInstanceManager>();
     userManager = std::make_shared<UserManager>();
-	gameCommunicator = std::make_unique<GameCommunicator>();
 }
 
 void 
@@ -26,15 +25,14 @@ ServerManager::startServer() {
 
 		const auto incoming = server->receive();
 		
-		// std::deque gameMessages = gameCommunicator->getMessages();
-		// server->send(gameMessages);
-		
 		std::deque<Message> userMsg = buildUserMessages(incoming);
 		std::deque<Message> responseMsg = buildResponses(incoming);
+		std::deque<Message> gameMsg = gameCommunicator.getGameMessages();
 
 		std::deque<Message> outgoing;
 		outgoing.insert(outgoing.end(), userMsg.begin(), userMsg.end());
 		outgoing.insert(outgoing.end(), responseMsg.begin(), responseMsg.end());
+		outgoing.insert(outgoing.end(), gameMsg.begin(), gameMsg.end());
         server->send(outgoing);
 
         sleep(0.5f);

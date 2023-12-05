@@ -2,6 +2,7 @@
 
 #include "Rule.h"
 #include "GameState.h"
+#include "OutgoingMessages.h"
 #include <stack>
 #include "Evaluator.h"
 #include "ExpressionEvaluator.h"

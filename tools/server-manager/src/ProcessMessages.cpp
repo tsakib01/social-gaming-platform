@@ -75,7 +75,7 @@ ServerManager::processGameSelect(const Message& message) {
 
 		std::vector<std::string> games = getGameFiles();
 		if (choice > 0 && choice <= games.size()) {
-			uint16_t roomCode = gameInstanceManager->createGameInstance(games[choice-1]);
+			uint16_t roomCode = gameInstanceManager->createGameInstance(games[choice-1], gameCommunicator);
 			userManager->setUserRole(message.connection, Role::OWNER);
 			userManager->setUserRoomCode(message.connection, roomCode);
 
