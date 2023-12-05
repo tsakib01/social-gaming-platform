@@ -278,7 +278,33 @@ private:
 
     GameEnvironment::Value evaluateImpl(std::vector<const GameEnvironment::Value*> values) const override{
         return std::visit(EqualOperationVisitor{}, values[0]->value, values[1]->value);
-    } 
+    }
+};
+
+class UpFromOperation : public Operation {
+private:
+    struct UpFromOperationVisitor {
+        GameEnvironment::Value operator()(const int& count, const int& upfrom){
+            std::unique_ptr<GameEnvironment::List> list = std::make_unique<GameEnvironment::List>();
+            list->reserve(count - upfrom);
+            for (int i = upfrom; i <= count; i++) {
+                list->emplace_back(std::make_unique<GameEnvironment::Value>(i));
+            }
+            return GameEnvironment::Value(std::move(list));
+        }
+
+        template <typename T, typename U>
+        GameEnvironment::Value operator()([[maybe_unused]] const T& count, [[maybe_unused]] const U& upfrom){
+            throw std::runtime_error("Unsupported types for UpFrom");
+        }
+    };
+
+    GameEnvironment::Value evaluateImpl(std::vector<const GameEnvironment::Value*> values) const override {
+        return std::visit(UpFromOperationVisitor{}, values[0]->value, values[1]->value);
+    }
+    bool getSpecificationImpl(std::vector<const GameEnvironment::Value*> values) const override {
+        return values.size() == 2;
+    }
 };
 
 // SIZE operation supports
@@ -426,7 +452,7 @@ void Evaluator::registerOperation(OPERATOR operatorEnum, std::unique_ptr<Operati
     }
 }
 
-GameEnvironment::Value Evaluator::evaluate(OPERATOR operationEnum, std::vector<const GameEnvironment::Value*> values){
+GameEnvironment::Value Evaluator::evaluate(OPERATOR operationEnum, std::vector<const GameEnvironment::Value*> values) const {
     auto operationItr = operatorToOperation.find(operationEnum);
     // No operation registered
     if (operationItr == operatorToOperation.end()){
@@ -578,7 +604,7 @@ Evaluator::registerOperation(MODIFIER MODIFIEREnum, std::unique_ptr<ModifyOperat
 }
 
 void
-Evaluator::evaluate(MODIFIER MODIFIEREnum, std::vector<GameEnvironment::Value*> values){
+Evaluator::evaluate(MODIFIER MODIFIEREnum, std::vector<GameEnvironment::Value*> values) {
     auto operationItr = MODIFIERToModifyOperation.find(MODIFIEREnum);
     // No operation registered
     if (operationItr == MODIFIERToModifyOperation.end()){
@@ -603,6 +629,7 @@ Evaluator Evaluator::defaultEvaluatorFactory(){
     evaluator.registerOperation(OPERATOR::EQUAL,        std::make_unique<EqualOperation>());
     evaluator.registerOperation(OPERATOR::SIZE,         std::make_unique<SizeOperation>());
     evaluator.registerOperation(OPERATOR::CONTAIN,         std::make_unique<ContainOperation>(evaluator));
+    evaluator.registerOperation(OPERATOR::UPFROM,        std::make_unique<UpFromOperation>());
     evaluator.registerOperation(MODIFIER::REVERSE,  std::make_unique<ReverseListOperation>());
     evaluator.registerOperation(MODIFIER::SHUFFLE,  std::make_unique<ShuffleListOperation>());
     evaluator.registerOperation(MODIFIER::EXTEND,   std::make_unique<ExtendListOperation>());

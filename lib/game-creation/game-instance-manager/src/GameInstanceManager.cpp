@@ -24,12 +24,13 @@ GameInstanceManager::generateRoomCode() {
 
 uint16_t 
 GameInstanceManager::createGameInstance(std::string_view gameFilePath) {
-    GameConfigLoader gameConfigLoader{gameFilePath};
-    auto rules = gameConfigLoader.createGameRules();
-    auto state = gameConfigLoader.createGameState();
-    auto setup = gameConfigLoader.createGameSetup();
+    std::unique_ptr<GameConfigLoader> gameConfigLoader = std::make_unique<GameConfigLoader>(gameFilePath);
+    auto rules = gameConfigLoader->createGameRules();
+    auto state = gameConfigLoader->createGameState();
+    auto setup = gameConfigLoader->createGameSetup();
     uint16_t inviteCode = generateRoomCode();
 
+    m_configs.push_back(std::move(gameConfigLoader));
     m_gameList.push_back(std::make_unique<GameInstance>(std::move(rules), std::move(state), std::move(setup), inviteCode));
 
     return inviteCode;
@@ -46,6 +47,16 @@ GameInstanceManager::startGame(uint16_t roomCode, const std::vector<User>& users
     auto& game = getGameInstance(roomCode);
     game->addUsers(users);
     game->startGame();
+}
+
+void
+GameInstanceManager::deleteGame(uint16_t roomCode) {
+    auto gameIterator = std::remove_if(m_gameList.begin(), m_gameList.end(),
+        [roomCode](const std::unique_ptr<GameInstance>& gameInstance) {
+            return gameInstance->getRoomCode() == roomCode;
+        });
+
+    m_gameList.erase(gameIterator, m_gameList.end());
 }
 
 void 

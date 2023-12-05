@@ -19,9 +19,11 @@ public:
     // Add an identifier with a given value.
     void addState(GameEnvironment::Identifier identifier, std::unique_ptr<GameEnvironment::Value> value);
     // Get a value of variable by a given identifier
-    GameEnvironment::Value getValue(GameEnvironment::Identifier identifier);
+    GameEnvironment::Value getValue(GameEnvironment::Identifier identifier) const;
     // Update the identifier's value to given value.
     void updateState(GameEnvironment::Identifier identifier, std::unique_ptr<GameEnvironment::Value> value);
+    // Check if gameState has value
+    bool hasValue(GameEnvironment::Identifier identifier);
     // Get the current execution index of a rule
     size_t getValue(Rule* rule);
     // Update state of a rule

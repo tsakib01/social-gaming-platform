@@ -13,6 +13,7 @@ target_include_directories(ruleExecute
 
 target_link_libraries(ruleExecute
     expression
+    expressionEvaluate
     gameConfigLoader
     userManager
 )
