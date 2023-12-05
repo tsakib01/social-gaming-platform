@@ -146,6 +146,31 @@ TEST_F(InGameUserManagerCopyValueTests, CanSetIntIdentifierOfExistingUser) {
     EXPECT_TRUE(valuesEqual(returnValue, *newValueCopy));
 }
 
+// From an existing User in InGameUserManager, set their Identifier as a string_view
+// The Value copy constructor does not support strings themselves
+TEST_F(InGameUserManagerCopyValueTests, CanSetStringViewIdentifierOfExistingUser) {
+
+    //Copies are due to std::move()
+    auto oldValue = std::make_unique<GameEnvironment::Value>(std::string_view("Hello"));
+    auto oldValueCopy = std::make_unique<GameEnvironment::Value>(*oldValue);
+    auto newValue = std::make_unique<GameEnvironment::Value>(std::string_view("Goodbye"));
+    auto newValueCopy = std::make_unique<GameEnvironment::Value>(*newValue);
+    
+    auto m_inGameUserManager = std::make_unique<InGameUserManager>();
+    UserId dummyConnection{1};
+
+    GameEnvironment::Environment testMap;
+
+    testMap.emplace(std::string_view(testIdentifier), std::move(oldValue));
+    m_inGameUserManager -> addNewUser(dummyConnection, std::move(testMap));
+
+    // Value should now change from 500 to 501... but running both of the next lines causes an error.
+    m_inGameUserManager -> setIdentifierOfUser(dummyConnection, std::string_view(testIdentifier), std::move(newValue));
+    GameEnvironment::Value returnValue = m_inGameUserManager -> getValueOfUser(dummyConnection, testIdentifier);
+    EXPECT_FALSE(valuesEqual(returnValue, *oldValueCopy));
+    EXPECT_TRUE(valuesEqual(returnValue, *newValueCopy));
+}
+
 // From an existing User in InGameUserManager, set their Identifier as a List
 TEST_F(InGameUserManagerCopyValueTests, CanSetListIdentifierOfExistingUser) {
 
