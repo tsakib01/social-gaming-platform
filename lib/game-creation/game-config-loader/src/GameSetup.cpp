@@ -50,4 +50,4 @@ KIND GameSetup::getKind(std::string_view identifier) const{
 }
 bool GameSetup::hasSetup() { 
     return setups.size() > 0;
-}
+} 

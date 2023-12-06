@@ -1,6 +1,6 @@
 #include "GameInstance.h"
 #include "GameConfigLoader.h"
-
+#include "GameEnvironment.h"
 GameInstance::GameInstance(std::unique_ptr<RuleTree> gameRules, std::unique_ptr<GameState> gameState, 
 std::unique_ptr<GameSetup> gameSetup, GameCommunicator& gameCommunicator, uint16_t roomCode)
     : m_gameRules(std::move(gameRules)), 
@@ -101,6 +101,22 @@ GameInstance::deleteUsers(const std::vector<User>& users) {
     for (const User& user : users) {
         m_inGameUserManager->deleteUser(user.userID);
     }
+}
+
+
+// TODO: Figure out where/how to insert an Identifier/Value key-value mapping
+// and then access it in InGameUserManager. The code below seems to leave the key-value pairing 
+// as nullptrs, but their declaration doesn't necessarily have to come from GameInstance itself.
+// void
+// GameInstance::updateUserStates(const std::vector<User>& users) {
+//         for (const User& user : users) {
+//         // This Enviroment has to be taken from somewhere...
+//         m_inGameUserManager->setStatesOfUser(user.userID, std::move(environmentToUse));
+//     }
+// }
+
+std::map<uintptr_t, GameEnvironment::Environment> GameInstance::getUserStates(){
+    return m_inGameUserManager->getAllUserStates();
 }
 
 GameInstanceState
