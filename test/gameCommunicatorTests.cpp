@@ -31,8 +31,11 @@ TEST_F(GameCommunicatorTest, TestStoreAndGetCurrentUserInput) {
 
 // Test setGameMessage
 TEST_F(GameCommunicatorTest, TestSetGameMessage) {
-    std::vector<UserId> users = {UserId{123}, UserId{456}};
-    communicator.setGameMessage(users, "hello");
+    std::map<UserId, std::string_view> userMessages = {
+        {UserId{123}, "hello"},
+        {UserId{456}, "hello"}
+    };
+    communicator.setGameMessage(userMessages);
     auto retrievedMessages = communicator.getGameMessages();
     ASSERT_EQ(retrievedMessages.size(), 2);
     ASSERT_EQ(retrievedMessages[0].text, "hello");

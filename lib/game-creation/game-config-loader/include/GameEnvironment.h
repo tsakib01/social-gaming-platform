@@ -15,6 +15,7 @@
  * Value must be either an Integer, a string, bool, a map or a list.
  * Map and List can contain anything valid Value can contain.
 */
+
 namespace GameEnvironment{
     // Identifier of value
     using Identifier = std::string_view;
@@ -22,7 +23,7 @@ namespace GameEnvironment{
     class Value;
     using Map = std::map<Identifier, std::unique_ptr<Value>>;
     using List = std::vector<std::unique_ptr<Value>>;
-    
+
     class Value{
     private:
         // Visitor for copy constructor
@@ -69,16 +70,27 @@ namespace GameEnvironment{
         Value(std::string_view value) : value(value) {}
         Value(std::unique_ptr<Map> value) : value(std::move(value)) {}
         Value(std::unique_ptr<List> value) : value(std::move(value)) {}
-        
+
         // Copy constructor does deep copy
-        Value(const Value& other) 
+        Value(const Value& other)
         : value(std::move(std::visit(CopyVisitor{}, other.value)->value))
         {}
+
+        // Assignment operator
+        Value& operator=(const Value& other){
+            if (this == &other){
+                return *this;
+            }
+            value = std::move(std::visit(CopyVisitor{}, other.value)->value);
+            return *this;
+        } 
         
         std::variant<int, bool, std::string_view, std::unique_ptr<Map>, std::unique_ptr<List> > value;
     };
 
     using Environment = std::map<Identifier, std::unique_ptr<Value>>;
 };
+
+
 #endif
 

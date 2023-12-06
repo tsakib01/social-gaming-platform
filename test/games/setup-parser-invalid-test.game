@@ -1,0 +1,21 @@
+// These are examples of core properties of a game that might be
+// configured when setting up an instance or lobby for a game.
+configuration {
+  name: "Rock, Paper, Scissors"
+  player range: (2, 4)
+  audience: false
+  setup: {
+    invalid_example2 {
+      kind: json
+      prompt: "wrong type"
+    }
+    invalid_example1 {
+      kind: enum
+    }
+  }
+}
+constants {}
+variables {}
+per-player {}
+per-audience {}
+rules {}

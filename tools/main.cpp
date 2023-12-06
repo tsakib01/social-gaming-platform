@@ -21,7 +21,8 @@ int main(int argc, char** argv) {
     auto identifers=setup->getIdentifiers();
 
     GameInstanceManager gameInstanceManager = GameInstanceManager();
-    auto invCode = gameInstanceManager.createGameInstance(gameFilePath);
+    GameCommunicator gameCommunicator;
+    auto invCode = gameInstanceManager.createGameInstance(gameFilePath, gameCommunicator);
     gameInstanceManager.startGame(invCode, {});
     gameInstanceManager.runCycle();
     return EXIT_SUCCESS;  

@@ -29,6 +29,7 @@ public:
     std::string_view getIdentifier();
     std::string_view getPrompt();
     std::string_view getRestInfo();
+    KIND getKind();
 private:
     std::string_view identifier;
     KIND kind;

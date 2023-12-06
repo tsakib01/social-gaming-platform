@@ -30,7 +30,7 @@ private:
     std::unique_ptr<Server> server;
     std::unique_ptr<GameInstanceManager> gameInstanceManager;
     std::shared_ptr<UserManager> userManager;
-    std::unique_ptr<GameCommunicator> gameCommunicator;
+    GameCommunicator gameCommunicator;
 
     // When a new client connects from server, add them to user list
     void onConnect(Connection client);

@@ -6,7 +6,7 @@ ServerManager::processNew(const Message& message) {
 		userManager->setUserName(message.connection, message.text);
 		userManager->setUserState(message.connection, UserState::INTRO);
 		return std::deque<Message>{
-			{message.connection, "Type (J) to join, (C) to create a game.\n"}};
+			{message.connection, "(J) to join, (C) to create a game.\n", true}};
 	}
 
 	else {
@@ -27,7 +27,7 @@ ServerManager::processIntro(const Message& message) {
 		userManager->setUserState(message.connection, UserState::GAME_SELECT);
 		return std::deque<Message>{
 			{buildGameFiles(message)}}; 
-	}	
+	}
 	else {
 		return std::deque<Message>{
 			{message.connection, "Invalid, try again.\n"}};
@@ -49,7 +49,7 @@ ServerManager::processJoinGame(const Message& message) {
 			User owner = userManager->getRoomOwner(code);
 
 			return std::deque<Message>{ 
-				{message.connection, "Joined game. Waiting on owner...\n"},
+				{message.connection, "Joined game. Waiting on owner...     Type (B) to leave.\n"},
 				{owner.userID, "[" + std::string(player.username) + "] joined.\n"}};
 		} 
 		
@@ -75,7 +75,7 @@ ServerManager::processGameSelect(const Message& message) {
 
 		std::vector<std::string> games = getGameFiles();
 		if (choice > 0 && choice <= games.size()) {
-			uint16_t roomCode = gameInstanceManager->createGameInstance(games[choice-1]);
+			uint16_t roomCode = gameInstanceManager->createGameInstance(games[choice-1], gameCommunicator);
 			userManager->setUserRole(message.connection, Role::OWNER);
 			userManager->setUserRoomCode(message.connection, roomCode);
 
@@ -88,7 +88,7 @@ ServerManager::processGameSelect(const Message& message) {
 			else {
 				userManager->setUserState(message.connection, UserState::GAME_WAIT);
 				return std::deque<Message>{
-					{message.connection, "Room Code: " + std::to_string(roomCode) + "     Type (S) to start.\n"}};
+					{message.connection, "Room Code: " + std::to_string(roomCode) + "     Type (S) to start, (B) to quit.\n"}};
 			}
 		}
 
@@ -115,7 +115,7 @@ ServerManager::processGameConfig(const Message& message) {
 	if (finished.status) {
 		userManager->setUserState(message.connection, UserState::GAME_WAIT);
 		return std::deque<Message>{
-			{message.connection, "Room Code: " + std::to_string(owner.roomCode) + "     Type (S) to start.\n"}};
+			{message.connection, "Room Code: " + std::to_string(owner.roomCode) + "     Type (S) to start, (B) to quit.\n"}};
 	}
 
 	else if (!finished.status && validResponse.status) {
@@ -137,6 +137,42 @@ ServerManager::processGameWait(const Message& message) {
 		userManager->setUserState(message.connection, UserState::GAME_RUN);
 		gameInstanceManager->startGame(user.roomCode, userManager->getUsersInGame(user.roomCode));
 		return buildGroupMessage(userManager->getUsersInGame(user.roomCode), "Starting game...\n");
+	}
+
+	if (message.text == "B" && user.role == Role::PLAYER) {
+		User owner = userManager->getRoomOwner(user.roomCode);
+		userManager->setUserRole(message.connection, Role::NONE);
+		userManager->setUserRoomCode(message.connection, -1);
+		userManager->setUserState(message.connection, UserState::JOIN_GAME);
+		return std::deque<Message>{
+			{message.connection, "You have left the game.\nPlease enter a room code, or type (B) to cancel.\n"},
+			{owner.userID, "[" + std::string(user.username) + "] left.\n"}};
+	}
+
+	if (message.text == "B" && user.role == Role::OWNER) {
+		gameInstanceManager->deleteGame(user.roomCode);
+
+		std::vector<User> users = userManager->getUsersInGame(user.roomCode);
+		for (User gameUser : users) {
+			userManager->setUserRole(gameUser.userID, Role::NONE);
+			userManager->setUserRoomCode(gameUser.userID, -1);
+			userManager->setUserState(gameUser.userID,
+				(gameUser.role == Role::PLAYER) ? UserState::JOIN_GAME : UserState::GAME_SELECT);
+		}
+
+		users.erase(std::remove_if(users.begin(), users.end(), [](const User& user) {
+    		return user.role == Role::OWNER;
+		}), users.end());
+		
+		std::deque<Message> playerMsgs = buildGroupMessage(users, "Game has been cancelled.\nPlease enter a room code, or type (B) to cancel.\n");
+		Message ownerMsg = {message.connection, "Game has been cancelled.\n"};
+		Message gameFiles = buildGameFiles(message);
+
+		std::deque<Message> result;
+		result.insert(result.end(), playerMsgs.begin(), playerMsgs.end());
+		result.push_back(ownerMsg);
+		result.push_back(gameFiles);
+		return result;
 	}
 
 	else {

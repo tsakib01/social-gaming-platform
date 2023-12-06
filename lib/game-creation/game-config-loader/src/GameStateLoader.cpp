@@ -174,11 +174,27 @@ std::unique_ptr<GameEnvironment::Environment>  GameStateLoader::getConfigEnviron
         auto toStore = nodeSymbolToConvert[nodeSymbol]->convertNode(root.getNamedChild(index));
         configMap->emplace(identifier, std::move(toStore));
     }
+    // (Jack) Uncomment to use rounds - should delete this after merging Allan's branch
+    // configMap->emplace("rounds", std::make_unique<GameEnvironment::Value>(15));
 
     toReturnEnvironment->emplace(configIdentifier, std::make_unique<GameEnvironment::Value>(std::move(configMap)));
     return toReturnEnvironment;
 }
 
+std::unique_ptr<GameEnvironment::Environment>  GameStateLoader::getPerPlayerEnvironment(const ts::Node& root){
+    std::unique_ptr<GameEnvironment::Environment> toReturnEnvironment = std::make_unique<GameEnvironment::Environment>();
+
+    int numNamedChildren=root.getNumNamedChildren();
+    for (int index=0; index<numNamedChildren; index++){
+
+        std::string_view identifier = root.getNamedChild(index).getPreviousSibling().getSourceRange(source);
+        int nodeSymbol = root.getNamedChild(index).getSymbol();
+        auto toStore = nodeSymbolToConvert[nodeSymbol]->convertNode(root.getNamedChild(index));
+        toReturnEnvironment->emplace(identifier, std::move(toStore));
+    }
+
+    return toReturnEnvironment;
+}
 
 
 // Print node by level order

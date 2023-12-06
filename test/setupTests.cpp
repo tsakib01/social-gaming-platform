@@ -4,13 +4,14 @@
 #include <string>
 #include <string_view>
 #include "GameSetupLoader.h"
-
+#include "GameConfigLoader.h"
+#include "GameSetup.h"
+#include <fstream>
 
 class DomainCheckerTest : public ::testing::Test {
 protected:
     DomainChecker checker;
 };
-
 TEST_F(DomainCheckerTest, ReturnsTrueForVariantWithInRange) {
     Domain domain = Range{1, 10};
     auto checkerFunc = [this](auto&& arg) { return checker(arg, std::string_view("5")); };
@@ -66,12 +67,12 @@ TEST(ConvertToRangeTest, ValidInput) {
     EXPECT_EQ(expected, result);
 }
 
-//TEST(ConvertToRangeTest, InvalidInput) {
-//    EXPECT_THROW(convertToRange("(1,10"), std::invalid_argument);
-//    EXPECT_THROW(convertToRange("1,10)"), std::invalid_argument);
-//    EXPECT_THROW(convertToRange("(1;10)"), std::invalid_argument);
-//    EXPECT_THROW(convertToRange("(1, 10, 15)"), std::invalid_argument);
-//}
+TEST(ConvertToRangeTest, InvalidInput) {
+    EXPECT_THROW(convertToRange("(1,10"), std::invalid_argument);
+    EXPECT_THROW(convertToRange("1,10)"), std::invalid_argument);
+    EXPECT_THROW(convertToRange("(1;10)"), std::invalid_argument);
+    EXPECT_THROW(convertToRange("(1, 10, 15)"), std::invalid_argument);
+}
 
 TEST(ConvertToChoiceListTest, ValidInput) {
     ChoiceList expected{{"apple", "fruit"}, {"banana", "fruit"}};
@@ -79,11 +80,11 @@ TEST(ConvertToChoiceListTest, ValidInput) {
     EXPECT_EQ(expected, result);
 }
 
-//TEST(ConvertToChoiceListTest, InvalidInput) {
-//    EXPECT_THROW(convertToChoiceList("'apple','fruit,'banana','fruit'"), std::runtime_error);
-//    EXPECT_THROW(convertToChoiceList("'apple','fruit','banana,'fruit"), std::runtime_error);
-//    EXPECT_THROW(convertToChoiceList("apple,fruit,banana,fruit"), std::runtime_error);
-//}
+TEST(ConvertToChoiceListTest, InvalidInput) {
+    EXPECT_THROW(convertToChoiceList("'apple','fruit,'banana','fruit'"), std::runtime_error);
+    EXPECT_THROW(convertToChoiceList("'apple','fruit','banana,'fruit"), std::runtime_error);
+    EXPECT_THROW(convertToChoiceList("apple,fruit,banana,fruit"), std::runtime_error);
+}
 
 TEST(ConvertStringToDomainTest, ValidInput) {
     KIND kind = KIND::INTEGER;
@@ -99,11 +100,11 @@ TEST(ConvertStringToDomainTest, ValidInput) {
     EXPECT_EQ(expected, actual);
 }
 
-//TEST(ConvertStringToDomainTest, InvalidInput) {
-//    EXPECT_THROW(convertStringToDomain(KIND::INTEGER, "(1,10,15)"), std::invalid_argument);
-//    EXPECT_THROW(convertStringToDomain(KIND::ENUM, "'apple','fruit,'banana','fruit'"), std::runtime_error);
-//    EXPECT_THROW(convertStringToDomain(static_cast<KIND>(42), "(1,10)"), std::runtime_error); // Example of an unsupported KIND
-//}
+TEST(ConvertStringToDomainTest, InvalidInput) {
+    EXPECT_THROW(convertStringToDomain(KIND::INTEGER, "(1,10,15)"), std::invalid_argument);
+    EXPECT_THROW(convertStringToDomain(KIND::ENUM, "'apple','fruit,'banana','fruit'"), std::runtime_error);
+    EXPECT_THROW(convertStringToDomain(static_cast<KIND>(42), "(1,10)"), std::runtime_error); // Example of an unsupported KIND
+}
 TEST(SetupInstanceTest, CombinedTestForAllKinds) {
     // Testing KIND::INTEGER
     SetupInstance setupInt("int_test", KIND::INTEGER, "Enter a number between 1 and 10", "", Domain(Range{1, 10}));
@@ -127,4 +128,136 @@ TEST(SetupInstanceTest, CombinedTestForAllKinds) {
     EXPECT_FALSE(setupEnum.checkResponse("cherry"));
 }
 
+//SetupLoaderTest
+extern "C" {
+    TSLanguage* tree_sitter_socialgaming();
+}
 
+class configParserTest{
+public:
+    configParserTest(std::string path){
+        std::ifstream ifs(path);
+        std::stringstream buffer;
+        buffer << ifs.rdbuf();
+        ifs.close();
+        source = buffer.str();
+    }
+    std::string source;
+};
+
+TEST(SingleSetupParserTest, intSetup ){
+    configParserTest config ("./test/games/setup-parser-test.game");
+    auto setupLoader= GameSetupLoader(config.source);
+    ts::Language language = tree_sitter_socialgaming();
+    ts::Parser parser{language};
+    ts::Tree tree = parser.parseString(config.source);
+    ts::Node root = tree.getRootNode();
+    ts::Node configuration = root.getChildByFieldName("configuration");
+    ts::Node setupNode = configuration.getNamedChild(3);
+    std::unique_ptr<SetupInstance> setupPtr = std::move(setupLoader.convertNodetoSetup(setupNode));
+    EXPECT_EQ(setupPtr->getIdentifier(), "rounds");
+    EXPECT_EQ(setupPtr->getKind(), KIND::INTEGER);
+    EXPECT_EQ(setupPtr->getPrompt(), "\"The number of rounds to play\"");
+    EXPECT_EQ(setupPtr->getRestInfo(), "range: (10, 20)");
+}
+
+TEST(SingleSetupParserTest, boolSetup ){
+    configParserTest config ("./test/games/setup-parser-test.game");
+    auto setupLoader= GameSetupLoader(config.source);
+    ts::Language language = tree_sitter_socialgaming();
+    ts::Parser parser{language};
+    ts::Tree tree = parser.parseString(config.source);
+    ts::Node root = tree.getRootNode();
+    ts::Node configuration = root.getChildByFieldName("configuration");
+    ts::Node setupNode = configuration.getNamedChild(4);
+    std::unique_ptr<SetupInstance> setupPtr = setupLoader.convertNodetoSetup(setupNode);
+    EXPECT_EQ(setupPtr->getIdentifier(), "public_voting");
+    EXPECT_EQ(setupPtr->getKind(), KIND::BOOLEAN);
+    EXPECT_EQ(setupPtr->getPrompt(), "\"Player votes are public\"");
+    EXPECT_EQ(setupPtr->getRestInfo(), "");
+}
+
+TEST(SingleSetupParserTest, stringSetup ){
+    configParserTest config ("./test/games/setup-parser-test.game");
+    auto setupLoader= GameSetupLoader(config.source);
+    ts::Language language = tree_sitter_socialgaming();
+    ts::Parser parser{language};
+    ts::Tree tree = parser.parseString(config.source);
+    ts::Node root = tree.getRootNode();
+    ts::Node configuration = root.getChildByFieldName("configuration");
+    ts::Node setupNode = configuration.getNamedChild(5);
+    std::unique_ptr<SetupInstance> setupPtr = setupLoader.convertNodetoSetup(setupNode);
+    EXPECT_EQ(setupPtr->getIdentifier(), "string_example");
+    EXPECT_EQ(setupPtr->getKind(), KIND::STRING);
+    EXPECT_EQ(setupPtr->getPrompt(), "\"Do nothing\"");
+    EXPECT_EQ(setupPtr->getRestInfo(), "");
+}
+
+TEST(SingleSetupParserTest, enumSetup ){
+    configParserTest config ("./test/games/setup-parser-test.game");
+    auto setupLoader= GameSetupLoader(config.source);
+    ts::Language language = tree_sitter_socialgaming();
+    ts::Parser parser{language};
+    ts::Tree tree = parser.parseString(config.source);
+    ts::Node root = tree.getRootNode();
+    ts::Node configuration = root.getChildByFieldName("configuration");
+    ts::Node setupNode = configuration.getNamedChild(6);
+    std::unique_ptr<SetupInstance> setupPtr = setupLoader.convertNodetoSetup(setupNode);
+    EXPECT_EQ(setupPtr->getIdentifier(), "mode");
+    EXPECT_EQ(setupPtr->getKind(), KIND::ENUM);
+    EXPECT_EQ(setupPtr->getPrompt(), "\"Game Style\"");
+    EXPECT_EQ(setupPtr->getRestInfo(), "choices: {\r\n        'fast':     'A quick round with friends'\r\n        'standard': 'Standard play'\r\n        'long':     'A marathon battle against former friends'\r\n      }");
+}
+
+TEST(SingleSetupParserTest, invalidSetup_wrongType ){
+    configParserTest config ("./test/games/setup-parser-invalid-test.game");
+    auto setupLoader= GameSetupLoader(config.source);
+    ts::Language language = tree_sitter_socialgaming();
+    ts::Parser parser{language};
+    ts::Tree tree = parser.parseString(config.source);
+    ts::Node root = tree.getRootNode();
+    ts::Node configuration = root.getChildByFieldName("configuration");
+    ts::Node setupNode = configuration.getNamedChild(0);
+    EXPECT_THROW(setupLoader.convertNodetoSetup(setupNode), std::runtime_error);
+}
+
+TEST(SingleSetupParserTest, invalidSetup_lessInfo ){
+    configParserTest config ("./test/games/setup-parser-invalid-test.game");
+    auto setupLoader= GameSetupLoader(config.source);
+    ts::Language language = tree_sitter_socialgaming();
+    ts::Parser parser{language};
+    ts::Tree tree = parser.parseString(config.source);
+    ts::Node root = tree.getRootNode();
+    ts::Node configuration = root.getChildByFieldName("configuration");
+    ts::Node setupNode = configuration.getNamedChild(1);
+    EXPECT_THROW(setupLoader.convertNodetoSetup(setupNode), std::runtime_error);
+}
+
+TEST(AllSetupParserTest, validGameFile ){
+    configParserTest config ("./test/games/setup-parser-test.game");
+    auto gameSetupLoader = std::make_shared<GameSetupLoader>(config.source);
+    auto gameSetup = GameSetup(gameSetupLoader);
+    ts::Language language = tree_sitter_socialgaming();
+    ts::Parser parser{language};
+    ts::Tree tree = parser.parseString(config.source);
+    ts::Node root = tree.getRootNode();
+    ts::Node configuration = root.getChildByFieldName("configuration");
+    gameSetup.addSetups(configuration);
+    std::vector<std::string_view> identifiers = {"rounds","public_voting","string_example","mode"};
+    std::vector<std::string_view> prompts = {"\"The number of rounds to play\"","\"Player votes are public\"","\"Do nothing\"","\"Game Style\""};
+    std::vector<std::string_view> restInfos = {"range: (10, 20)","","","choices: {\r\n        'fast':     'A quick round with friends'\r\n        'standard': 'Standard play'\r\n        'long':     'A marathon battle against former friends'\r\n      }"};
+    EXPECT_EQ(gameSetup.getIdentifiers(), identifiers);
+    EXPECT_EQ(gameSetup.getPrompts(), prompts);
+    EXPECT_EQ(gameSetup.getRestInfos(), restInfos);
+}
+
+TEST(AllSetupParserTest, invalidGameFile ){
+    configParserTest config ("./test/games/setup-parser-invalid-test.game");
+    auto gameSetupLoader = GameSetupLoader(config.source);
+    ts::Language language = tree_sitter_socialgaming();
+    ts::Parser parser{language};
+    ts::Tree tree = parser.parseString(config.source);
+    ts::Node root = tree.getRootNode();
+    ts::Node configuration = root.getChildByFieldName("configuration");
+    EXPECT_THROW(gameSetupLoader.getGameSetup(configuration), std::runtime_error);
+}

@@ -6,6 +6,7 @@
 #include<memory>
 #include <cpp-tree-sitter.h>
 
+
 class GameSetup {
 public:
     GameSetup(std::shared_ptr<GameSetupLoader> SetupLoader);
@@ -15,6 +16,7 @@ public:
     std::vector<std::string_view> getPrompts();
     std::vector<std::string_view> getRestInfos();
     bool isResponseValid(std::string_view identifier,std::string_view response);
+    KIND getKind(std::string_view identifier) const;
     bool hasSetup();
 private:
     std::vector<std::unique_ptr<SetupInstance>> setups;
