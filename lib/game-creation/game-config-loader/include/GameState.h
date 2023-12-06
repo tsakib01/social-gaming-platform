@@ -3,6 +3,7 @@
 
 #include "GameEnvironment.h"
 #include "Rule.h"
+#include "Evaluator.h"
 #include <string_view>
 #include <iostream>
 #include <variant>
@@ -18,6 +19,8 @@ public:
     void addEnvironment(GameEnvironment::Environment& newEnvironment);
     // Add an identifier with a given value.
     void addState(GameEnvironment::Identifier identifier, std::unique_ptr<GameEnvironment::Value> value);
+    // Add a setup to game state
+    void addSetupToGameState(GameEnvironment::Identifier identifier,  GameEnvironment::Value value);
     // Get a value of variable by a given identifier
     GameEnvironment::Value getValue(GameEnvironment::Identifier identifier) const;
     // Update the identifier's value to given value.
@@ -33,6 +36,7 @@ public:
     // Print all of identifier and its associative values of the map.
     void print();
 private:
+    Evaluator evaluator = Evaluator::defaultEvaluatorFactory();
     std::unique_ptr<GameEnvironment::Environment> environment;
     std::map<Rule*, size_t> ruleEnvironment;
 };
@@ -70,4 +74,8 @@ struct PrintVisitor {
         std::visit(*this, value.value);
     }
 };
+
+
+
+
 #endif

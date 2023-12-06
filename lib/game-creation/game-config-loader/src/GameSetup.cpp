@@ -1,4 +1,5 @@
 #include "GameSetup.h"
+#include <stdexcept>
 GameSetup::GameSetup (std::shared_ptr<GameSetupLoader> SetupLoader):setups(std::vector<std::unique_ptr<SetupInstance>>()), SetupLoader(SetupLoader){}
 
 void GameSetup::addSetups(ts::Node node){
@@ -38,6 +39,14 @@ bool GameSetup::isResponseValid(std::string_view identifier,std::string_view res
         }
     }
     return false;
+}
+KIND GameSetup::getKind(std::string_view identifier) const{
+    for(auto const& setup :setups){
+        if(identifier == setup->getIdentifier()){
+            return setup->getKind();
+        }
+    }
+    throw std::runtime_error("identifier not inside");
 }
 bool GameSetup::hasSetup() { 
     return setups.size() > 0;

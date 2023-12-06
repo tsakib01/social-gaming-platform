@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "Evaluator.h"
+#include "GameConfigLoader.h"
 #include <iostream>
 
 class EvaluatorOperationTest : public ::testing::Test {
@@ -682,6 +683,89 @@ TEST_F(EvaluatorOperationTest, TestEqualMapOfMap) {
     EXPECT_FALSE(std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&mapOfMapValue1, &mapOfMapValue3}).value));
 }
 
+TEST_F(EvaluatorOperationTest, TestLookUpOneLevelMap){
+    std::unique_ptr<GameEnvironment::Map> map = std::make_unique<GameEnvironment::Map>();
+
+    map->emplace("int1", std::make_unique<GameEnvironment::Value>(5));
+    map->emplace("int2", std::make_unique<GameEnvironment::Value>(10));
+    map->emplace("string1", std::make_unique<GameEnvironment::Value>(std::string_view("string")));
+    map->emplace("string2", std::make_unique<GameEnvironment::Value>(std::string_view("strings")));
+    map->emplace("bool1", std::make_unique<GameEnvironment::Value>(true));
+    map->emplace("bool2", std::make_unique<GameEnvironment::Value>(false));
+    GameEnvironment::Value mapValue(std::move(map));
+
+    std::vector< GameEnvironment::Value> identifiers={GameEnvironment::Value(std::string_view("int1")), GameEnvironment::Value(std::string_view("int2")),
+                                                                                                                  GameEnvironment::Value(std::string_view("string1")),GameEnvironment::Value(std::string_view("string2")),GameEnvironment::Value(std::string_view("bool1")), GameEnvironment::Value(std::string_view("bool2")) };
+
+    EXPECT_EQ(std::get<int>(evaluator.evaluate(OPERATOR::LOOK_UP, {&mapValue, &identifiers[0]}).value), 5);
+    EXPECT_EQ(std::get<int>(evaluator.evaluate(OPERATOR::LOOK_UP, {&mapValue, &identifiers[1]}).value), 10);
+    EXPECT_EQ(std::get<std::string_view>(evaluator.evaluate(OPERATOR::LOOK_UP, {&mapValue, &identifiers[2]}).value), "string");
+    EXPECT_EQ(std::get<std::string_view>(evaluator.evaluate(OPERATOR::LOOK_UP, {&mapValue, &identifiers[3]}).value), "strings");
+    EXPECT_EQ(std::get<bool>(evaluator.evaluate(OPERATOR::LOOK_UP, {&mapValue, &identifiers[4]}).value), true);
+    EXPECT_EQ(std::get<bool>(evaluator.evaluate(OPERATOR::LOOK_UP, {&mapValue, &identifiers[5]}).value), false);
+}
+
+TEST_F(EvaluatorOperationTest, TestLookUpMultiLevelMap){
+    std::unique_ptr<GameEnvironment::Map> map1 = std::make_unique<GameEnvironment::Map>();
+
+    map1->emplace("int1", std::make_unique<GameEnvironment::Value>(5));
+    map1->emplace("string1", std::make_unique<GameEnvironment::Value>(std::string_view("string")));
+    map1->emplace("bool1", std::make_unique<GameEnvironment::Value>(true));
+    GameEnvironment::Value mapValue1(std::move(map1));
+
+    std::unique_ptr<GameEnvironment::Map> map2 = std::make_unique<GameEnvironment::Map>();
+
+    map2->emplace("level2map", std::make_unique<GameEnvironment::Value>(mapValue1));
+    map2->emplace("level2int", std::make_unique<GameEnvironment::Value>(20));
+    GameEnvironment::Value mapValue2(std::move(map2));
+
+    std::unique_ptr<GameEnvironment::Map> map3 = std::make_unique<GameEnvironment::Map>();
+
+    map3->emplace("level1map", std::make_unique<GameEnvironment::Value>(mapValue2));
+    GameEnvironment::Value level0Map(std::move(map3));
+
+    std::vector< GameEnvironment::Value> identifiers={GameEnvironment::Value(std::string_view("int1")), GameEnvironment::Value(std::string_view("string1")),GameEnvironment::Value(std::string_view("bool1")), GameEnvironment::Value(std::string_view("level2map")),GameEnvironment::Value(std::string_view("level2int")), GameEnvironment::Value(std::string_view("level1map"))   };
+
+    auto level1Map = evaluator.evaluate(OPERATOR::LOOK_UP, {&level0Map, &identifiers[5]});
+    auto level2Map =  evaluator.evaluate(OPERATOR::LOOK_UP, {&level1Map, &identifiers[3]});
+
+    EXPECT_EQ(std::get<int>(evaluator.evaluate(OPERATOR::LOOK_UP, {&level1Map, &identifiers[4]}).value), 20);
+    EXPECT_EQ(std::get<int>(evaluator.evaluate(OPERATOR::LOOK_UP, {&level2Map, &identifiers[0]}).value), 5);
+    EXPECT_EQ(std::get<std::string_view>(evaluator.evaluate(OPERATOR::LOOK_UP, {&level2Map, &identifiers[1]}).value), "string");
+    EXPECT_EQ(std::get<bool>(evaluator.evaluate(OPERATOR::LOOK_UP, {&level2Map, &identifiers[2]}).value), true);
+}
+TEST_F(EvaluatorOperationTest, TestLookUpFromGameState){
+    GameConfigLoader gameConfigLoader{"./test/games/setup-parser-test.game"};
+    auto gameState = gameConfigLoader.createGameState();
+    auto configuration = gameState->getValue("configuration");
+    std::string_view idenfitier1=std::string_view("name");
+    auto identifier = GameEnvironment::Value(idenfitier1);
+    auto name = evaluator.evaluate(OPERATOR::LOOK_UP, {&configuration, &identifier});
+    auto information = std::get<std::string_view>(name.value);
+    EXPECT_EQ(information, "\"Rock, Paper, Scissors\"");
+}
+TEST_F(EvaluatorOperationTest, TestLookUpInvalidType){
+    std::unique_ptr<GameEnvironment::Map> map = std::make_unique<GameEnvironment::Map>();
+    std::vector< GameEnvironment::Value> identifiers={GameEnvironment::Value(std::string_view("int1")), GameEnvironment::Value(std::string_view("int2")),
+                                                  GameEnvironment::Value(std::string_view("string1")),GameEnvironment::Value(std::string_view("string2")),GameEnvironment::Value(std::string_view("bool1")), GameEnvironment::Value(std::string_view("bool2")) };
+
+    map->emplace("int1", std::make_unique<GameEnvironment::Value>(5));
+    GameEnvironment::Value mapValue(std::move(map));
+    EXPECT_THROW(evaluator.evaluate(OPERATOR::LOOK_UP, {&mapValue, &identifiers[4]}),std::runtime_error);
+
+    GameEnvironment::Value intValue(4);
+    GameEnvironment::Value boolValue(true);
+
+    std::unique_ptr<GameEnvironment::List> list = std::make_unique<GameEnvironment::List>();
+    list->push_back(std::make_unique<GameEnvironment::Value>(intValue));
+    list->push_back(std::make_unique<GameEnvironment::Value>(boolValue));
+    GameEnvironment::Value listValue(std::move(list));
+
+    EXPECT_THROW(evaluator.evaluate(OPERATOR::LOOK_UP, {&intValue, &identifiers[4]}),std::runtime_error);
+    EXPECT_THROW(evaluator.evaluate(OPERATOR::LOOK_UP, {&boolValue, &identifiers[4]}),std::runtime_error);
+    EXPECT_THROW(evaluator.evaluate(OPERATOR::LOOK_UP, {&listValue, &identifiers[4]}),std::runtime_error);
+}
+
 // Test case for SIZE operation
 TEST_F(EvaluatorOperationTest, TestValidSizeOperation) {
     // Create a list with some elements
@@ -859,3 +943,4 @@ TEST_F(EvaluatorOperationTest, TestContainOperationWithListOfLists) {
     containResult = evaluator.evaluate(OPERATOR::CONTAIN, {&listListValue, &targetListValueNotFound});
     EXPECT_FALSE(std::get<bool>(containResult.value));
 }
+

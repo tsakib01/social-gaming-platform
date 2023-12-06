@@ -32,11 +32,14 @@ GameInstance::inputConfig(const std::string& response) {
     }
 
     if (m_gameSetup->isResponseValid(identifiers[m_setupIndex], response)) {
-        m_setupResponses.push_back({std::string(identifiers[m_setupIndex]), response});
+        m_setupResponses.push_back({(identifiers[m_setupIndex]), response});
         m_setupIndex++;
         if (m_setupIndex == identifiers.size()) {
             m_setupIndex = SETUP_FINISHED;
-            // TODO: Can insert setupResponses into gameState here. 
+            // TODO: Can insert setupResponses into gameState here.
+            addSetupIntoState();
+
+//            m_gameState->print();
             return ConfigResult{
                 "Finished setup.\n", ValidResponse{true}, Finished{true}};
         }
@@ -113,4 +116,34 @@ GameInstance::gameIsJoinable() {
 bool
 GameInstance::gameHasSetup() {
     return m_gameSetup->hasSetup();
+}
+
+GameEnvironment::Value convertSetupResponseToValue( KIND kind, std::string_view response ){
+
+    if(kind == KIND::INTEGER){
+        return GameEnvironment::Value(std::stoi(std::string(response)));
+    }
+    else if(kind == KIND::BOOLEAN){
+        bool value ;
+        if (response=="y"){
+            value = true;
+        }
+        else{
+            value = false;
+        }
+        return GameEnvironment::Value(value);
+    }
+    else{
+        return GameEnvironment::Value(response);
+    }
+}
+
+void GameInstance::addSetupIntoState(){
+    int size = m_setupResponses.size();
+    for(int i=0; i<size; i++){
+        std::string_view identifier = m_setupResponses[i].first;
+        auto kind = m_gameSetup->getKind(identifier);
+        auto value = convertSetupResponseToValue(kind, m_setupResponses[i].second );
+        m_gameState->addSetupToGameState(identifier,value);
+    }
 }
