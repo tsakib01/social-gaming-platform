@@ -10,6 +10,7 @@
 
 // This class and its functions are mostly copied from gameEnvirionmentTests.cpp
 class InGameUserManagerCopyValueTests : public ::testing::Test {
+const int threeElements = 3;
 protected:
     bool valuesEqual(const GameEnvironment::Value& v1, const GameEnvironment::Value& v2) {
         return std::get<bool>(evaluator.evaluate(OPERATOR::EQUAL, {&v1, &v2}).value);
@@ -20,7 +21,7 @@ protected:
 
     std::unique_ptr<GameEnvironment::List>makeIntList(){
         auto list = std::make_unique<GameEnvironment::List>();
-        for(int i = 0; i < 3; i++){
+        for(int i = 0; i < threeElements; i++){
             list -> push_back(std::make_unique<GameEnvironment::Value>(i));
         }
         return list;
@@ -28,7 +29,7 @@ protected:
 
     std::unique_ptr<GameEnvironment::List> makeStringList(){
         auto list = std::make_unique<GameEnvironment::List>();
-        for (int i = 0; i < 3; i++){
+        for (int i = 0; i < threeElements; i++){
             list->push_back(std::make_unique<GameEnvironment::Value>("String" + std::to_string(i)));
         }
         return list;
