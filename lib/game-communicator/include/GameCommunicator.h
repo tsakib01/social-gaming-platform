@@ -37,16 +37,16 @@ public:
     
     void setGameChoices(uint16_t roomCode, const std::vector<std::string_view>& choices); //called by game instance
     void storeCurrentUserInput(const Message& message); // stores the current user input to use later for sending all at once to the game instance
-    void setGameMessage(const std::vector<UserId> users, std::string_view message);
+    void setGameMessage(std::map<UserId, std::string_view> messages);
 
     std::vector<std::string_view> getChoicesForUser(uint16_t roomCode) const;
     std::string_view getCurrentUserInput(UserId userID) const;
-    std::vector<Message> getGameMessages() const { return gameMessages; }
+    std::deque<Message> getGameMessages() const { return gameMessages; }
 
 private:
     std::vector<GameChoices> gameChoices;
     std::vector<UserInput> userInputs; 
-    std::vector<Message> gameMessages;
+    std::deque<Message> gameMessages;
 };
 
 #endif

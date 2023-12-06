@@ -277,6 +277,58 @@ private:
 
     GameEnvironment::Value evaluateImpl(std::vector<const GameEnvironment::Value*> values) const override{
         return std::visit(EqualOperationVisitor{}, values[0]->value, values[1]->value);
+    }
+};
+
+class UpFromOperation : public Operation {
+private:
+    struct UpFromOperationVisitor {
+        GameEnvironment::Value operator()(const int& count, const int& upfrom){
+            std::unique_ptr<GameEnvironment::List> list = std::make_unique<GameEnvironment::List>();
+            list->reserve(count - upfrom);
+            for (int i = upfrom; i <= count; i++) {
+                list->emplace_back(std::make_unique<GameEnvironment::Value>(i));
+            }
+            return GameEnvironment::Value(std::move(list));
+        }
+
+        template <typename T, typename U>
+        GameEnvironment::Value operator()([[maybe_unused]] const T& count, [[maybe_unused]] const U& upfrom){
+            throw std::runtime_error("Unsupported types for UpFrom");
+        }
+    };
+
+    GameEnvironment::Value evaluateImpl(std::vector<const GameEnvironment::Value*> values) const override {
+        return std::visit(UpFromOperationVisitor{}, values[0]->value, values[1]->value);
+    }
+    bool getSpecificationImpl(std::vector<const GameEnvironment::Value*> values) const override {
+        return values.size() == 2;
+    }
+};
+
+// SIZE operation supports
+// Return size of operand which should be list
+class SizeOperation final : public Operation {
+private:
+    struct SizeOperationVisitor {
+        GameEnvironment::Value operator()(const std::unique_ptr<GameEnvironment::List>& list){
+            int listSize = list->size();
+            return GameEnvironment::Value(listSize);
+        }
+
+        template <typename T>
+        GameEnvironment::Value operator()([[maybe_unused]] const T& op){
+            throw std::runtime_error("Unsupported types for SIZE");
+        }
+    };
+
+    // SIZE operation requires only 1 argument
+    bool getSpecificationImpl(std::vector<const GameEnvironment::Value*> values) const override {
+        return values.size() == 1;
+    };
+
+    GameEnvironment::Value evaluateImpl(std::vector<const GameEnvironment::Value*> values) const override{
+        return std::visit(SizeOperationVisitor{}, values[0]->value);
     } 
 };
 //Get a copy of value form GameEnvironment::Map by Identifier
@@ -305,6 +357,41 @@ private:
         return std::visit(LookInVisitor{}, values[0]->value, values[1]->value );
     }
 };
+// CONTAIN operation supports
+// If it is a list, return whether the given value is in the list or not
+// TODO -> Support Map
+class ContainOperation final : public Operation {
+public:
+private:
+    struct ContainOperationVisitor {
+        GameEnvironment::Value operator()(const std::unique_ptr<GameEnvironment::List>& list){
+            auto result = GameEnvironment::Value(false);
+            // Check any of the element in the list is equal to target
+            for (const auto& value : *list){
+                auto isEqual = EqualOperation().evaluate({value.get(), target});
+                result = OrOperation().evaluate({&result, &isEqual});
+            }
+            return result;
+        }
+
+        template <typename T>
+        GameEnvironment::Value operator()([[maybe_unused]] const T& value){
+            throw std::runtime_error("Unsupported types for CONTAIN");
+        }
+        
+        const GameEnvironment::Value* target;
+    };
+
+    // CONTAIN operation requires 2 arguments
+    bool getSpecificationImpl(std::vector<const GameEnvironment::Value*> values) const override {
+        return values.size() == 2;
+    };
+
+    GameEnvironment::Value evaluateImpl(std::vector<const GameEnvironment::Value*> values) const override{
+        return std::visit(ContainOperationVisitor{values[1]}, values[0]->value);
+    }
+};
+
 // Register operation to the map
 void Evaluator::registerOperation(OPERATOR operatorEnum, std::unique_ptr<Operation> operation){
     auto [it, succeeded] = operatorToOperation.try_emplace(operatorEnum, std::move(operation));
@@ -315,7 +402,7 @@ void Evaluator::registerOperation(OPERATOR operatorEnum, std::unique_ptr<Operati
     }
 }
 
-GameEnvironment::Value Evaluator::evaluate(OPERATOR operationEnum, std::vector<const GameEnvironment::Value*> values){
+GameEnvironment::Value Evaluator::evaluate(OPERATOR operationEnum, std::vector<const GameEnvironment::Value*> values) const {
     auto operationItr = operatorToOperation.find(operationEnum);
     // No operation registered
     if (operationItr == operatorToOperation.end()){
@@ -503,7 +590,7 @@ Evaluator::registerOperation(MODIFIER MODIFIEREnum, std::unique_ptr<ModifyOperat
 }
 
 void
-Evaluator::evaluate(MODIFIER MODIFIEREnum, std::vector<GameEnvironment::Value*> values){
+Evaluator::evaluate(MODIFIER MODIFIEREnum, std::vector<GameEnvironment::Value*> values) {
     auto operationItr = MODIFIERToModifyOperation.find(MODIFIEREnum);
     // No operation registered
     if (operationItr == MODIFIERToModifyOperation.end()){
@@ -527,6 +614,9 @@ Evaluator Evaluator::defaultEvaluatorFactory(){
     evaluator.registerOperation(OPERATOR::NOT,          std::make_unique<NotOperation>());
     evaluator.registerOperation(OPERATOR::EQUAL,        std::make_unique<EqualOperation>());
     evaluator.registerOperation(OPERATOR::LOOK_UP,     std::make_unique<LookInOperation>());
+    evaluator.registerOperation(OPERATOR::SIZE,         std::make_unique<SizeOperation>());
+    evaluator.registerOperation(OPERATOR::CONTAIN,         std::make_unique<ContainOperation>());
+    evaluator.registerOperation(OPERATOR::UPFROM,        std::make_unique<UpFromOperation>());
     evaluator.registerOperation(MODIFIER::REVERSE,  std::make_unique<ReverseListOperation>());
     evaluator.registerOperation(MODIFIER::SHUFFLE,  std::make_unique<ShuffleListOperation>());
     evaluator.registerOperation(MODIFIER::EXTEND,   std::make_unique<ExtendListOperation>());

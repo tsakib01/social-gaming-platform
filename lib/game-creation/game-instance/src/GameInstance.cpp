@@ -1,19 +1,19 @@
 #include "GameInstance.h"
 #include "GameConfigLoader.h"
-GameInstance::GameInstance(std::unique_ptr<RuleTree> gameRules, 
-std::unique_ptr<GameState> gameState, std::unique_ptr<GameSetup> gameSetup, uint16_t roomCode)
+
+GameInstance::GameInstance(std::unique_ptr<RuleTree> gameRules, std::unique_ptr<GameState> gameState, 
+std::unique_ptr<GameSetup> gameSetup, GameCommunicator& gameCommunicator, uint16_t roomCode)
     : m_gameRules(std::move(gameRules)), 
       m_gameState(std::move(gameState)),
       m_gameSetup(std::move(gameSetup)),
+      m_gameCommunicator(gameCommunicator),
       m_roomCode(roomCode),
       m_context(*m_gameState, m_gameRules->getRoot()),
       m_ruleExecutor(m_context)
 {
     m_inGameUserManager = std::make_unique<InGameUserManager>();
-    // const std::shared_ptr<RuleNode> rulesRoot = gameRules->getRules();
-    // instructionStack.push(rulesRoot);
-
     m_state = GameInstanceState::QUEUED;
+    
     if (!gameHasSetup()) {
         m_setupIndex = SETUP_FINISHED;
     }
@@ -28,7 +28,7 @@ GameInstance::inputConfig(const std::string& response) {
     if (!sentFirstPrompt) {
         sentFirstPrompt = true;
         return ConfigResult{
-            std::string(prompts[m_setupIndex]), ValidResponse{false}, Finished{false}};
+            "Configuration Setup...\nEnter " + std::string(prompts[m_setupIndex]), ValidResponse{false}, Finished{false}};
     }
 
     if (m_gameSetup->isResponseValid(identifiers[m_setupIndex], response)) {
@@ -44,7 +44,7 @@ GameInstance::inputConfig(const std::string& response) {
                 "Finished setup.\n", ValidResponse{true}, Finished{true}};
         }
         return ConfigResult{
-            std::string(prompts[m_setupIndex]), ValidResponse{true}, Finished{false}};
+            "Enter " + std::string(prompts[m_setupIndex]), ValidResponse{true}, Finished{false}};
     } 
     
     return ConfigResult{
@@ -57,12 +57,18 @@ GameInstance::startGame() {
 }
 
 void 
-GameInstance::executeNextInstruction() {
+GameInstance::execute() {
     while (!m_context.blocked && (m_context.instructionStack.size() > 0)) {
         m_context.instructionStack.top()->accept(m_ruleExecutor);
     }
     if (m_context.blocked) {
         m_state = GameInstanceState::WAITING;
+        
+        // TODO: Replace this once executeContext has outgoingMessages
+        // auto outgoing = m_context.outgoingMessages;
+        auto outgoing = OutgoingMessages{{}};
+        m_gameCommunicator.setGameMessage(outgoing.getMessages());
+        outgoing.clear();
     }
 }
 

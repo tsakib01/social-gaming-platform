@@ -6,6 +6,7 @@
 class EvaluatorOperationTest : public ::testing::Test {
 protected:
     Evaluator evaluator;
+    std::string MAP_KEYS[5] = {"ID1", "ID2", "ID3", "ID4", "ID5"};
 
     // Use a default evaluator
     void SetUp() override {
@@ -535,10 +536,9 @@ TEST_F(EvaluatorOperationTest, TestEqualListOfMap) {
         std::unique_ptr<GameEnvironment::Map> innerMap3 = std::make_unique<GameEnvironment::Map>();
 
         for (int j = 0; j < 5; j++) {
-            std::string innerID = "ID" + std::to_string(j);
-            innerMap1->emplace(innerID, std::make_unique<GameEnvironment::Value>(j));
-            innerMap2->emplace(innerID, std::make_unique<GameEnvironment::Value>(j));
-            innerMap3->emplace(innerID, std::make_unique<GameEnvironment::Value>(j + 1));
+            innerMap1->emplace(MAP_KEYS[j], std::make_unique<GameEnvironment::Value>(j));
+            innerMap2->emplace(MAP_KEYS[j], std::make_unique<GameEnvironment::Value>(j));
+            innerMap3->emplace(MAP_KEYS[j], std::make_unique<GameEnvironment::Value>(j + 1));
         }
 
         listOfMap1->push_back(std::make_unique<GameEnvironment::Value>(std::move(innerMap1)));
@@ -563,10 +563,9 @@ TEST_F(EvaluatorOperationTest, TestEqualMapOfInt) {
 
     // Populating lists with 5 elements
     for (int i = 0; i < 5; i++) {
-        std::string id = "ID" + std::to_string(i);
-        intMap1->emplace(id, std::make_unique<GameEnvironment::Value>(i));
-        intMap2->emplace(id, std::make_unique<GameEnvironment::Value>(i));
-        intMap3->emplace(id, std::make_unique<GameEnvironment::Value>(i + 1));
+        intMap1->emplace(MAP_KEYS[i], std::make_unique<GameEnvironment::Value>(i));
+        intMap2->emplace(MAP_KEYS[i], std::make_unique<GameEnvironment::Value>(i));
+        intMap3->emplace(MAP_KEYS[i], std::make_unique<GameEnvironment::Value>(i + 1));
     }
 
     GameEnvironment::Value intMapValue1(std::move(intMap1));
@@ -586,10 +585,9 @@ TEST_F(EvaluatorOperationTest, TestEqualMapOfBool) {
 
     // Populating lists with 5 elements
     for (int i = 0; i < 5; i++) {
-        std::string id = "ID" + std::to_string(i);
-        boolMap1->emplace(id, std::make_unique<GameEnvironment::Value>(i % 2 == 0));
-        boolMap2->emplace(id, std::make_unique<GameEnvironment::Value>(i % 2 == 0));
-        boolMap3->emplace(id, std::make_unique<GameEnvironment::Value>(i % 2 == 1));
+        boolMap1->emplace(MAP_KEYS[i], std::make_unique<GameEnvironment::Value>(i % 2 == 0));
+        boolMap2->emplace(MAP_KEYS[i], std::make_unique<GameEnvironment::Value>(i % 2 == 0));
+        boolMap3->emplace(MAP_KEYS[i], std::make_unique<GameEnvironment::Value>(i % 2 == 1));
     }
 
     GameEnvironment::Value boolMapValue1(std::move(boolMap1));
@@ -609,10 +607,9 @@ TEST_F(EvaluatorOperationTest, TestEqualMapOfString) {
 
     // Populating lists with 5 elements
     for (int i = 0; i < 5; i++) {
-        std::string id = "ID" + std::to_string(i);
-        stringMap1->emplace(id, std::make_unique<GameEnvironment::Value>(std::string_view("Hello")));
-        stringMap2->emplace(id, std::make_unique<GameEnvironment::Value>(std::string_view("Hello")));
-        stringMap3->emplace(id, std::make_unique<GameEnvironment::Value>(std::string_view("World")));
+        stringMap1->emplace(MAP_KEYS[i], std::make_unique<GameEnvironment::Value>(std::string_view("Hello")));
+        stringMap2->emplace(MAP_KEYS[i], std::make_unique<GameEnvironment::Value>(std::string_view("Hello")));
+        stringMap3->emplace(MAP_KEYS[i], std::make_unique<GameEnvironment::Value>(std::string_view("World")));
     }
 
     GameEnvironment::Value stringMapValue1(std::move(stringMap1));
@@ -641,10 +638,9 @@ TEST_F(EvaluatorOperationTest, TestEqualMapOfList) {
             list2->push_back(std::make_unique<GameEnvironment::Value>(j));
             list3->push_back(std::make_unique<GameEnvironment::Value>(j + 1));
         }
-        std::string id = "ID" + std::to_string(i);
-        mapOfList1->emplace(id, std::make_unique<GameEnvironment::Value>(std::move(list1)));
-        mapOfList2->emplace(id, std::make_unique<GameEnvironment::Value>(std::move(list2)));
-        mapOfList3->emplace(id, std::make_unique<GameEnvironment::Value>(std::move(list3)));
+        mapOfList1->emplace(MAP_KEYS[i], std::make_unique<GameEnvironment::Value>(std::move(list1)));
+        mapOfList2->emplace(MAP_KEYS[i], std::make_unique<GameEnvironment::Value>(std::move(list2)));
+        mapOfList3->emplace(MAP_KEYS[i], std::make_unique<GameEnvironment::Value>(std::move(list3)));
     }
 
     GameEnvironment::Value mapOfListValue1(std::move(mapOfList1));
@@ -669,16 +665,14 @@ TEST_F(EvaluatorOperationTest, TestEqualMapOfMap) {
         std::unique_ptr<GameEnvironment::Map> innerMap3 = std::make_unique<GameEnvironment::Map>();
 
         for (int j = 0; j < 5; j++) {
-            std::string innerID = "ID" + std::to_string(j);
-            innerMap1->emplace(innerID, std::make_unique<GameEnvironment::Value>(i + j));
-            innerMap2->emplace(innerID, std::make_unique<GameEnvironment::Value>(i + j));
-            innerMap3->emplace(innerID, std::make_unique<GameEnvironment::Value>((i + j) + 1));
+            innerMap1->emplace(MAP_KEYS[j], std::make_unique<GameEnvironment::Value>(i + j));
+            innerMap2->emplace(MAP_KEYS[j], std::make_unique<GameEnvironment::Value>(i + j));
+            innerMap3->emplace(MAP_KEYS[j], std::make_unique<GameEnvironment::Value>((i + j) + 1));
         }
 
-        std::string id = "ID" + std::to_string(i);
-        mapOfMap1->emplace(id, std::make_unique<GameEnvironment::Value>(std::move(innerMap1)));
-        mapOfMap2->emplace(id, std::make_unique<GameEnvironment::Value>(std::move(innerMap2)));
-        mapOfMap3->emplace(id, std::make_unique<GameEnvironment::Value>(std::move(innerMap3)));
+        mapOfMap1->emplace(MAP_KEYS[i], std::make_unique<GameEnvironment::Value>(std::move(innerMap1)));
+        mapOfMap2->emplace(MAP_KEYS[i], std::make_unique<GameEnvironment::Value>(std::move(innerMap2)));
+        mapOfMap3->emplace(MAP_KEYS[i], std::make_unique<GameEnvironment::Value>(std::move(innerMap3)));
     }
 
     GameEnvironment::Value mapOfMapValue1(std::move(mapOfMap1));
@@ -771,3 +765,182 @@ TEST_F(EvaluatorOperationTest, TestLookUpInvalidType){
     EXPECT_THROW(evaluator.evaluate(OPERATOR::LOOK_UP, {&boolValue, &identifiers[4]}),std::runtime_error);
     EXPECT_THROW(evaluator.evaluate(OPERATOR::LOOK_UP, {&listValue, &identifiers[4]}),std::runtime_error);
 }
+
+// Test case for SIZE operation
+TEST_F(EvaluatorOperationTest, TestValidSizeOperation) {
+    // Create a list with some elements
+    auto list = std::make_unique<GameEnvironment::List>();
+    for (int i = 0; i < 5; ++i) {
+        list->push_back(std::make_unique<GameEnvironment::Value>(i));
+    }
+    GameEnvironment::Value listValue(std::move(list));
+    
+    // Non-empty list check
+    GameEnvironment::Value sizeResult = evaluator.evaluate(OPERATOR::SIZE, {&listValue});
+    EXPECT_EQ(std::get<int>(sizeResult.value), 5);
+
+    // Empty list check
+    GameEnvironment::Value emptyListValue(std::make_unique<GameEnvironment::List>());
+    GameEnvironment::Value sizeResultEmpty = evaluator.evaluate(OPERATOR::SIZE, {&emptyListValue});
+    EXPECT_EQ(std::get<int>(sizeResultEmpty.value), 0);
+}
+
+// Test case for invalid SIZE operation on non-list type
+TEST_F(EvaluatorOperationTest, TestInvalidSizeOperation) {
+    // Create values that is not a list
+    GameEnvironment::Value intValue(10);
+    GameEnvironment::Value boolValue(true);
+    GameEnvironment::Value stringValue(std::string_view("Hello"));
+
+    // Check the SIZE operation on a non-list type
+    EXPECT_THROW(evaluator.evaluate(OPERATOR::SIZE, {&intValue}), std::runtime_error);
+    EXPECT_THROW(evaluator.evaluate(OPERATOR::SIZE, {&boolValue}), std::runtime_error);
+    EXPECT_THROW(evaluator.evaluate(OPERATOR::SIZE, {&stringValue}), std::runtime_error);
+
+    // Check passing two arguments
+    GameEnvironment::Value listValue(std::make_unique<GameEnvironment::List>());
+    EXPECT_THROW(evaluator.evaluate(OPERATOR::SIZE, {&listValue, &listValue}), std::runtime_error);
+}
+
+// Test case for CONTAIN operation with a list of integers
+TEST_F(EvaluatorOperationTest, TestContainOperationWithListOfIntegers) {
+    // Create a list of integers
+    auto intList = std::make_unique<GameEnvironment::List>();
+    for (int i = 0; i < 5; ++i) {
+        intList->push_back(std::make_unique<GameEnvironment::Value>(i * 2));
+    }
+    GameEnvironment::Value intListValue(std::move(intList));
+
+    // Target integer that exists in the list
+    GameEnvironment::Value targetIntValue(6);
+    GameEnvironment::Value containResult = evaluator.evaluate(OPERATOR::CONTAIN, {&intListValue, &targetIntValue});
+    EXPECT_TRUE(std::get<bool>(containResult.value));
+
+    // Target integer that doesn't exist in the list
+    GameEnvironment::Value targetIntValueNotFound(9);
+    containResult = evaluator.evaluate(OPERATOR::CONTAIN, {&intListValue, &targetIntValueNotFound});
+    EXPECT_FALSE(std::get<bool>(containResult.value));
+
+    // Target that is not an integer
+    GameEnvironment::Value targeStringValue(std::string_view("hello"));
+    containResult = evaluator.evaluate(OPERATOR::CONTAIN, {&intListValue, &targeStringValue});
+    EXPECT_FALSE(std::get<bool>(containResult.value));
+}
+
+// Test case for CONTAIN operation with a list of strings
+TEST_F(EvaluatorOperationTest, TestContainOperationWithListOfStrings) {
+    // Create a list of strings
+    auto stringList = std::make_unique<GameEnvironment::List>();
+    std::vector<std::string> strings = {"apple", "banana", "orange", "grapes", "watermelon"};
+    for (const auto& str : strings) {
+        stringList->push_back(std::make_unique<GameEnvironment::Value>(std::string_view(str)));
+    }
+    GameEnvironment::Value stringListValue(std::move(stringList));
+
+    // Target string that exists in the list
+    GameEnvironment::Value targetStrValue(std::string_view("orange"));
+    GameEnvironment::Value containResult = evaluator.evaluate(OPERATOR::CONTAIN, {&stringListValue, &targetStrValue});
+    EXPECT_TRUE(std::get<bool>(containResult.value));
+
+    // Target string that doesn't exist in the list
+    GameEnvironment::Value targetStrValueNotFound(std::string_view("pineapple"));
+    containResult = evaluator.evaluate(OPERATOR::CONTAIN, {&stringListValue, &targetStrValueNotFound});
+    EXPECT_FALSE(std::get<bool>(containResult.value));
+
+    // Target that is not a string
+    GameEnvironment::Value targeIntValue(1);
+    containResult = evaluator.evaluate(OPERATOR::CONTAIN, {&stringListValue, &targeIntValue});
+    EXPECT_FALSE(std::get<bool>(containResult.value));
+}
+
+// Test case for CONTAIN operation with a list of booleans
+TEST_F(EvaluatorOperationTest, TestContainOperationWithListOfBooleans) {
+    // Create a list of booleans
+    auto boolList = std::make_unique<GameEnvironment::List>();
+    for (size_t i = 0; i < 5; i++) {
+        boolList->push_back(std::make_unique<GameEnvironment::Value>(true));
+    }
+    GameEnvironment::Value boolListValue(std::move(boolList));
+
+    // Target boolean that exists in the list
+    GameEnvironment::Value targetBoolValue(true);
+    GameEnvironment::Value containResult = evaluator.evaluate(OPERATOR::CONTAIN, {&boolListValue, &targetBoolValue});
+    EXPECT_TRUE(std::get<bool>(containResult.value));
+
+    // Target boolean that doesn't exist in the list
+    GameEnvironment::Value targetBoolValueNotFound(false);
+    containResult = evaluator.evaluate(OPERATOR::CONTAIN, {&boolListValue, &targetBoolValueNotFound});
+    EXPECT_FALSE(std::get<bool>(containResult.value));
+
+    // Target boolean that is not boolean
+    GameEnvironment::Value targeIntValue(1);
+    containResult = evaluator.evaluate(OPERATOR::CONTAIN, {&boolListValue, &targeIntValue});
+    EXPECT_FALSE(std::get<bool>(containResult.value));
+}
+
+// Test case for CONTAIN operation with a list of maps
+TEST_F(EvaluatorOperationTest, TestContainOperationWithListOfMaps) {
+    auto mapList = std::make_unique<GameEnvironment::List>();
+
+    // Map 1
+    auto map1 = std::make_unique<GameEnvironment::Map>();
+    map1->emplace(std::string_view(MAP_KEYS[0]), std::make_unique<GameEnvironment::Value>(1));
+    map1->emplace(std::string_view(MAP_KEYS[1]), std::make_unique<GameEnvironment::Value>("value1"));
+    auto map1Value = std::make_unique<GameEnvironment::Value>(std::move(map1));
+    GameEnvironment::Value targetMapValue(*map1Value);
+    
+    // Map 2
+    auto map2 = std::make_unique<GameEnvironment::Map>();
+    map2->emplace(std::string_view(MAP_KEYS[2]), std::make_unique<GameEnvironment::Value>(2));
+    map2->emplace(std::string_view(MAP_KEYS[3]), std::make_unique<GameEnvironment::Value>("value2"));
+    auto map2Value = std::make_unique<GameEnvironment::Value>(std::move(map2));
+
+    // Push maps to list
+    mapList->push_back(std::move(map1Value));
+    mapList->push_back(std::move(map2Value));
+    GameEnvironment::Value mapListValue(std::move(mapList));
+
+    // Target map that exists in the list
+    GameEnvironment::Value containResult = evaluator.evaluate(OPERATOR::CONTAIN, {&mapListValue, &targetMapValue});
+    EXPECT_TRUE(std::get<bool>(containResult.value));
+
+    // Target map that doesn't exist in the list
+    GameEnvironment::Value targetMapValueNotFound(std::make_unique<GameEnvironment::Map>());
+    containResult = evaluator.evaluate(OPERATOR::CONTAIN, {&mapListValue, &targetMapValueNotFound});
+    EXPECT_FALSE(std::get<bool>(containResult.value));
+}
+
+// Test case for CONTAIN operation with a list of lists
+TEST_F(EvaluatorOperationTest, TestContainOperationWithListOfLists) {
+    auto listList = std::make_unique<GameEnvironment::List>();
+
+    // List 1
+    auto list1 = std::make_unique<GameEnvironment::List>();
+    list1->push_back(std::make_unique<GameEnvironment::Value>(1));
+    list1->push_back(std::make_unique<GameEnvironment::Value>(2));
+    list1->push_back(std::make_unique<GameEnvironment::Value>(3));
+    auto list1Value = std::make_unique<GameEnvironment::Value>(std::move(list1));
+    GameEnvironment::Value targetListValue(*list1Value);
+    
+    // List 2
+    auto list2 = std::make_unique<GameEnvironment::List>();
+    list2->push_back(std::make_unique<GameEnvironment::Value>(4));
+    list2->push_back(std::make_unique<GameEnvironment::Value>(5));
+    list2->push_back(std::make_unique<GameEnvironment::Value>(6));
+    auto list2Value = std::make_unique<GameEnvironment::Value>(std::move(list2));
+
+    // Push lists to list
+    listList->push_back(std::move(list1Value));
+    listList->push_back(std::move(list2Value));
+    GameEnvironment::Value listListValue(std::move(listList));
+
+    // Target list that exists in the list
+    GameEnvironment::Value containResult = evaluator.evaluate(OPERATOR::CONTAIN, {&listListValue, &targetListValue});
+    EXPECT_TRUE(std::get<bool>(containResult.value));
+
+    // Target list that doesn't exist in the list
+    GameEnvironment::Value targetListValueNotFound(std::make_unique<GameEnvironment::List>());
+    containResult = evaluator.evaluate(OPERATOR::CONTAIN, {&listListValue, &targetListValueNotFound});
+    EXPECT_FALSE(std::get<bool>(containResult.value));
+}
+

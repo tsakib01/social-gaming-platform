@@ -174,6 +174,8 @@ std::unique_ptr<GameEnvironment::Environment>  GameStateLoader::getConfigEnviron
         auto toStore = nodeSymbolToConvert[nodeSymbol]->convertNode(root.getNamedChild(index));
         configMap->emplace(identifier, std::move(toStore));
     }
+    // (Jack) Uncomment to use rounds - should delete this after merging Allan's branch
+    // configMap->emplace("rounds", std::make_unique<GameEnvironment::Value>(15));
 
     toReturnEnvironment->emplace(configIdentifier, std::make_unique<GameEnvironment::Value>(std::move(configMap)));
     return toReturnEnvironment;

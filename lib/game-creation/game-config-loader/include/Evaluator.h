@@ -8,7 +8,7 @@
 
 // Allowed operations by evaluator
 enum class OPERATOR {
-    ADD, SUBTRACT, MULTIPLY, DIVIDE, OR, AND, NOT, EQUAL, LOOK_UP
+    ADD, SUBTRACT, MULTIPLY, DIVIDE, OR, AND, NOT, EQUAL, LOOK_UP, UPFROM, SIZE, CONTAIN
 };
 
 // Allowed operations for modifying lists by evaluator
@@ -58,8 +58,9 @@ private:
 
 class Evaluator{
 public:
+    Evaluator() = default;
     // Evaluate given arguments with given operator
-    GameEnvironment::Value evaluate(OPERATOR operationEnum, std::vector<const GameEnvironment::Value*> values);
+    GameEnvironment::Value evaluate(OPERATOR operationEnum, std::vector<const GameEnvironment::Value*> values) const;
     // Modify lists based on given action
     void evaluate(MODIFIER MODIFIEREnum, std::vector<GameEnvironment::Value*> values);
     // Add an associate from operator to operation
