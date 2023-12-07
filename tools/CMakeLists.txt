@@ -7,6 +7,8 @@ target_link_libraries(main
     gameInstance
     gameInstanceManager
     cpp-tree-sitter
+    userManager
+    networking
 )
 
 install(TARGETS main

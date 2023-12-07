@@ -3,6 +3,8 @@
 #include "GameConfigLoader.h"
 #include "GameInstance.h"
 #include "GameInstanceManager.h"
+#include "UserManager.h"
+#include "Server.h"
 
 
 int main(int argc, char** argv) {
@@ -23,7 +25,11 @@ int main(int argc, char** argv) {
     GameInstanceManager gameInstanceManager = GameInstanceManager();
     GameCommunicator gameCommunicator;
     auto invCode = gameInstanceManager.createGameInstance(gameFilePath, gameCommunicator);
-    gameInstanceManager.startGame(invCode, {});
+    User user{networking::Connection{1}};
+    user.username = "testUser";
+    std::vector<User> users;
+    users.emplace_back(user);
+    gameInstanceManager.startGame(invCode, users);
     gameInstanceManager.runCycle();
     return EXIT_SUCCESS;  
 

@@ -4,6 +4,7 @@
 #include "GameEnvironment.h"
 #include "Rule.h"
 #include "Evaluator.h"
+#include "UserManager.h"
 #include <string_view>
 #include <iostream>
 #include <variant>
@@ -33,12 +34,15 @@ public:
     void updateState(Rule* identifier, size_t value);
     // Removes rule from ruleEnvironment
     void removeValue(Rule* identifier);
+    // Adds player state
+    void addPlayerState(const User& user);
     // Print all of identifier and its associative values of the map.
     void print();
 private:
     Evaluator evaluator = Evaluator::defaultEvaluatorFactory();
     std::unique_ptr<GameEnvironment::Environment> environment;
     std::map<Rule*, size_t> ruleEnvironment;
+    int numPlayers;
 };
 
 struct PrintVisitor {

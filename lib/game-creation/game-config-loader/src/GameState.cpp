@@ -116,6 +116,28 @@ void GameState::removeValue(Rule* rule) {
     ruleEnvironment.erase(it);
 }
 
+void GameState::addPlayerState(const User& user) {
+    if (!hasValue("players")) {
+        std::unique_ptr<GameEnvironment::List> playerList = std::make_unique<GameEnvironment::List>();
+        addState("players", std::make_unique<GameEnvironment::Value>(std::move(playerList)));
+        numPlayers = 0;
+    }
+    auto userObject = std::make_unique<GameEnvironment::Value>((getValue("per-player")));
+    GameEnvironment::Value nameIdentifier(std::string_view("name"));
+    GameEnvironment::Value nameToSet(user.username);
+    std::vector<GameEnvironment::Value*> nameValues={userObject.get(), &nameIdentifier, &nameToSet};
+    GameEnvironment::Value idIdentifier(std::string_view("id"));
+    GameEnvironment::Value idToSet((int)user.userID.id);
+    std::vector<GameEnvironment::Value*> idValues={userObject.get(), &idIdentifier, &idToSet};
+    evaluator.evaluate(MODIFIER::SET, nameValues);
+    evaluator.evaluate(MODIFIER::SET, idValues);
+    auto players = environment->find("players");
+    GameEnvironment::Value index(numPlayers);
+    std::vector<GameEnvironment::Value*> playerValues={players->second.get(), &index, userObject.get()};
+    evaluator.evaluate(MODIFIER::SET, playerValues);
+    numPlayers++;
+}
+
 void GameState::print(){
     for (const auto& [key, value] : *environment){
         std::cout << key << ": ";
