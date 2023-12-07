@@ -30,6 +30,7 @@ target_link_libraries(gameConfigLoader
   tree-sitter-socialgaming
   cpp-tree-sitter
   expression
+  userManager
 )
 
 install(TARGETS

@@ -93,6 +93,7 @@ GameInstance::addUsers(const std::vector<User>& users) {
     for (const User& user : users) {
         GameEnvironment::Environment dummyEnvironment;
         m_inGameUserManager->addNewUser(user.userID, std::move(dummyEnvironment));
+        m_gameState->addPlayerState(user);
     }
 }
 
