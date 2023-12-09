@@ -11,6 +11,7 @@ public:
     void setMessage(UserId user, std::string_view message);
     void setMessageForAll(std::string_view message);
     std::map<UserId, std::string_view> getMessages() const;
+    std::vector<UserId> getUsers() const;
     /// Clears all messages but retains the users
     void clear();
 
