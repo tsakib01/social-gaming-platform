@@ -25,6 +25,13 @@ OutgoingMessages::getMessages() const {
     return m_userMessages;
 }
 
+std::vector<UserId> OutgoingMessages::getUsers() const {
+    std::vector<UserId> users;
+    std::transform(m_userMessages.begin(), m_userMessages.end(), std::back_inserter(users),
+        [](const auto& userMessage) { return userMessage.first; });
+    return users;
+}
+
 void OutgoingMessages::clear() {
     for(auto& [user, _] : m_userMessages)
         setMessage(user, "");
