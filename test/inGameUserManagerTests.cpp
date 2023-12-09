@@ -75,6 +75,18 @@ TEST(InGameUserManagerTests, CanDeleteAllUsers){
     ASSERT_EQ(std::move(inGameUManager.getAllUserStates()).size(), 0);
 }
 
+TEST(InGameUserManagerTests, GetAllUserIds) {
+    auto userManager = InGameUserManager{};
+    auto userIds = std::vector<UserId>{{1}, {2}, {3}};
+    for (const auto& userId : userIds)
+        userManager.addNewUser(userId, GameEnvironment::Environment{});
+    
+    auto returnedUserIds = userManager.getAllUserIds();
+    ASSERT_EQ(returnedUserIds.size(), userIds.size());
+    for (const auto& userId : userIds)
+        ASSERT_TRUE(std::find(returnedUserIds.begin(), returnedUserIds.end(), userId) != returnedUserIds.end());
+}
+
 // Check to get int from existing User from InGameUserManager.
 TEST_F(InGameUserManagerCopyValueTests, CanGetIntValueOfExistingUser){
     auto original = std::make_unique<GameEnvironment::Value>(1);

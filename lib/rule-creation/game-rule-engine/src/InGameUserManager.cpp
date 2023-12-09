@@ -25,6 +25,13 @@ std::map<uintptr_t, GameEnvironment::Environment> InGameUserManager::getAllUserS
     return std::move(m_userStates);
 }
 
+std::vector<UserId> InGameUserManager::getAllUserIds() const {
+    auto userIds = std::vector<UserId>{};
+    std::transform(m_userStates.begin(), m_userStates.end(), std::back_inserter(userIds),
+        [](const auto& userState) { return UserId{userState.first}; });
+    return userIds;
+}
+
 GameEnvironment::Value InGameUserManager::getValueOfUser(UserId connection, GameEnvironment::Identifier identifier){
     auto iterator = m_userStates.find(connection.id);
     assert(iterator != m_userStates.end());
