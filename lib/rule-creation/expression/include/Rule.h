@@ -91,6 +91,8 @@ public:
     }
 };
 
+const auto ALL_PLAYERS = "all";
+
 /// A rule that represents a message to be sent to a list of players
 class MessageRule : public Rule {
 public:

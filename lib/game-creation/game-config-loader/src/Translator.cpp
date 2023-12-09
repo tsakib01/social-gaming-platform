@@ -128,9 +128,9 @@ MessageFactory::createImpl(const ts::Node& node) {
 
     if (players.getSourceRange(translator->source) == "all") {
         rule->players = std::make_unique<LiteralExpression>(
-                std::make_unique<GameEnvironment::Value>("all"));
+                std::make_unique<GameEnvironment::Value>(ALL_PLAYERS));
     } else {
-
+        throw new std::runtime_error("Unimplemented feature: message rule with non-all players");
     }
     
     return rule;
