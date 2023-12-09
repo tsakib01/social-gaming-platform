@@ -1,6 +1,8 @@
 #include "GameInstance.h"
 #include "GameConfigLoader.h"
 #include "GameEnvironment.h"
+#include "OutgoingMessages.h"
+
 GameInstance::GameInstance(std::unique_ptr<RuleTree> gameRules, std::unique_ptr<GameState> gameState, 
 std::unique_ptr<GameSetup> gameSetup, GameCommunicator& gameCommunicator, uint16_t roomCode)
     : m_gameRules(std::move(gameRules)), 
@@ -8,7 +10,7 @@ std::unique_ptr<GameSetup> gameSetup, GameCommunicator& gameCommunicator, uint16
       m_gameSetup(std::move(gameSetup)),
       m_gameCommunicator(gameCommunicator),
       m_roomCode(roomCode),
-      m_context(*m_gameState, m_gameRules->getRoot()),
+      m_context(*m_gameState, OutgoingMessages({}), m_gameRules->getRoot()),
       m_ruleExecutor(m_context)
 {
     m_inGameUserManager = std::make_unique<InGameUserManager>();
@@ -65,8 +67,7 @@ GameInstance::execute() {
         m_state = GameInstanceState::WAITING;
         
         // TODO: Replace this once executeContext has outgoingMessages
-        // auto outgoing = m_context.outgoingMessages;
-        auto outgoing = OutgoingMessages{{}};
+        auto outgoing = m_context.outgoingMessages;
         m_gameCommunicator.setGameMessage(outgoing.getMessages());
         outgoing.clear();
     }
@@ -94,6 +95,9 @@ GameInstance::addUsers(const std::vector<User>& users) {
         GameEnvironment::Environment dummyEnvironment;
         m_inGameUserManager->addNewUser(user.userID, std::move(dummyEnvironment));
         m_gameState->addPlayerState(user);
+        
+        auto users = m_inGameUserManager->getAllUserIds();
+        m_context.outgoingMessages = OutgoingMessages{users};
     }
 }
 

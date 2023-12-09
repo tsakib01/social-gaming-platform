@@ -67,8 +67,26 @@ void RuleExecuteVisitor::visit(DiscardRule& rule) {
 }
 
 void RuleExecuteVisitor::visit(MessageRule& rule) {
-    (void)rule;
     std::cout << "executing message rule" << std::endl;
+
+    auto content = rule.content->accept(exprVisitor);
+    auto message = std::get_if<std::string_view>(&content->value);
+    if(!message)
+        throw new std::runtime_error("Invalid message content");
+
+    auto players = rule.players->accept(exprVisitor);
+    
+    auto playerDesc = std::get_if<std::string_view>(&players->value);
+    if(playerDesc) {
+        if(playerDesc->compare(ALL_PLAYERS) != 0)
+            throw new std::runtime_error("Unknown player description");
+        
+        context.outgoingMessages.setMessageForAll(*message);
+    }
+    else if(std::holds_alternative<std::unique_ptr<GameEnvironment::List>>(players->value)) {
+        throw new std::runtime_error("Unimplemented feature: message rule with non-all players");        
+    }
+
     context.instructionStack.pop();
 }
 

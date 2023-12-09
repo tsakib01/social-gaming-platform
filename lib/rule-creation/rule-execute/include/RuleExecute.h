@@ -6,15 +6,17 @@
 #include <stack>
 #include "Evaluator.h"
 #include "ExpressionEvaluator.h"
+#include "OutgoingMessages.h"
 
 /// Context for executing a rule
 struct ExecuteContext {
     GameState& gameState;
+    OutgoingMessages outgoingMessages;
     std::stack<Rule*> instructionStack;
     bool blocked = false;
 
-    ExecuteContext(GameState& state, Rule* initialRule)
-        : gameState(state) {
+    ExecuteContext(GameState& state, OutgoingMessages outgoingMessages, Rule* initialRule)
+        : gameState(state), outgoingMessages(outgoingMessages) {
         instructionStack.push(initialRule);
     }
 };
